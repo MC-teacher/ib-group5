@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCA_IB_Group5_mathematics</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --sl-accent: #00e5a0;
+    --sl-glow: rgba(0,229,160,0.15);
+    --sl-dim: rgba(0,229,160,0.05);
+    --hl-accent: #ff6b35;
+    --hl-glow: rgba(255,107,53,0.15);
+    --hl-dim: rgba(255,107,53,0.05);
+    --text-primary: #eeeef4;
+    --text-secondary: #8888aa;
+    --text-dim: #44445a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ambient glow blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    animation: float 8s ease-in-out infinite;
+  }
+  .blob-sl { width: 500px; height: 500px; background: rgba(0,229,160,0.06); top: -100px; left: -100px; }
+  .blob-hl { width: 500px; height: 500px; background: rgba(255,107,53,0.06); bottom: -100px; right: -100px; animation-delay: -4s; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, 20px); }
+  }
+
+  /* Header */
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #eeeef4 30%, #8888aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-sub {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  /* Main */
+  main {
+    position: relative;
+    z-index: 10;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  @media (max-width: 700px) {
+    main { grid-template-columns: 1fr; }
+    header { padding: 40px 20px 32px; }
+  }
+
+  /* Section */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.8s ease both;
+  }
+  .section:nth-child(2) { animation-delay: 0.15s; }
+
+  .section-header {
+    padding: 28px 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 1;
+  }
+
+  .sl .section-header { background: var(--sl-dim); border-bottom: 1px solid rgba(0,229,160,0.12); }
+  .hl .section-header { background: var(--hl-dim); border-bottom: 1px solid rgba(255,107,53,0.12); }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+  .sl .badge { background: rgba(0,229,160,0.12); color: var(--sl-accent); border: 1px solid rgba(0,229,160,0.2); }
+  .hl .badge { background: rgba(255,107,53,0.12); color: var(--hl-accent); border: 1px solid rgba(255,107,53,0.2); }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+  .sl .badge-dot { background: var(--sl-accent); box-shadow: 0 0 8px var(--sl-accent); }
+  .hl .badge-dot { background: var(--hl-accent); box-shadow: 0 0 8px var(--hl-accent); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .sl .section-title { color: var(--sl-accent); }
+  .hl .section-title { color: var(--hl-accent); }
+
+  .section-desc {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  /* Links */
+  .links {
+    padding: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .link-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    group: true;
+  }
+
+  .sl .link-card {
+    background: rgba(0,229,160,0.04);
+    border-color: rgba(0,229,160,0.08);
+    color: var(--text-primary);
+  }
+  .sl .link-card:hover {
+    background: rgba(0,229,160,0.10);
+    border-color: rgba(0,229,160,0.3);
+    transform: translateX(4px);
+    box-shadow: 0 0 20px rgba(0,229,160,0.08);
+  }
+
+  .hl .link-card {
+    background: rgba(255,107,53,0.04);
+    border-color: rgba(255,107,53,0.08);
+    color: var(--text-primary);
+  }
+  .hl .link-card:hover {
+    background: rgba(255,107,53,0.10);
+    border-color: rgba(255,107,53,0.3);
+    transform: translateX(4px);
+    box-shadow: 0 0 20px rgba(255,107,53,0.08);
+  }
+
+  .link-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .link-num {
+    font-size: 10px;
+    letter-spacing: 1px;
+    opacity: 0.3;
+    min-width: 20px;
+  }
+
+  .link-info {}
+
+  .link-name {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  .link-url {
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .link-arrow {
+    font-size: 14px;
+    opacity: 0.3;
+    transition: all 0.2s;
+  }
+  .link-card:hover .link-arrow {
+    opacity: 1;
+    transform: translateX(2px);
+  }
+  .sl .link-card:hover .link-arrow { color: var(--sl-accent); }
+  .hl .link-card:hover .link-arrow { color: var(--hl-accent); }
+
+  /* Footer */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob-sl"></div>
+<div class="blob blob-hl"></div>
+
+<header>
+  <div class="header-label">CCA · IB Mathematics Hub</div>
+  <h1>CCA_IB_Group5<br>_mathematics</h1>
+  <div class="header-sub">Select a level to explore the materials</div>
+</header>
+
+<main>
+
+  <!-- SL Section -->
+  <div class="section sl">
+    <div class="section-header">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Standard Level
+      </div>
+      <div class="section-title">SL</div>
+      <div class="section-desc">IB Mathematics · Standard Level Units</div>
+    </div>
+    <div class="links">
+      <a class="link-card" href="https://mc-teacher.github.io/ib-exponent/" target="_blank">
+        <div class="link-left">
+          <span class="link-num">01</span>
+          <div class="link-info">
+            <div class="link-name">지수 &amp; 로그</div>
+            <div class="link-url">mc-teacher.github.io/ib-exponent</div>
+          </div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+      <a class="link-card" href="https://mc-teacher.github.io/ib-graph/" target="_blank">
+        <div class="link-left">
+          <span class="link-num">02</span>
+          <div class="link-info">
+            <div class="link-name">지수 &amp; 로그 함수</div>
+            <div class="link-url">mc-teacher.github.io/ib-graph</div>
+          </div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- HL Section -->
+  <div class="section hl">
+    <div class="section-header">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Higher Level
+      </div>
+      <div class="section-title">HL</div>
+      <div class="section-desc">IB Mathematics · Higher Level Units</div>
+    </div>
+    <div class="links">
+      <a class="link-card" href="https://mc-teacher.github.io/ib-graph/" target="_blank">
+        <div class="link-left">
+          <span class="link-num">01</span>
+          <div class="link-info">
+            <div class="link-name">Graph</div>
+            <div class="link-url">mc-teacher.github.io/ib-graph</div>
+          </div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+      <a class="link-card" href="https://mc-teacher.github.io/ib-sequences/" target="_blank">
+        <div class="link-left">
+          <span class="link-num">02</span>
+          <div class="link-info">
+            <div class="link-name">Arithmetic Sequence</div>
+            <div class="link-url">mc-teacher.github.io/ib-sequences</div>
+          </div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+      <a class="link-card" href="https://mc-teacher.github.io/ib-geometric/" target="_blank">
+        <div class="link-left">
+          <span class="link-num">03</span>
+          <div class="link-info">
+            <div class="link-name">Geometric Sequence</div>
+            <div class="link-url">mc-teacher.github.io/ib-geometric</div>
+          </div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+      <a class="link-card" href="https://mc-teacher.github.io/ib-proof/" target="_blank">
+        <div class="link-left">
+          <span class="link-num">04</span>
+          <div class="link-info">
+            <div class="link-name">Proof</div>
+            <div class="link-url">mc-teacher.github.io/ib-proof</div>
+          </div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+      <a class="link-card" href="https://mc-teacher.github.io/ib-exponent-HL/" target="_blank">
+        <div class="link-left">
+          <span class="link-num">05</span>
+          <div class="link-info">
+            <div class="link-name">Exponent &amp; Logarithm</div>
+            <div class="link-url">mc-teacher.github.io/ib-exponent-HL</div>
+          </div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<footer>CCA · IB Group 5 · Mathematics</footer>
+
+</body>
+</html>
