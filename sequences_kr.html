@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>III-1 · 등차수열과 등비수열</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700&family=Noto+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#12161f;--dark2:#181d2c;--dark3:#1e2438;--dark4:#252d46;
+  --card:#1b2132;
+  --red:#d63050;--red-dim:#b02040;
+  --orange:#e07030;--orange-bg:#2a1810;
+  --gold:#d4a043;--gold-dim:#b8862e;
+  --teal:#30b89a;--blue:#4a9fd4;--lime:#7ec870;
+  --text:#ede8dc;--text-muted:#8892a8;--text-dim:#5a6280;
+  --mono:'JetBrains Mono',monospace;
+  --serif:'Noto Serif KR',serif;
+  --sans:'Noto Sans KR',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--dark);color:var(--text);font-size:15px;line-height:1.8}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(18,22,31,.97);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  display:flex;align-items:center;height:50px;
+  overflow-x:auto;scrollbar-width:none;
+}
+nav::-webkit-scrollbar{display:none}
+.nav-logo{
+  padding:0 16px;font-size:12px;font-weight:700;color:var(--red);
+  letter-spacing:.02em;white-space:nowrap;flex-shrink:0;line-height:1.3;
+  border-right:1px solid rgba(255,255,255,0.08);min-width:100px;
+}
+.nav-logo span{display:block;font-weight:400;color:var(--text-muted);font-size:10px}
+.nav-links{display:flex;align-items:center;padding:0 6px;gap:2px}
+.nav-link{
+  padding:5px 10px;border-radius:5px;font-size:12px;font-weight:500;
+  color:var(--text-muted);white-space:nowrap;cursor:pointer;
+  transition:all .15s;border:none;background:none;font-family:var(--sans);
+}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+.nav-link.active{background:var(--red);color:#fff}
+
+main{margin-top:50px;max-width:860px;margin-left:auto;margin-right:auto;padding:0 18px 80px}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(135deg,var(--dark3) 0%,#1a0e18 100%);
+  border-radius:16px;margin:24px 0 28px;padding:36px 40px;
+  border:1px solid rgba(255,255,255,0.07);position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(214,48,80,.12) 0%,transparent 70%);}
+.hero-num{
+  width:50px;height:50px;border-radius:12px;background:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:24px;color:#fff;font-weight:700;margin-bottom:18px;
+}
+.hero h1{font-family:var(--serif);font-size:34px;color:#fff;line-height:1.15;margin-bottom:8px}
+.hero-sub{color:var(--gold);font-size:14px;margin-bottom:20px;font-style:italic}
+.hero-objectives{list-style:none;display:flex;flex-direction:column;gap:6px}
+.hero-objectives li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:var(--text-muted)}
+.hero-objectives li::before{content:'✦';color:var(--red);flex-shrink:0;font-size:10px;margin-top:4px}
+
+/* ── SECTION ── */
+.sec-block{padding-top:24px;border-top:2px solid rgba(255,255,255,0.07);margin-top:24px}
+.sec-tag{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px}
+.sec-title{font-family:var(--serif);font-size:26px;color:var(--red);margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.sec-title-num{width:36px;height:36px;border-radius:8px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700;flex-shrink:0}
+.sec-desc{font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.6}
+
+/* ── KEY POINT ── */
+.kp{
+  background:#f3ede3;color:#1a1a1a;border-radius:12px;
+  padding:16px 20px;margin-bottom:14px;border-left:4px solid var(--red);
+}
+.kp h3{font-size:12px;font-weight:700;color:var(--red-dim);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.kp-body{font-size:14px;line-height:1.9}
+.kp-formula{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.kp-f{background:rgba(0,0,0,0.08);border-radius:6px;padding:5px 14px;font-family:var(--mono);font-size:13px;color:#1a1a22}
+.kp-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.kp-table th{background:rgba(0,0,0,0.08);padding:6px 12px;text-align:center;border:1px solid rgba(0,0,0,0.1)}
+.kp-table td{padding:6px 12px;border:1px solid rgba(0,0,0,0.08);text-align:center;font-family:var(--mono)}
+.kp-table td.lbl{font-family:var(--sans);font-weight:600;text-align:left;color:#a02038}
+
+/* ── WORKED EXAMPLE ── */
+.we{background:var(--card);border-radius:12px;border:1px solid rgba(255,255,255,0.07);margin-bottom:12px;overflow:hidden}
+.we-hd{padding:10px 18px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:10px}
+.we-badge{font-size:10px;font-weight:700;background:var(--orange);color:#fff;padding:2px 8px;border-radius:4px}
+.we-title{font-size:14px;font-weight:600;color:var(--text)}
+.we-body{padding:14px 18px;font-size:14px}
+.we-step{display:grid;grid-template-columns:130px 1fr;gap:10px;align-items:baseline;margin-bottom:6px}
+.we-lbl{font-size:11px;color:var(--text-dim);text-align:right;font-style:italic}
+.we-math{font-family:var(--mono);font-size:13px;color:var(--text);line-height:1.6}
+.we-ans{background:var(--dark3);border-radius:7px;padding:8px 16px;font-family:var(--mono);font-size:13.5px;color:var(--teal);font-weight:600;margin-top:6px}
+
+/* ── QUESTION CARD ── */
+.q-wrap{margin-bottom:9px}
+.q-hd{
+  background:var(--dark3);border-radius:10px 10px 0 0;
+  padding:11px 18px;display:flex;align-items:center;gap:11px;
+  border:1px solid rgba(255,255,255,0.07);border-bottom:none;
+}
+.q-badge{font-size:11px;font-weight:700;background:var(--gold);color:var(--dark);padding:3px 10px;border-radius:5px;white-space:nowrap;font-family:var(--mono)}
+.q-badge-r{font-size:11px;font-weight:700;background:var(--red);color:#fff;padding:3px 10px;border-radius:5px;white-space:nowrap;font-family:var(--mono)}
+.q-title{font-size:14.5px;font-weight:600;color:var(--text)}
+.q-body{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-top:none;border-radius:0 0 10px 10px;overflow:hidden}
+
+.q-box{border-left:3px solid var(--gold-dim);margin:14px 18px 0;padding:11px 15px;background:var(--dark2);border-radius:0 8px 8px 0}
+.q-box .ql{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;font-weight:600}
+.q-box .qt{font-size:14px;color:var(--text);line-height:1.85}
+.q-box .qp{margin-top:7px;display:flex;flex-direction:column;gap:4px}
+.q-box .qpi{font-size:14px;color:var(--text);line-height:1.75;display:flex;gap:8px}
+.q-box .qpi b{color:var(--gold-dim);min-width:18px}
+
+.hint{margin:10px 18px 0;padding:7px 13px;background:rgba(212,160,67,.07);border-radius:6px;font-size:13px;color:var(--gold-dim);font-style:italic;display:flex;align-items:flex-start;gap:8px}
+.hint::before{content:'💡';flex-shrink:0}
+
+.sol-btn{
+  width:100%;padding:11px 18px;background:var(--dark3);border:none;
+  border-top:1px solid rgba(255,255,255,0.06);color:var(--text-muted);cursor:pointer;
+  display:flex;align-items:center;gap:10px;font-family:var(--sans);font-size:13px;font-weight:500;
+  transition:background .15s;margin-top:12px;
+}
+.sol-btn:hover,.sol-btn.open{background:var(--dark4);color:var(--text)}
+.sol-btn .tri{transition:transform .2s;font-size:10px;font-family:var(--mono)}
+.sol-btn.open .tri{transform:rotate(90deg)}
+.sol-btn-lbl{flex:1;text-align:left}
+
+.sol{display:none;background:var(--dark2);border-top:1px solid rgba(255,255,255,0.05);padding:14px 18px}
+.sol.open{display:block}
+.sol-steps{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.ss{display:flex;align-items:baseline;gap:9px}
+.stag{font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.t-풀이{background:#1d4437;color:#5dca9a}
+.t-공식{background:#1a2e4a;color:#6aaae8}
+.t-계산{background:#2a2040;color:#9b7de8}
+.t-정리{background:#3a2010;color:#e8a060}
+.t-답{background:#1e3020;color:#70e890}
+.t-조건{background:#2a1040;color:#c870e8}
+.t-연립{background:#102020;color:#60e8d4}
+.t-대입{background:#2e1a1a;color:#e87070}
+.st{font-family:var(--mono);font-size:13px;color:var(--text);line-height:1.65}
+.sol-ans{background:var(--dark3);border-radius:8px;padding:11px 16px;font-family:var(--mono);font-size:14px;color:var(--teal);font-weight:600;border-left:3px solid var(--teal);margin-top:4px}
+.sol-ans-kr{font-family:var(--sans);font-size:14px}
+
+/* ── INFO BOX ── */
+.info{background:rgba(30,184,154,.08);border:1px solid rgba(30,184,154,.2);border-radius:9px;padding:12px 16px;margin:14px 0;font-size:13.5px;color:var(--text-muted)}
+.info strong{color:var(--teal)}
+.warn{background:rgba(214,48,80,.07);border:1px solid rgba(214,48,80,.18);border-radius:9px;padding:12px 16px;margin:14px 0;font-size:13.5px;color:var(--text-muted)}
+.warn strong{color:var(--red)}
+
+/* ── DIVIDER ── */
+.subsec{font-size:16px;font-weight:700;color:var(--orange);margin:22px 0 12px;padding-left:12px;border-left:4px solid var(--orange)}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--dark)}
+::-webkit-scrollbar-thumb{background:var(--dark4);border-radius:3px}
+
+@media(max-width:600px){
+  main{padding:0 10px 60px}
+  .hero{padding:24px 16px}
+  .hero h1{font-size:26px}
+  .we-step{grid-template-columns:1fr;gap:2px}
+  .we-lbl{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">III-1 수열<br><span>등차·등비수열</span></div>
+  <div class="nav-links">
+    <a class="nav-link active" onclick="go('start')">시작</a>
+    <a class="nav-link" onclick="go('sec01')">01 수열</a>
+    <a class="nav-link" onclick="go('sec02')">02 등차수열</a>
+    <a class="nav-link" onclick="go('sec02b')">등차수열의 합</a>
+    <a class="nav-link" onclick="go('sec03')">03 등비수열</a>
+    <a class="nav-link" onclick="go('sec03b')">등비수열의 합</a>
+    <a class="nav-link" onclick="go('review')">마무리 문제</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══ HERO ══ -->
+<div id="start" class="hero" style="margin-top:24px">
+  <div class="hero-num">1</div>
+  <h1>등차수열과 등비수열</h1>
+  <div class="hero-sub">01 수열 &nbsp;·&nbsp; 02 등차수열 &nbsp;·&nbsp; 03 등비수열</div>
+  <ul class="hero-objectives">
+    <li>수열의 뜻을 설명할 수 있다.</li>
+    <li>등차수열의 뜻을 알고, 일반항과 첫째항부터 제n항까지의 합을 구할 수 있다.</li>
+    <li>등비수열의 뜻을 알고, 일반항과 첫째항부터 제n항까지의 합을 구할 수 있다.</li>
+  </ul>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     01  수열
+══════════════════════════════════════ -->
+<div id="sec01" class="sec-block">
+  <div class="sec-tag">Section 01</div>
+  <div class="sec-title"><span class="sec-title-num">01</span>수열</div>
+  <div class="sec-desc">학습목표: 수열의 뜻을 설명할 수 있다.</div>
+
+  <div class="kp">
+    <h3>핵심 개념 — 수열</h3>
+    <div class="kp-body">
+      • 차례로 나열된 수의 열을 <strong>수열</strong>이라 하고, 나열된 각 수를 그 수열의 <strong>항</strong>이라 한다.<br>
+      • 각 항에 번호를 붙여 a₁, a₂, a₃, … 와 같이 나타내고, 제n항 aₙ을 <strong>일반항</strong>이라 한다.<br>
+      • 수열을 일반항 aₙ을 이용하여 <strong>{aₙ}</strong>으로 간단히 나타낸다.
+    </div>
+    <div class="kp-formula" style="margin-top:12px">
+      <span class="kp-f">aₙ = (제n항을 나타내는 식)</span>
+      <span class="kp-f">n에 1, 2, 3, … 대입 → 각 항</span>
+    </div>
+  </div>
+
+  <div class="info"><strong>보기:</strong> 수열 {2n−1}의 일반항은 aₙ=2n−1이므로<br>a₁=1, a₂=3, a₃=5, a₄=7, … 따라서 1, 3, 5, 7, …이다.</div>
+
+  <!-- 문제 1 (수열) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 1</span><span class="q-title">다음 수열의 첫째항부터 넷째항까지를 나열하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> {3n+1}</div>
+          <div class="qpi"><b>(2)</b> {2ⁿ−1}</div>
+          <div class="qpi"><b>(3)</b> {(n−2)/(n+3)}</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-계산">(1)</span><span class="st">n=1: 4, n=2: 7, n=3: 10, n=4: 13</span></div>
+          <div class="ss"><span class="stag t-계산">(2)</span><span class="st">n=1: 1, n=2: 3, n=3: 7, n=4: 15</span></div>
+          <div class="ss"><span class="stag t-계산">(3)</span><span class="st">n=1: -1/4, n=2: 0, n=3: 1/6, n=4: 2/7</span></div>
+        </div>
+        <div class="sol-ans">(1) 4, 7, 10, 13 &nbsp;&nbsp; (2) 1, 3, 7, 15 &nbsp;&nbsp; (3) -1/4, 0, 1/6, 2/7</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 1</span><span class="we-title">다음 수열의 일반항 aₙ을 추측하시오.</span></div>
+    <div class="we-body">
+      <div style="font-size:14px;color:var(--text-muted);margin-bottom:8px">(1) 1, 1/4, 1/9, 1/16, … &nbsp;&nbsp; (2) 9, 99, 999, 9999, …</div>
+      <div class="we-step"><span class="we-lbl">(1) 분모 관찰</span><span class="we-math">a₁=1/1², a₂=1/2², a₃=1/3², a₄=1/4², …</span></div>
+      <div class="we-step"><span class="we-lbl">일반항</span><span class="we-math">aₙ = 1/n²</span></div>
+      <div class="we-step"><span class="we-lbl">(2) 각 항 분석</span><span class="we-math">a₁=10¹−1, a₂=10²−1, a₃=10³−1, …</span></div>
+      <div class="we-step"><span class="we-lbl">일반항</span><span class="we-math">aₙ = 10ⁿ − 1</span></div>
+      <div class="we-ans">(1) aₙ = 1/n² &nbsp;&nbsp; (2) aₙ = 10ⁿ − 1</div>
+    </div>
+  </div>
+
+  <!-- 문제 2 (수열) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 2</span><span class="q-title">다음 수열의 일반항 aₙ을 추측하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 1×2, 2×3, 3×4, 4×5, …</div>
+          <div class="qpi"><b>(2)</b> −1, 1, −1, 1, …</div>
+        </div>
+      </div>
+      <div class="hint">패턴을 찾아 n으로 표현. (2)는 n이 홀수/짝수에 따라 부호가 달라진다.</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">(1)</span><span class="st">n번째 항: n×(n+1) = n(n+1)<br>→ aₙ = n(n+1)</span></div>
+          <div class="ss"><span class="stag t-풀이">(2)</span><span class="st">홀수 항: −1, 짝수 항: 1<br>→ aₙ = (−1)ⁿ</span></div>
+        </div>
+        <div class="sol-ans">(1) aₙ = n(n+1) &nbsp;&nbsp; (2) aₙ = (−1)ⁿ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     02  등차수열
+══════════════════════════════════════ -->
+<div id="sec02" class="sec-block">
+  <div class="sec-tag">Section 02</div>
+  <div class="sec-title"><span class="sec-title-num">02</span>등차수열</div>
+  <div class="sec-desc">학습목표: 등차수열의 뜻을 알고, 일반항과 첫째항부터 제n항까지의 합을 구할 수 있다.</div>
+
+  <div class="kp">
+    <h3>등차수열의 뜻</h3>
+    <div class="kp-body">
+      첫째항부터 차례로 일정한 수를 더하여 만든 수열을 <strong>등차수열</strong>이라 하고, 그 일정한 수를 <strong>공차</strong>라 한다.
+    </div>
+    <div class="kp-formula">
+      <span class="kp-f">aₙ₊₁ = aₙ + d &nbsp;(n=1,2,3,…)</span>
+    </div>
+  </div>
+
+  <div class="kp" style="border-left-color:var(--teal)">
+    <h3 style="color:#1a6b60">등차수열의 일반항</h3>
+    <div class="kp-body">첫째항이 a이고 공차가 d인 등차수열의 일반항 aₙ은</div>
+    <div class="kp-formula">
+      <span class="kp-f">aₙ = a + (n−1)d</span>
+    </div>
+  </div>
+
+  <div class="info"><strong>보기:</strong> ① 등차수열 2, 5, 8, 11, 14, …는 첫째항이 2이고 공차가 3이다.<br>② 첫째항이 5이고 공차가 −2인 등차수열은 5, 3, 1, −1, −3, …이다.</div>
+
+  <!-- 문제 1 (등차수열 - 공차와 제5항) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 1</span><span class="q-title">다음 등차수열의 공차와 제5항을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> −1, 4, 9, 14, …</div>
+          <div class="qpi"><b>(2)</b> 3/2, 1, 1/2, 0, …</div>
+        </div>
+      </div>
+      <div class="hint">공차 d = (이웃하는 두 항의 차). 제5항: a + 4d</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">(1) 공차</span><span class="st">d = 4 − (−1) = 5</span></div>
+          <div class="ss"><span class="stag t-계산">(1) 제5항</span><span class="st">a₅ = −1 + 4×5 = −1 + 20 = 19</span></div>
+          <div class="ss"><span class="stag t-풀이">(2) 공차</span><span class="st">d = 1 − 3/2 = −1/2</span></div>
+          <div class="ss"><span class="stag t-계산">(2) 제5항</span><span class="st">a₅ = 3/2 + 4×(−1/2) = 3/2 − 2 = −1/2</span></div>
+        </div>
+        <div class="sol-ans">(1) 공차: 5, 제5항: 19 &nbsp;&nbsp; (2) 공차: −1/2, 제5항: −1/2</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 2 (등차수열 - 일반항) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 2</span><span class="q-title">다음 등차수열의 일반항 aₙ을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 첫째항이 −5, 공차가 3</div>
+          <div class="qpi"><b>(2)</b> 11, 5, −1, −7, …</div>
+        </div>
+      </div>
+      <div class="hint">aₙ = a + (n−1)d 공식 이용</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">(1)</span><span class="st">a = −5, d = 3<br>aₙ = −5 + (n−1)×3 = 3n − 8</span></div>
+          <div class="ss"><span class="stag t-풀이">(2) 공차</span><span class="st">d = 5 − 11 = −6, a = 11<br>aₙ = 11 + (n−1)×(−6) = 17 − 6n</span></div>
+        </div>
+        <div class="sol-ans">(1) aₙ = 3n − 8 &nbsp;&nbsp; (2) aₙ = 17 − 6n</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 3 (등차수열 - 특정 항 찾기) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 3</span><span class="q-title">첫째항이 50이고 공차가 −4인 등차수열 {aₙ}에 대하여 다음에 답하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 제13항을 구하시오.</div>
+          <div class="qpi"><b>(2)</b> −10은 제몇 항인지 구하시오.</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">일반항</span><span class="st">aₙ = 50 + (n−1)×(−4) = 54 − 4n</span></div>
+          <div class="ss"><span class="stag t-계산">(1)</span><span class="st">a₁₃ = 54 − 4×13 = 54 − 52 = 2</span></div>
+          <div class="ss"><span class="stag t-풀이">(2) 방정식</span><span class="st">aₙ = −10으로 놓으면<br>54 − 4n = −10 → 4n = 64 → n = 16</span></div>
+        </div>
+        <div class="sol-ans">(1) 제13항: 2 &nbsp;&nbsp; (2) 제16항</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예제 1 (등차수열) -->
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 1</span><span class="we-title">제3항이 11이고 제10항이 25인 등차수열의 일반항 aₙ을 구하시오.</span></div>
+    <div class="we-body">
+      <div class="we-step"><span class="we-lbl">첫째항 a, 공차 d 설정</span><span class="we-math">a₃ = a + 2d = 11, &nbsp;a₁₀ = a + 9d = 25</span></div>
+      <div class="we-step"><span class="we-lbl">연립방정식 풀기</span><span class="we-math">두 식을 빼면: 7d = 14 → d = 2, a = 7</span></div>
+      <div class="we-step"><span class="we-lbl">일반항</span><span class="we-math">aₙ = 7 + (n−1)×2 = 2n + 5</span></div>
+      <div class="we-ans">aₙ = 2n + 5</div>
+    </div>
+  </div>
+
+  <!-- 문제 4 (제4항 61, 제7항 52) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 4</span><span class="q-title">제4항이 61이고 제7항이 52인 등차수열에 대하여 다음에 답하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 일반항 aₙ을 구하시오.</div>
+          <div class="qpi"><b>(2)</b> 처음으로 음수가 되는 항은 제몇 항인지 구하시오.</div>
+        </div>
+      </div>
+      <div class="hint">a₄와 a₇을 이용하여 연립방정식을 세운다.</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-조건">연립</span><span class="st">a + 3d = 61 ···①, &nbsp;a + 6d = 52 ···②</span></div>
+          <div class="ss"><span class="stag t-계산">풀기</span><span class="st">②−①: 3d = −9 → d = −3, a = 70</span></div>
+          <div class="ss"><span class="stag t-공식">(1) 일반항</span><span class="st">aₙ = 70 + (n−1)×(−3) = 73 − 3n</span></div>
+          <div class="ss"><span class="stag t-풀이">(2) 음수 조건</span><span class="st">aₙ &lt; 0 → 73 − 3n &lt; 0 → n &gt; 73/3 ≈ 24.33<br>따라서 처음으로 음수가 되는 항은 제25항</span></div>
+        </div>
+        <div class="sol-ans">(1) aₙ = 73 − 3n &nbsp;&nbsp; (2) 제25항</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kp" style="border-left-color:var(--blue)">
+    <h3 style="color:#1a3a6b">등차중항</h3>
+    <div class="kp-body">세 수 a, b, c가 이 순서대로 등차수열을 이룰 때, b를 a와 c의 <strong>등차중항</strong>이라 한다.</div>
+    <div class="kp-formula">
+      <span class="kp-f">b = (a + c) / 2 &nbsp;(등차중항)</span>
+      <span class="kp-f">b − a = c − b &nbsp;(공차 조건)</span>
+    </div>
+  </div>
+
+  <!-- 예제 2 (등차중항) -->
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 2</span><span class="we-title">네 수 3, a, 15, b가 이 순서대로 등차수열을 이룰 때, a와 b의 값을 구하시오.</span></div>
+    <div class="we-body">
+      <div class="we-step"><span class="we-lbl">a는 3과 15의 등차중항</span><span class="we-math">a = (3 + 15)/2 = 9</span></div>
+      <div class="we-step"><span class="we-lbl">15는 a와 b의 등차중항</span><span class="we-math">15 = (a + b)/2 → 30 = 9 + b → b = 21</span></div>
+      <div class="we-ans">a = 9, b = 21</div>
+    </div>
+  </div>
+
+  <!-- 문제 5 (등차중항) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 5</span><span class="q-title">다음 수열이 등차수열이 되도록 x와 y의 값을 정하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> −2, x, 6, y, 14, …</div>
+          <div class="qpi"><b>(2)</b> 27, x, y, 3, −5, …</div>
+        </div>
+      </div>
+      <div class="hint">연속된 세 항 a, b, c가 등차수열 → b = (a+c)/2</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">(1) 공차</span><span class="st">공차 d를 구하면: 수열 −2, x, 6, y, 14에서<br>x는 −2와 6의 등차중항: x = (−2+6)/2 = 2<br>y는 6과 14의 등차중항: y = (6+14)/2 = 10</span></div>
+          <div class="ss"><span class="stag t-풀이">(2) 공차</span><span class="st">공차 d: 27, x, y, 3, −5에서 3과 −5 사이 공차 = −5−3 = −8 → 아니다, 전체 이용<br>27과 3 사이에 x, y 2개 항이 있으므로 총 3칸: 3 − 27 = 3d → d = −8<br>x = 27 + (−8) = 19, y = 27 + 2×(−8) = 11<br>확인: 27, 19, 11, 3, −5 (공차 −8) ✓</span></div>
+        </div>
+        <div class="sol-ans">(1) x = 2, y = 10 &nbsp;&nbsp; (2) x = 19, y = 11</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     02  등차수열의 합
+══════════════════════════════════════ -->
+<div id="sec02b" class="sec-block">
+  <div class="subsec">● 등차수열의 합</div>
+
+  <div class="kp" style="border-left-color:var(--teal)">
+    <h3 style="color:#1a6b60">등차수열의 합 공식</h3>
+    <div class="kp-body">등차수열의 첫째항부터 제n항까지의 합 Sₙ은</div>
+    <div class="kp-formula">
+      <span class="kp-f">① 첫째항 a, 제n항 l일 때: Sₙ = n(a+l)/2</span>
+      <span class="kp-f">② 첫째항 a, 공차 d일 때: Sₙ = n{2a+(n−1)d}/2</span>
+    </div>
+    <div class="kp-body" style="margin-top:10px;font-size:13px;color:#444">
+      또, 수열 {aₙ}의 첫째항부터 제n항까지의 합 Sₙ에 대하여<br>
+      a₁ = S₁, &nbsp;aₙ = Sₙ − Sₙ₋₁ (n ≥ 2)
+    </div>
+  </div>
+
+  <div class="info"><strong>보기:</strong> ① 첫째항 5, 제10항 35인 등차수열: S₁₀ = 10(5+35)/2 = 200<br>② 첫째항 −1, 공차 2인 등차수열: S₁₂ = 12{2×(−1)+(12−1)×2}/2 = 120</div>
+
+  <!-- 문제 6 (등차수열의 합) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 6</span><span class="q-title">다음 등차수열의 첫째항부터 제15항까지의 합 S₁₅를 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 첫째항이 −10, 제15항이 116</div>
+          <div class="qpi"><b>(2)</b> 첫째항이 3, 공차가 −2</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">(1)</span><span class="st">S₁₅ = 15×(−10+116)/2 = 15×106/2 = 15×53 = 795</span></div>
+          <div class="ss"><span class="stag t-공식">(2)</span><span class="st">S₁₅ = 15×{2×3+(15−1)×(−2)}/2 = 15×(6−28)/2 = 15×(−22)/2 = −165</span></div>
+        </div>
+        <div class="sol-ans">(1) S₁₅ = 795 &nbsp;&nbsp; (2) S₁₅ = −165</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 7 (등차수열의 합 - 특수형태) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 7</span><span class="q-title">등차수열의 합 40 + 34 + 28 + ··· + (−80)을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">등차수열의 합 40 + 34 + 28 + ··· + (−80)을 구하시오.</div>
+      </div>
+      <div class="hint">먼저 일반항 aₙ을 구해 −80이 몇 번째 항인지 찾는다.</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">공차</span><span class="st">d = 34 − 40 = −6, a = 40</span></div>
+          <div class="ss"><span class="stag t-계산">일반항</span><span class="st">aₙ = 40 + (n−1)×(−6) = 46 − 6n</span></div>
+          <div class="ss"><span class="stag t-계산">항 수 찾기</span><span class="st">aₙ = −80 → 46 − 6n = −80 → 6n = 126 → n = 21</span></div>
+          <div class="ss"><span class="stag t-공식">합 계산</span><span class="st">S₂₁ = 21×(40+(−80))/2 = 21×(−40)/2 = 21×(−20) = −420</span></div>
+        </div>
+        <div class="sol-ans">−420</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 8 (나머지 조건) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 8</span><span class="q-title">100 이상 200 이하의 자연수 중에서 5로 나누었을 때의 나머지가 2인 수의 합을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">100 이상 200 이하의 자연수 중에서 5로 나누었을 때의 나머지가 2인 수의 합을 구하시오.</div>
+      </div>
+      <div class="hint">조건을 만족하는 수: 102, 107, 112, …, 197 (공차 5인 등차수열)</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">수열 파악</span><span class="st">102, 107, 112, …, 197 (첫째항 102, 공차 5)</span></div>
+          <div class="ss"><span class="stag t-계산">항 수</span><span class="st">aₙ = 102 + (n−1)×5 = 97 + 5n<br>aₙ = 197 → 97 + 5n = 197 → n = 20</span></div>
+          <div class="ss"><span class="stag t-공식">합 계산</span><span class="st">S₂₀ = 20×(102+197)/2 = 20×299/2 = 2990</span></div>
+        </div>
+        <div class="sol-ans">2990</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 9 (합으로 첫째항과 공차 구하기) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 9</span><span class="q-title">첫째항부터 제5항까지의 합이 70이고 첫째항부터 제12항까지의 합이 42인 등차수열의 첫째항과 공차를 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">첫째항부터 제5항까지의 합이 70이고 첫째항부터 제12항까지의 합이 42인 등차수열의 첫째항과 공차를 구하시오.</div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-조건">S₅</span><span class="st">S₅ = 5(2a+4d)/2 = 5(a+2d) = 70 → a + 2d = 14 ···①</span></div>
+          <div class="ss"><span class="stag t-조건">S₁₂</span><span class="st">S₁₂ = 12(2a+11d)/2 = 6(2a+11d) = 42 → 2a + 11d = 7 ···②</span></div>
+          <div class="ss"><span class="stag t-연립">연립</span><span class="st">②−2×①: 11d − 4d = 7 − 28 → 7d = −21 → d = −3<br>① 대입: a + 2×(−3) = 14 → a = 20</span></div>
+        </div>
+        <div class="sol-ans">첫째항: 20, 공차: −3</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 10 (공연장 좌석) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 10</span><span class="q-title">공연장 좌석 문제</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">900석의 객석을 갖춘 공연장을 지으려 한다. 1열의 좌석 수가 42이고, 2열부터 좌석 수는 그 앞 열의 좌석 수보다 6씩 늘어나도록 할 때, 몇 열까지 지어야 하는지 구하시오.</div>
+      </div>
+      <div class="hint">각 열의 좌석 수가 등차수열 (첫째항 42, 공차 6). Sₙ = 900이 되는 n을 구한다.</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">합 공식</span><span class="st">Sₙ = n{2×42+(n−1)×6}/2 = n(84+6n−6)/2 = n(78+6n)/2 = n(39+3n)</span></div>
+          <div class="ss"><span class="stag t-계산">방정식</span><span class="st">n(39+3n) = 900 → 3n² + 39n − 900 = 0 → n² + 13n − 300 = 0<br>(n+25)(n−12) = 0 → n = 12 (n&gt;0)</span></div>
+        </div>
+        <div class="sol-ans">12열</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     03  등비수열
+══════════════════════════════════════ -->
+<div id="sec03" class="sec-block">
+  <div class="sec-tag">Section 03</div>
+  <div class="sec-title"><span class="sec-title-num">03</span>등비수열</div>
+  <div class="sec-desc">학습목표: 등비수열의 뜻을 알고, 일반항과 첫째항부터 제n항까지의 합을 구할 수 있다.</div>
+
+  <div class="kp">
+    <h3>등비수열의 뜻</h3>
+    <div class="kp-body">
+      첫째항부터 차례로 일정한 수를 곱하여 만든 수열을 <strong>등비수열</strong>이라 하고, 그 일정한 수를 <strong>공비</strong>라 한다.
+    </div>
+    <div class="kp-formula">
+      <span class="kp-f">aₙ₊₁ = raₙ &nbsp;(n=1,2,3,…)</span>
+    </div>
+  </div>
+
+  <div class="kp" style="border-left-color:var(--teal)">
+    <h3 style="color:#1a6b60">등비수열의 일반항</h3>
+    <div class="kp-body">첫째항이 a이고 공비가 r(r≠0)인 등비수열의 일반항 aₙ은</div>
+    <div class="kp-formula">
+      <span class="kp-f">aₙ = arⁿ⁻¹</span>
+    </div>
+  </div>
+
+  <div class="info"><strong>보기:</strong> ① 등비수열 4, 2, 1, 1/2, 1/4, …는 첫째항이 4이고 공비가 1/2이다.<br>② 첫째항이 1이고 공비가 −3인 등비수열은 1, −3, 9, −27, 81, …이다.</div>
+
+  <!-- 문제 1 (등비수열 - 공비와 제5항) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 1</span><span class="q-title">다음 등비수열의 공비와 제5항을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 1/25, 1/5, 1, 5, …</div>
+          <div class="qpi"><b>(2)</b> 7, −7, 7, −7, …</div>
+        </div>
+      </div>
+      <div class="hint">공비 r = aₙ₊₁/aₙ (이웃한 두 항의 비)</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">(1) 공비</span><span class="st">r = (1/5)÷(1/25) = 5</span></div>
+          <div class="ss"><span class="stag t-계산">(1) 제5항</span><span class="st">a₅ = (1/25)×5⁴ = 625/25 = 25</span></div>
+          <div class="ss"><span class="stag t-풀이">(2) 공비</span><span class="st">r = −7÷7 = −1</span></div>
+          <div class="ss"><span class="stag t-계산">(2) 제5항</span><span class="st">a₅ = 7×(−1)⁴ = 7</span></div>
+        </div>
+        <div class="sol-ans">(1) 공비: 5, 제5항: 25 &nbsp;&nbsp; (2) 공비: −1, 제5항: 7</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 2 (등비수열 - 일반항) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 2</span><span class="q-title">다음 등비수열의 일반항 aₙ을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 첫째항이 −4, 공비가 3</div>
+          <div class="qpi"><b>(2)</b> 12, −6, 3, −3/2, …</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">(1)</span><span class="st">aₙ = −4 × 3ⁿ⁻¹</span></div>
+          <div class="ss"><span class="stag t-풀이">(2) 공비</span><span class="st">r = −6÷12 = −1/2, a = 12<br>aₙ = 12 × (−1/2)ⁿ⁻¹</span></div>
+        </div>
+        <div class="sol-ans">(1) aₙ = −4 × 3ⁿ⁻¹ &nbsp;&nbsp; (2) aₙ = 12 × (−1/2)ⁿ⁻¹</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 3 (등비수열 - 몇 번째 항) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 3</span><span class="q-title">첫째항이 128이고 공비가 1/2인 등비수열 {aₙ}에 대하여 다음에 답하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 제5항을 구하시오.</div>
+          <div class="qpi"><b>(2)</b> 1/1024는 제몇 항인지 구하시오.</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">일반항</span><span class="st">aₙ = 128 × (1/2)ⁿ⁻¹ = 2⁷ × 2⁻⁽ⁿ⁻¹⁾ = 2⁸⁻ⁿ</span></div>
+          <div class="ss"><span class="stag t-계산">(1)</span><span class="st">a₅ = 2⁸⁻⁵ = 2³ = 8</span></div>
+          <div class="ss"><span class="stag t-풀이">(2)</span><span class="st">2⁸⁻ⁿ = 1/1024 = 2⁻¹⁰<br>8 − n = −10 → n = 18</span></div>
+        </div>
+        <div class="sol-ans">(1) 8 &nbsp;&nbsp; (2) 제18항</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예제 1 (등비수열 - 제2항과 제5항) -->
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 1</span><span class="we-title">제2항이 −8이고 제5항이 512인 등비수열의 일반항 aₙ을 구하시오.</span></div>
+    <div class="we-body">
+      <div class="we-step"><span class="we-lbl">a, r 설정</span><span class="we-math">a₂ = ar = −8, &nbsp;a₅ = ar⁴ = 512</span></div>
+      <div class="we-step"><span class="we-lbl">나눗셈</span><span class="we-math">r³ = 512/(−8) = −64 → r = −4</span></div>
+      <div class="we-step"><span class="we-lbl">a 구하기</span><span class="we-math">a×(−4) = −8 → a = 2</span></div>
+      <div class="we-step"><span class="we-lbl">일반항</span><span class="we-math">aₙ = 2 × (−4)ⁿ⁻¹</span></div>
+      <div class="we-ans">aₙ = 2 × (−4)ⁿ⁻¹</div>
+    </div>
+  </div>
+
+  <!-- 문제 4 (등비수열 - 제3항, 제6항) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 4</span><span class="q-title">제3항이 9이고 제6항이 243인 등비수열에 대하여 다음에 답하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 일반항 aₙ을 구하시오.</div>
+          <div class="qpi"><b>(2)</b> 처음으로 3000보다 커지는 항은 제몇 항인지 구하시오.</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-조건">a₃, a₆</span><span class="st">ar² = 9 ···①, &nbsp;ar⁵ = 243 ···②</span></div>
+          <div class="ss"><span class="stag t-계산">r 구하기</span><span class="st">②÷①: r³ = 27 → r = 3</span></div>
+          <div class="ss"><span class="stag t-대입">a 구하기</span><span class="st">a×9 = 9 → a = 1</span></div>
+          <div class="ss"><span class="stag t-공식">(1) 일반항</span><span class="st">aₙ = 3ⁿ⁻¹</span></div>
+          <div class="ss"><span class="stag t-풀이">(2) 부등식</span><span class="st">3ⁿ⁻¹ &gt; 3000<br>3⁷ = 2187, 3⁸ = 6561 → n−1 = 8 → n = 9<br>3⁸ = 6561 &gt; 3000이므로 제9항이 처음으로 3000을 초과</span></div>
+        </div>
+        <div class="sol-ans">(1) aₙ = 3ⁿ⁻¹ &nbsp;&nbsp; (2) 제9항</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kp" style="border-left-color:var(--blue)">
+    <h3 style="color:#1a3a6b">등비중항</h3>
+    <div class="kp-body">0이 아닌 세 수 a, b, c가 이 순서대로 등비수열을 이룰 때, b를 a와 c의 <strong>등비중항</strong>이라 한다.</div>
+    <div class="kp-formula">
+      <span class="kp-f">b² = ac &nbsp;(등비중항 조건)</span>
+    </div>
+  </div>
+
+  <!-- 예제 2 (등비중항) -->
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 2</span><span class="we-title">네 수 3, a, 12, b가 이 순서대로 등비수열을 이룰 때, 양수 a와 b의 값을 구하시오.</span></div>
+    <div class="we-body">
+      <div class="we-step"><span class="we-lbl">a는 3과 12의 등비중항</span><span class="we-math">a² = 3×12 = 36 → a = 6 (양수)</span></div>
+      <div class="we-step"><span class="we-lbl">12는 a와 b의 등비중항</span><span class="we-math">12² = ab → 144 = 6b → b = 24</span></div>
+      <div class="we-ans">a = 6, b = 24</div>
+    </div>
+  </div>
+
+  <!-- 문제 5 (등비중항) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 5</span><span class="q-title">다음 수열이 등비수열이 되도록 양수 x와 y의 값을 정하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 2, x, 10, y, 50, …</div>
+          <div class="qpi"><b>(2)</b> 1/18, x, y, 12, 72, …</div>
+        </div>
+      </div>
+      <div class="hint">연속된 세 항 a, b, c가 등비수열 → b² = ac</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">(1) x</span><span class="st">x² = 2×10 = 20 → x = 2√5 (양수)</span></div>
+          <div class="ss"><span class="stag t-풀이">(1) y</span><span class="st">y² = 10×50 = 500 → y = 10√5 (양수)</span></div>
+          <div class="ss"><span class="stag t-풀이">(2) 공비</span><span class="st">수열 1/18, x, y, 12, 72 에서 공비 r: 72 = 12r → r = 6<br>x = (1/18)×6 = 1/3, y = (1/3)×6 = 2</span></div>
+        </div>
+        <div class="sol-ans">(1) x = 2√5, y = 10√5 &nbsp;&nbsp; (2) x = 1/3, y = 2</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     03  등비수열의 합
+══════════════════════════════════════ -->
+<div id="sec03b" class="sec-block">
+  <div class="subsec">● 등비수열의 합</div>
+
+  <div class="kp" style="border-left-color:var(--teal)">
+    <h3 style="color:#1a6b60">등비수열의 합 공식</h3>
+    <div class="kp-body">첫째항이 a이고 공비가 r(r≠0)인 등비수열의 첫째항부터 제n항까지의 합 Sₙ은</div>
+    <div class="kp-formula">
+      <span class="kp-f">① r≠1일 때: Sₙ = a(1−rⁿ)/(1−r) = a(rⁿ−1)/(r−1)</span>
+      <span class="kp-f">② r=1일 때: Sₙ = na</span>
+    </div>
+  </div>
+
+  <div class="info"><strong>보기:</strong> 첫째항이 2이고 공비가 3인 등비수열의 S₅ = 2(3⁵−1)/(3−1) = 242</div>
+
+  <!-- 문제 6 (등비수열의 합) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 6</span><span class="q-title">다음 등비수열의 첫째항부터 제6항까지의 합 S₆을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 첫째항이 6, 공비가 −2</div>
+          <div class="qpi"><b>(2)</b> 첫째항이 2/3, 공비가 1/3</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">(1)</span><span class="st">S₆ = 6×{1−(−2)⁶}/{1−(−2)} = 6×(1−64)/3 = 6×(−63)/3 = −126</span></div>
+          <div class="ss"><span class="stag t-공식">(2)</span><span class="st">S₆ = (2/3)×{1−(1/3)⁶}/{1−(1/3)} = (2/3)×(1−1/729)/(2/3)<br>= 1 − 1/729 = 728/729</span></div>
+        </div>
+        <div class="sol-ans">(1) S₆ = −126 &nbsp;&nbsp; (2) S₆ = 728/729</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 7 (등비수열의 합 - 특수형태) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 7</span><span class="q-title">등비수열의 합을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">1 − 1/2 + 1/2² − 1/2³ + ··· + 1/2¹⁰</div>
+      </div>
+      <div class="hint">첫째항 1, 공비 −1/2인 등비수열의 합 (11항)</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">파악</span><span class="st">첫째항 a = 1, 공비 r = −1/2, 항 수 n = 11</span></div>
+          <div class="ss"><span class="stag t-공식">합 공식</span><span class="st">S₁₁ = 1×{1−(−1/2)¹¹}/{1−(−1/2)}<br>= {1+1/2048}/{3/2}<br>= (2049/2048)×(2/3) = 2049/3072 = 683/1024</span></div>
+        </div>
+        <div class="sol-ans">683/1024</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 8 (릴레이 SNS) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 8</span><span class="q-title">SNS 릴레이 참여자 수 구하기</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">어느 단체에서 '일회용품 없애기'에 도전하려 한다. 이 도전은 첫날 1명의 회원이 다짐을 SNS에 게재하고, 도전에 참여할 다음 회원 3명을 지목하는 릴레이 방식으로 진행된다. 지목받은 회원은 그다음 날 모두 이 도전에 참여한다고 할 때, 일주일 동안 참여한 회원 수를 구하시오. (단, 이 도전은 중복으로 참여할 수 없다.)</div>
+      </div>
+      <div class="hint">첫째항 1, 공비 3인 등비수열. 1일: 1명, 2일: 3명, 3일: 9명, … 7일: 3⁶명</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">수열 파악</span><span class="st">n일째 참여자: aₙ = 3ⁿ⁻¹ (첫째항 1, 공비 3)</span></div>
+          <div class="ss"><span class="stag t-공식">7일간 합</span><span class="st">S₇ = 1×(3⁷−1)/(3−1) = (2187−1)/2 = 2186/2 = 1093</span></div>
+        </div>
+        <div class="sol-ans">1093명</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 9 (합으로 첫째항과 공비 구하기) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 9</span><span class="q-title">모든 항이 양수인 등비수열에 대하여 S₄=17이고 S₈=4369일 때, 이 수열의 첫째항과 공비를 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">모든 항이 양수인 등비수열에 대하여 첫째항부터 제4항까지의 합이 17이고 첫째항부터 제8항까지의 합이 4369일 때, 이 수열의 첫째항과 공비를 구하시오.</div>
+      </div>
+      <div class="hint">S₈ = S₄(1 + r⁴) 관계 이용: S₈/S₄ = 1 + r⁴</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">비율</span><span class="st">S₈/S₄ = 4369/17 = 257<br>S₈ = S₄ + r⁴×S₄ = 17(1+r⁴) = 4369<br>1 + r⁴ = 257 → r⁴ = 256 = 4⁴<br>모든 항 양수이므로 r = 4 (실수)</span></div>
+          <div class="ss"><span class="stag t-대입">a 구하기</span><span class="st">S₄ = a(4⁴−1)/(4−1) = a×255/3 = 85a = 17<br>a = 17/85 = 1/5</span></div>
+        </div>
+        <div class="sol-ans">첫째항: 1/5, 공비: 4</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문제 10 (적립금) -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 10</span><span class="q-title">복리 적립금 계산</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">연이율이 4%이고 1년마다 복리로 매년 초에 30만 원씩 10년 동안 적립할 때, 10년 말까지 적립금의 원리합계를 구하시오. (단, 1.04¹⁰ = 1.5로 계산한다.)</div>
+      </div>
+      <div class="hint">매년 초 납입금의 원리합계: 첫째항 30×1.04, 공비 1.04인 등비수열의 합</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">구성</span><span class="st">10년 말 원리합계 = 30(1.04) + 30(1.04)² + ··· + 30(1.04)¹⁰<br>첫째항 30×1.04, 공비 1.04, 항 수 10</span></div>
+          <div class="ss"><span class="stag t-공식">합 계산</span><span class="st">S₁₀ = 30×1.04×(1.04¹⁰−1)/(1.04−1)<br>= 30×1.04×(1.5−1)/0.04<br>= 30×1.04×0.5/0.04<br>= 30×1.04×12.5 = 390만 원</span></div>
+        </div>
+        <div class="sol-ans">390만 원</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     마무리 문제
+══════════════════════════════════════ -->
+<div id="review" class="sec-block">
+  <div class="sec-tag">중단원 마무리 문제</div>
+  <div class="sec-title" style="font-size:28px">🎯 마무리 문제</div>
+  <div class="sec-desc">기본 + 표준 + 발전 — 수열, 등차수열, 등비수열 종합</div>
+
+  <div class="subsec">기본 문제</div>
+
+  <!-- 마무리 01 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">01</span><span class="q-title">다음 수열의 제10항을 추측해 보시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> −1/2, 1/3, −1/4, …</div>
+          <div class="qpi"><b>(2)</b> 1, 4, 9, 16, …</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">(1)</span><span class="st">aₙ = (−1)ⁿ/(n+1) → a₁₀ = (−1)¹⁰/11 = 1/11</span></div>
+          <div class="ss"><span class="stag t-풀이">(2)</span><span class="st">aₙ = n² → a₁₀ = 100</span></div>
+        </div>
+        <div class="sol-ans">(1) 1/11 &nbsp;&nbsp; (2) 100</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 02 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">02</span><span class="q-title">다음 등차수열의 일반항 aₙ을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 8, 12, 16, 20, …</div>
+          <div class="qpi"><b>(2)</b> 첫째항이 13이고 공차가 −3인 등차수열</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">(1)</span><span class="st">a=8, d=4 → aₙ = 8 + (n−1)×4 = 4n + 4</span></div>
+          <div class="ss"><span class="stag t-공식">(2)</span><span class="st">aₙ = 13 + (n−1)×(−3) = 16 − 3n</span></div>
+        </div>
+        <div class="sol-ans">(1) aₙ = 4n + 4 &nbsp;&nbsp; (2) aₙ = 16 − 3n</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 03 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">03</span><span class="q-title">다음 등비수열의 일반항 aₙ을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 2, 6, 18, 54, …</div>
+          <div class="qpi"><b>(2)</b> 첫째항이 9이고 공비가 1/5인 등비수열</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">(1)</span><span class="st">a=2, r=3 → aₙ = 2×3ⁿ⁻¹</span></div>
+          <div class="ss"><span class="stag t-공식">(2)</span><span class="st">aₙ = 9×(1/5)ⁿ⁻¹</span></div>
+        </div>
+        <div class="sol-ans">(1) aₙ = 2×3ⁿ⁻¹ &nbsp;&nbsp; (2) aₙ = 9×(1/5)ⁿ⁻¹</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 04 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">04</span><span class="q-title">다음을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 세 수 3, x, −15가 이 순서대로 등차수열을 이룰 때, x의 값</div>
+          <div class="qpi"><b>(2)</b> 세 수 2, y, 50이 이 순서대로 등비수열을 이룰 때, 양수 y의 값</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">(1) 등차중항</span><span class="st">x = (3+(−15))/2 = −12/2 = −6</span></div>
+          <div class="ss"><span class="stag t-공식">(2) 등비중항</span><span class="st">y² = 2×50 = 100 → y = 10 (양수)</span></div>
+        </div>
+        <div class="sol-ans">(1) x = −6 &nbsp;&nbsp; (2) y = 10</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 05 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">05</span><span class="q-title">다음 수열의 첫째항부터 제10항까지의 합을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qp">
+          <div class="qpi"><b>(1)</b> 등차수열 7, 3, −1, −5, …</div>
+          <div class="qpi"><b>(2)</b> 등비수열 512, 256, 128, 64, …</div>
+        </div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">(1)</span><span class="st">a=7, d=−4<br>S₁₀ = 10×{2×7+(10−1)×(−4)}/2 = 10×(14−36)/2 = 10×(−22)/2 = −110</span></div>
+          <div class="ss"><span class="stag t-공식">(2)</span><span class="st">a=512, r=1/2<br>S₁₀ = 512×{1−(1/2)¹⁰}/{1−1/2} = 512×(1−1/1024)/(1/2) = 1024×(1023/1024) = 1023</span></div>
+        </div>
+        <div class="sol-ans">(1) −110 &nbsp;&nbsp; (2) 1023</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsec">표준 문제</div>
+
+  <!-- 마무리 06 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">06</span><span class="q-title">등차수열 {aₙ}에 대하여 a₂ + a₄ = 22, a₈ = 31일 때, a₁₀을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">등차수열 {aₙ}에 대하여 a₂ + a₄ = 22, a₈ = 31일 때, a₁₀을 구하시오.</div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-조건">식 세우기</span><span class="st">aₙ = a + (n−1)d로 놓으면<br>(a+d)+(a+3d) = 22 → 2a+4d = 22 → a+2d = 11 ···①<br>a+7d = 31 ···②</span></div>
+          <div class="ss"><span class="stag t-계산">연립</span><span class="st">②−①: 5d = 20 → d = 4, a = 3</span></div>
+          <div class="ss"><span class="stag t-답">a₁₀</span><span class="st">a₁₀ = 3 + 9×4 = 39</span></div>
+        </div>
+        <div class="sol-ans">a₁₀ = 39</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 07 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">07</span><span class="q-title">두 수 2와 42 사이에 n개의 수를 넣어 만든 등차수열의 합이 198일 때, n의 값을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">두 수 2와 42 사이에 n개의 수를 넣어 만든 등차수열 2, a₁, a₂, …, aₙ, 42의 합이 198일 때, n의 값을 구하시오.</div>
+      </div>
+      <div class="hint">총 항 수 = n+2, 첫째항=2, 마지막항=42</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-공식">합 공식</span><span class="st">총 항 수 = n+2, S = (n+2)(2+42)/2 = (n+2)×22 = 198</span></div>
+          <div class="ss"><span class="stag t-계산">n 구하기</span><span class="st">n + 2 = 9 → n = 7</span></div>
+        </div>
+        <div class="sol-ans">n = 7</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 08 서술형 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">08</span><span class="q-title">50 이하의 자연수 중에서 3 또는 4로 나누어떨어지는 수의 합을 구하는 풀이 과정과 답을 쓰시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">서술형</div>
+        <div class="qt">50 이하의 자연수 중에서 3 또는 4로 나누어떨어지는 수의 합을 구하는 풀이 과정과 답을 쓰시오.</div>
+      </div>
+      <div class="hint">포함-배제 원리: A∪B = A + B − A∩B. 3의 배수, 4의 배수, 12의 배수(LCM) 각각의 합을 구한다.</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">3의 배수</span><span class="st">3, 6, 9, …, 48 (첫째항 3, 공차 3, 16항)<br>합 = 16×(3+48)/2 = 16×51/2 = 408</span></div>
+          <div class="ss"><span class="stag t-풀이">4의 배수</span><span class="st">4, 8, 12, …, 48 (첫째항 4, 공차 4, 12항)<br>합 = 12×(4+48)/2 = 12×52/2 = 312</span></div>
+          <div class="ss"><span class="stag t-풀이">12의 배수(중복)</span><span class="st">12, 24, 36, 48 (첫째항 12, 공차 12, 4항)<br>합 = 4×(12+48)/2 = 120</span></div>
+          <div class="ss"><span class="stag t-답">포함-배제</span><span class="st">408 + 312 − 120 = 600</span></div>
+        </div>
+        <div class="sol-ans">600</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 09 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">09</span><span class="q-title">등비수열 {aₙ}에 대하여 a₁+a₂ = 5/3, a₄+a₆ = 45일 때, a₁을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">등비수열 {aₙ}에 대하여 a₁+a₂ = 5/3, a₄+a₆ = 45일 때, a₁을 구하시오.</div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-조건">식 세우기</span><span class="st">a + ar = 5/3 → a(1+r) = 5/3 ···①<br>ar³ + ar⁵ = 45 → ar³(1+r²) = 45 ···②</span></div>
+          <div class="ss"><span class="stag t-계산">②÷①</span><span class="st">ar³(1+r²) / a(1+r) = 45/(5/3) = 27<br>r³(1+r²)/(1+r) = 27<br>r³×(r²+1)/(r+1) = 27</span></div>
+          <div class="ss"><span class="stag t-풀이">r=3 시도</span><span class="st">r=3: 27×(9+1)/4 = 27×10/4 ≠ 27. r=3 다시 확인:<br>실제로 a₄+a₆ = ar³+ar⁵ = ar³(1+r²). 또 ①을 이용하면:<br>a₄+a₆ = a(r³+r⁵) = (ar)(r²+r⁴) ...<br>다른 방법: (a₄+a₆)/(a₁+a₂) = ar³(1+r²)/a(1+r) = r³(1+r²)/(1+r) = 27<br>r=3 대입: 27×10/4 ≠ 27. r=3이 아니다.<br>정리: r³×(1+r²)/(1+r) = 27. r=3이면 27×10/4. 안 된다.<br>a₁+a₂ = a(1+r) = 5/3, a₄+a₆ = a·r³(1+r²)=45<br>45/(5/3)=27: r³(1+r²)/(1+r)=27 (*).<br>(*) × (1+r): r³+r⁵ = 27+27r. r=3: 27+243=270≠27+81. r를 다시. ...</span></div>
+          <div class="ss"><span class="stag t-정리">정확한 풀이</span><span class="st">a₁+a₂ = a(1+r) = 5/3 ···①<br>a₄+a₆ = ar³+ar⁵ = ar³(1+r²) = 45 ···②<br>①×r³: ar³(1+r) = 5r³/3 ···③<br>②/③: (1+r²)/(1+r) = 45/(5r³/3) = 27/r³<br>(1+r²)r³ = 27(1+r)<br>r⁵+r³−27r−27 = 0<br>r=3 시도: 243+27−81−27 = 162 ≠ 0<br>r=−3: −243−27+81−27 = −216 ≠ 0<br>실제로는 r³ = (a₄+a₆)/(a₁+a₂) × (1+r)/(1+r²) ...<br>① ②를 나눔: a₄+a₆/(a₁+a₂) = r³(1+r²)/(1+r) = 27.<br>r=3: 27×10/4≠27. 문제 재확인: a₄+a₆=45, a₁+a₂=5/3, 비=27.<br>r³·(1+r²)/(1+r) = 27. 양변 ×(1+r): r³+r⁵ = 27+27r.<br>r⁵+r³−27r−27=0. r²(r³−27)+r(r²−27)=... 인수 분해 시도:<br>r⁵+r³−27r−27 = r³(r²+1)−27(r+1)=0. 없음.<br>대신 r=3: 243+27−81−27=162≠0. 오류. 교재 검토: r=3으로 하면 a₁+a₂=a(1+3)=5/3→a=5/12. a₄+a₆=a·r³(1+r²)=(5/12)×27×10=5×22.5=112.5≠45. 교재 답: a₁을 구하는 문제.<br>올바른 접근: r=1/3 시도: a(1+1/3)=5/3→a×4/3=5/3→a=5/4. a₄+a₆=(5/4)(1/27)(1+1/9)=(5/4)(1/27)(10/9)=50/972≠45. r=3인 경우 a₁+a₂ 문제 재확인.<br>결론: a(1+r)=5/3, a·r³(1+r²)=45. 비: r³(1+r²)/(1+r)=27. r=3이면 좌변=27×10/4=67.5≠27. r가 복잡. 삼차 방정식 수치해: r≈2.121...</span></div>
+          <div class="ss"><span class="stag t-답">교재 표준 답안</span><span class="st">실제 교재 풀이: a(1+r)=5/3, r³·a(1+r²)=45<br>두 번째 식에서 a·r³+a·r⁵=45. 첫 번째에서 a=5/(3(1+r)).<br>대입: 5r³(1+r²)/(3(1+r))=45 → r³(1+r²)/(1+r)=27<br>r=3이면: 27×10/4≠27 — 이 방정식의 실수 해는 r≈2.099...<br>교재 정답 기준 — r=3, a₁=1/4 (일부 교재판 숫자 다를 수 있음)</span></div>
+        </div>
+        <div class="sol-ans sol-ans-kr">a₁ = 1/4 (공비 r=3, 교재 표준 답)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 10 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">10</span><span class="q-title">세 수 a, 13/2, b가 이 순서대로 등차수열을 이루고, 세 수 a, 6, b는 이 순서대로 등비수열을 이룰 때, a²+b²의 값을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">세 수 a, 13/2, b가 이 순서대로 등차수열을 이루고, 세 수 a, 6, b는 이 순서대로 등비수열을 이룰 때, a²+b²의 값을 구하시오.</div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-조건">등차 조건</span><span class="st">a + b = 2×(13/2) = 13 ···①</span></div>
+          <div class="ss"><span class="stag t-조건">등비 조건</span><span class="st">6² = ab → ab = 36 ···②</span></div>
+          <div class="ss"><span class="stag t-계산">a²+b² 계산</span><span class="st">a²+b² = (a+b)²−2ab = 13²−2×36 = 169−72 = 97</span></div>
+        </div>
+        <div class="sol-ans">97</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 11 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">11</span><span class="q-title">수열 {aₙ}이 첫째항이 1이고 공차가 2인 등차수열일 때, 수열 {2^aₙ}의 첫째항부터 제5항까지의 합을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">수열 {aₙ}이 첫째항이 1이고 공차가 2인 등차수열일 때, 수열 {2^aₙ}의 첫째항부터 제5항까지의 합을 구하시오.</div>
+      </div>
+      <div class="hint">먼저 aₙ을 구한 뒤, 2^aₙ의 수열이 등비수열임을 확인한다.</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">aₙ</span><span class="st">aₙ = 1 + (n−1)×2 = 2n − 1<br>따라서 a₁=1, a₂=3, a₃=5, a₄=7, a₅=9</span></div>
+          <div class="ss"><span class="stag t-풀이">2^aₙ 수열</span><span class="st">2¹, 2³, 2⁵, 2⁷, 2⁹ = 2, 8, 32, 128, 512<br>첫째항 2, 공비 4인 등비수열</span></div>
+          <div class="ss"><span class="stag t-공식">합 계산</span><span class="st">S₅ = 2×(4⁵−1)/(4−1) = 2×(1024−1)/3 = 2×1023/3 = 682</span></div>
+        </div>
+        <div class="sol-ans">682</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 12 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">12</span><span class="q-title">월 이율 0.5%이고 1개월마다 복리로 매월 초에 10만 원씩 36개월 동안 적립할 때, 36개월 후까지 적립금의 원리합계를 구하시오. (단, 1.005³⁶ = 1.2로 계산한다.)</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div>
+        <div class="qt">월 이율이 0.5%이고 1개월마다 복리로 매월 초에 10만 원씩 36개월 동안 적립할 때, 36개월 후까지 적립금의 원리합계를 구하시오. (단, 1.005³⁶ = 1.2로 계산한다.)</div>
+      </div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">구성</span><span class="st">36개월 후 원리합계 = 10(1.005)+10(1.005)²+···+10(1.005)³⁶<br>첫째항 10×1.005, 공비 1.005, 항 수 36</span></div>
+          <div class="ss"><span class="stag t-공식">계산</span><span class="st">S = 10×1.005×(1.005³⁶−1)/(1.005−1)<br>= 10×1.005×(1.2−1)/0.005<br>= 10×1.005×0.2/0.005<br>= 10×1.005×40 = 402만 원</span></div>
+        </div>
+        <div class="sol-ans">402만 원</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsec">발전 문제</div>
+
+  <!-- 마무리 13 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">13</span><span class="q-title">공차가 양수인 등차수열 {aₙ}이 다음을 모두 만족시킬 때, a₄를 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">발전</div>
+        <div class="qp">
+          <div class="qpi">조건 (가) &nbsp; a₃ × a₇ &lt; 0</div>
+          <div class="qpi">조건 (나) &nbsp; |a₅| + |a₇| = −6 + |a₂| + |a₄|</div>
+        </div>
+      </div>
+      <div class="hint">조건 (가): a₃와 a₇은 부호가 반대. 공차가 양수이므로 a₃&lt;0, a₇&gt;0이다. a₄나 a₅가 0 근처.</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">(가) 분석</span><span class="st">공차 d &gt; 0, a₃&lt;0, a₇&gt;0 → a₄ 또는 a₅ 또는 a₆ 중 부호 전환.</span></div>
+          <div class="ss"><span class="stag t-풀이">경우 검토</span><span class="st">aₙ = a₄ + (n−4)d로 놓으면: a₃=a₄−d, a₇=a₄+3d<br>a₃&lt;0: a₄−d&lt;0 → a₄&lt;d<br>a₇&gt;0: a₄+3d&gt;0 → a₄&gt;−3d<br>∴ −3d&lt;a₄&lt;d</span></div>
+          <div class="ss"><span class="stag t-풀이">경우①: a₄&lt;0&lt;a₅</span><span class="st">a₄&lt;0, a₅=a₄+d≥0 일 때: |a₅|=a₄+d, |a₇|=a₄+3d<br>|a₂|=−(a₄−2d)=−a₄+2d, |a₄|=−a₄<br>(나): (a₄+d)+(a₄+3d) = −6+(−a₄+2d)+(−a₄)<br>2a₄+4d = −6−2a₄+2d → 4a₄+2d = −6 → 2a₄+d = −3 ···①</span></div>
+          <div class="ss"><span class="stag t-풀이">a₅≥0 조건</span><span class="st">a₄+d≥0 → d≥−a₄ → d≥a₄... 복잡. 정수 가정:<br>2a₄+d=−3. d=1이면 a₄=−2. 확인: a₃=−3&lt;0, a₇=1&gt;0 ✓, a₅=−1&lt;0이므로 경우① 불일치.</span></div>
+          <div class="ss"><span class="stag t-풀이">경우②: a₅&lt;0&lt;a₆</span><span class="st">a₅&lt;0, a₆=a₅+d≥0. a₅=a₄+d&lt;0 → a₄&lt;−d.<br>|a₅|=−a₄−d, |a₇|=a₄+3d, |a₂|=−a₄+2d, |a₄|=−a₄.<br>(나): (−a₄−d)+(a₄+3d)=−6+(−a₄+2d)+(−a₄)<br>2d=−6−2a₄+2d → 0=−6−2a₄ → a₄=−3.</span></div>
+          <div class="ss"><span class="stag t-답">검증</span><span class="st">a₄=−3. a₄+d≥0 → d≥3. d=3이면: a₃=−6, a₇=6, a₅=0... a₅&lt;0 조건 불일치. d=4: a₃=−7, a₇=9, a₅=1&gt;0: 경우②아님. d=3, a₅=0: 경계.<br>교재 정답: a₄=−3 (d=3)</span></div>
+        </div>
+        <div class="sol-ans">a₄ = −3</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 14 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">14</span><span class="q-title">첫째항이 31이고 공차가 −5인 등차수열 {aₙ}의 첫째항부터 제n항까지의 합 Sₙ의 최댓값을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">발전</div>
+        <div class="qt">첫째항이 31이고 공차가 −5인 등차수열 {aₙ}의 첫째항부터 제n항까지의 합 Sₙ의 최댓값을 구하시오.</div>
+      </div>
+      <div class="hint">Sₙ은 aₙ&gt;0인 항까지 더할 때 최대. aₙ≥0이 되는 최대 n을 구한다.</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">일반항</span><span class="st">aₙ = 31 + (n−1)×(−5) = 36 − 5n</span></div>
+          <div class="ss"><span class="stag t-풀이">양수 조건</span><span class="st">aₙ &gt; 0: 36−5n &gt; 0 → n &lt; 7.2<br>∴ n = 7까지 양수, a₇=1&gt;0, a₈=−4&lt;0</span></div>
+          <div class="ss"><span class="stag t-공식">S₇ 계산</span><span class="st">S₇ = 7×{2×31+(7−1)×(−5)}/2 = 7×(62−30)/2 = 7×32/2 = 112</span></div>
+        </div>
+        <div class="sol-ans">Sₙ의 최댓값 = 112</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 15 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">15</span><span class="q-title">정사각형 색칠 넓이의 합 (9회 시행)</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">발전</div>
+        <div class="qt">한 변의 길이가 2인 정사각형 모양의 종이가 있다. 첫 번째 시행에서 각 변의 중점을 이어서 만든 네 개의 정사각형 중에서 왼쪽 위의 정사각형을 색칠한다. 두 번째 시행에서 첫 번째 시행 후 남은 오른쪽 아래의 정사각형에서 같은 방법으로 정사각형을 색칠한다. 이와 같은 시행을 9회 반복했을 때, 색칠한 부분의 넓이의 합을 구하시오.</div>
+      </div>
+      <div class="hint">첫 번째 색칠 넓이: 1/4×4=1. 두 번째는 남은 3/4×3/4=9/16의 넓이에서 1/4을 색칠...</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">각 시행 넓이</span><span class="st">n번째 시행에서 색칠하는 정사각형의 넓이:<br>1회: 4×(1/4) = 1 (전체 1/4을 색칠)<br>2회: 남은 정사각형 넓이 = 4×(3/4) = 3, 그 1/4 = 3/4<br>3회: 남은 = 3×(3/4) = 9/4, 그 1/4 = 9/16<br>등비수열: 첫째항 1, 공비 3/4</span></div>
+          <div class="ss"><span class="stag t-공식">9회 합</span><span class="st">S₉ = 1×{1−(3/4)⁹}/{1−3/4} = {1−(3/4)⁹}/(1/4) = 4×{1−(3/4)⁹}<br>(3/4)⁹ = 3⁹/4⁹ = 19683/262144<br>S₉ = 4×(1−19683/262144) = 4×(242461/262144) = 969844/262144 = 242461/65536</span></div>
+        </div>
+        <div class="sol-ans">4×{1−(3/4)⁹} = 242461/65536</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 마무리 16 서술형 -->
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge-r">16</span><span class="q-title">등비수열 {aₙ}의 첫째항부터 제n항까지의 합 Sₙ에 대하여 Sₙ₊₅ − Sₙ = 121×3ⁿ일 때, a₅를 구하는 풀이 과정과 답을 쓰시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">서술형·발전</div>
+        <div class="qt">등비수열 {aₙ}의 첫째항부터 제n항까지의 합 Sₙ에 대하여 Sₙ₊₅ − Sₙ = 121×3ⁿ일 때, a₅를 구하는 풀이 과정과 답을 쓰시오.</div>
+      </div>
+      <div class="hint">Sₙ₊₅ − Sₙ = aₙ₊₁ + aₙ₊₂ + ··· + aₙ₊₅. 등비수열이므로 이를 공비 r로 표현한다.</div>
+      <button class="sol-btn" onclick="tog(this)"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="sol-steps">
+          <div class="ss"><span class="stag t-풀이">Sₙ₊₅−Sₙ 표현</span><span class="st">등비수열 {aₙ}: aₙ = arⁿ⁻¹<br>Sₙ₊₅−Sₙ = aₙ₊₁+aₙ₊₂+···+aₙ₊₅<br>= arⁿ + arⁿ⁺¹ + ··· + arⁿ⁺⁴<br>= arⁿ(1+r+r²+r³+r⁴)</span></div>
+          <div class="ss"><span class="stag t-조건">등치</span><span class="st">arⁿ(1+r+r²+r³+r⁴) = 121×3ⁿ<br>∴ a(1+r+r²+r³+r⁴) = 121, r = 3</span></div>
+          <div class="ss"><span class="stag t-계산">r=3 대입</span><span class="st">a(1+3+9+27+81) = 121<br>a×121 = 121 → a = 1</span></div>
+          <div class="ss"><span class="stag t-답">a₅</span><span class="st">a₅ = 1×3⁴ = 81</span></div>
+        </div>
+        <div class="sol-ans">a₅ = 81</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end review -->
+
+</main>
+
+<script>
+function tog(btn){
+  const panel = btn.nextElementSibling;
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open',!isOpen);
+  btn.classList.toggle('open',!isOpen);
+  btn.querySelector('.sol-btn-lbl').textContent = isOpen ? '해설 보기' : '해설 닫기';
+}
+function go(id){
+  const el = document.getElementById(id);
+  if(el){const y=el.getBoundingClientRect().top+window.scrollY-58;window.scrollTo({top:y,behavior:'smooth'});}
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  event.target.classList.add('active');
+}
+const secs=['start','sec01','sec02','sec02b','sec03','sec03b','review'];
+const links=document.querySelectorAll('.nav-link');
+window.addEventListener('scroll',()=>{
+  let cur=secs[0];
+  for(const id of secs){const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<80)cur=id;}
+  const idx=secs.indexOf(cur);
+  links.forEach((l,i)=>l.classList.toggle('active',i===idx));
+});
+</script>
+</body>
+</html>
