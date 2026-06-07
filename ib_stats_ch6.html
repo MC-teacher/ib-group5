@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IB Math SL · Chapter 6 통계 (Statistics)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1f2537;
+    --border: #2a3150;
+    --accent: #4f8ef7;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #0f1117 0%, #1a1f35 50%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% -20%, rgba(79,142,247,.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-tag {
+    display: inline-block;
+    background: rgba(79,142,247,.15);
+    border: 1px solid rgba(79,142,247,.35);
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: .4rem;
+  }
+  header h1 span { color: var(--accent); }
+  header p { color: var(--muted); font-size: 14px; }
+
+  /* ── Nav Tabs ── */
+  nav {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 1.2rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  nav button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    transition: all .2s;
+  }
+  nav button:hover { border-color: var(--accent); color: var(--accent); }
+  nav button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* ── Main Layout ── */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .section { display: none; animation: fadeIn .3s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── Section Title ── */
+  .sec-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.8rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .sec-title .num {
+    background: var(--accent);
+    color: #fff;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px;
+    flex-shrink: 0;
+  }
+  .sec-title h2 { font-size: 1.35rem; font-weight: 700; color: #fff; }
+  .sec-title p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 1.2rem;
+  }
+  .card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: .8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h3 .icon { font-size: 1.1rem; }
+
+  /* ── Key Point Box ── */
+  .keypoint {
+    background: rgba(79,142,247,.07);
+    border: 1px solid rgba(79,142,247,.3);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+  }
+  .keypoint .kp-title {
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: .5rem;
+  }
+  .keypoint .formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    color: var(--yellow);
+    font-weight: 600;
+  }
+
+  /* ── Definition chips ── */
+  .def-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 1rem 0;
+  }
+  .def-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .9rem 1rem;
+  }
+  .def-chip .term {
+    font-weight: 700;
+    color: var(--green);
+    font-size: .88rem;
+    margin-bottom: .3rem;
+  }
+  .def-chip .meaning { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── Table ── */
+  .tbl-wrap { overflow-x: auto; margin: 1rem 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+  }
+  th {
+    background: var(--surface2);
+    color: var(--accent);
+    padding: 9px 14px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+    font-size: 12px;
+    letter-spacing: .05em;
+    font-weight: 700;
+  }
+  td {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  /* ── Tag badges ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-blue { background: rgba(79,142,247,.15); color: var(--accent); border: 1px solid rgba(79,142,247,.3); }
+  .badge-green { background: rgba(52,211,153,.12); color: var(--green); border: 1px solid rgba(52,211,153,.3); }
+  .badge-yellow { background: rgba(251,191,36,.12); color: var(--yellow); border: 1px solid rgba(251,191,36,.3); }
+  .badge-purple { background: rgba(167,139,250,.12); color: var(--accent2); border: 1px solid rgba(167,139,250,.3); }
+
+  /* ── Example Box ── */
+  .example-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 1.2rem 0;
+    overflow: hidden;
+  }
+  .example-header {
+    background: rgba(79,142,247,.1);
+    border-bottom: 1px solid var(--border);
+    padding: .6rem 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .example-body { padding: 1rem 1.2rem; }
+  .example-q { color: var(--text); margin-bottom: .5rem; font-size: .93rem; }
+  .example-step {
+    display: flex;
+    gap: 10px;
+    margin: .5rem 0;
+    font-size: .88rem;
+  }
+  .step-num {
+    background: var(--accent);
+    color: #fff;
+    min-width: 22px; height: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-body { color: var(--muted); line-height: 1.6; }
+  .step-body strong { color: var(--text); }
+  .step-answer {
+    background: rgba(52,211,153,.08);
+    border: 1px solid rgba(52,211,153,.25);
+    border-radius: 8px;
+    padding: .6rem 1rem;
+    margin-top: .6rem;
+    font-size: .9rem;
+  }
+  .step-answer strong { color: var(--green); }
+
+  /* ── Problem Cards ── */
+  .prob-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1.4rem;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .prob-card:hover { border-color: rgba(79,142,247,.4); }
+  .prob-header {
+    padding: .9rem 1.4rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+  }
+  .prob-num {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    min-width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .prob-meta { flex: 1; }
+  .prob-title { font-weight: 600; font-size: .95rem; color: var(--text); margin-bottom: 4px; }
+  .prob-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .prob-q {
+    padding: 0 1.4rem .9rem 3.4rem;
+    color: var(--muted);
+    font-size: .9rem;
+    line-height: 1.7;
+  }
+  .prob-divider { height: 1px; background: var(--border); }
+
+  /* ── Solution Toggle ── */
+  .sol-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: .75rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--accent);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: background .15s;
+    text-align: left;
+  }
+  .sol-toggle:hover { background: rgba(79,142,247,.06); }
+  .sol-toggle .arrow {
+    margin-left: auto;
+    transition: transform .25s;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .sol-toggle.open .arrow { transform: rotate(180deg); }
+
+  .sol-body {
+    display: none;
+    padding: 1rem 1.4rem 1.4rem;
+    border-top: 1px solid var(--border);
+    background: rgba(0,0,0,.15);
+  }
+  .sol-body.open { display: block; animation: fadeIn .25s ease; }
+
+  .sol-step {
+    display: flex;
+    gap: 10px;
+    margin-bottom: .6rem;
+    font-size: .88rem;
+  }
+  .sol-step-num {
+    min-width: 24px; height: 24px;
+    border-radius: 50%;
+    background: rgba(79,142,247,.15);
+    border: 1px solid rgba(79,142,247,.3);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .sol-step-body { color: var(--muted); line-height: 1.6; }
+  .sol-step-body strong { color: var(--text); }
+  .sol-step-body .hi { color: var(--yellow); font-family: 'JetBrains Mono', monospace; font-size: .92rem; }
+
+  .answer-final {
+    margin-top: .8rem;
+    background: rgba(52,211,153,.08);
+    border: 1px solid rgba(52,211,153,.25);
+    border-radius: 8px;
+    padding: .7rem 1rem;
+    font-size: .9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .answer-final::before { content: '✓'; color: var(--green); font-weight: 700; font-size: 1rem; }
+  .answer-final strong { color: var(--green); }
+
+  /* ── Summary Table ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 1rem 0;
+  }
+  @media (max-width: 600px) { .summary-grid { grid-template-columns: 1fr; } }
+
+  .sum-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .9rem;
+  }
+  .sum-item .sum-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .sum-item .sum-content { font-size: .88rem; color: var(--text); }
+  .sum-item .sum-formula { font-family: 'JetBrains Mono', monospace; color: var(--yellow); font-size: .92rem; font-weight: 600; }
+
+  /* ── Progress bar ── */
+  .progress-wrap { margin-bottom: 1.5rem; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+  .progress-bar { height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .5s ease; }
+
+  /* warning */
+  .warn {
+    background: rgba(251,191,36,.08);
+    border: 1px solid rgba(251,191,36,.25);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    font-size: .88rem;
+    color: var(--yellow);
+    margin: .8rem 0;
+  }
+  .warn::before { content: '⚠ '; }
+
+  ul.concept-list { padding-left: 0; list-style: none; }
+  ul.concept-list li {
+    display: flex;
+    gap: 10px;
+    padding: .4rem 0;
+    font-size: .9rem;
+    color: var(--muted);
+    border-bottom: 1px solid rgba(255,255,255,.04);
+  }
+  ul.concept-list li::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+  ul.concept-list li strong { color: var(--text); }
+
+  /* math inline */
+  .math { font-family: 'JetBrains Mono', monospace; color: var(--yellow); font-size: .93rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">IB Mathematics SL · Core</div>
+  <h1>Chapter 6 <span>통계</span> (Statistics)</h1>
+  <p>표본추출 · 자료 요약 · 자료 표현 — 기초 개념과 문제 풀이</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('s1', this)">① 표본추출</button>
+  <button onclick="showSection('s2', this)">② 중심경향치</button>
+  <button onclick="showSection('s3', this)">③ 산포도</button>
+  <button onclick="showSection('s4', this)">④ 상수 변환</button>
+  <button onclick="showSection('s5', this)">⑤ 자료 표현</button>
+  <button onclick="showSection('s6', this)">📝 기초 문제</button>
+</nav>
+
+<main>
+
+<!-- ===== SECTION 1: 표본추출 ===== -->
+<div id="s1" class="section active">
+  <div class="sec-title">
+    <div class="num">1</div>
+    <div>
+      <h2>표본추출 (Sampling)</h2>
+      <p>6A — 표본과 모집단, 편향, 이상값</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📌</span> 핵심 용어</h3>
+    <div class="def-grid">
+      <div class="def-chip">
+        <div class="term">모집단 (Population)</div>
+        <div class="meaning">관심 대상이 되는 전체 집합. 예) 영국 성인 여성 전체</div>
+      </div>
+      <div class="def-chip">
+        <div class="term">표본 (Sample)</div>
+        <div class="meaning">모집단에서 추출한 일부. 모집단을 추정하는 데 사용</div>
+      </div>
+      <div class="def-chip">
+        <div class="term">연속 자료 (Continuous)</div>
+        <div class="meaning">키, 무게처럼 어떤 값이든 가질 수 있는 자료</div>
+      </div>
+      <div class="def-chip">
+        <div class="term">이산 자료 (Discrete)</div>
+        <div class="meaning">학생 수, 신발 사이즈처럼 뚜렷이 구분되는 값만 가지는 자료</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">⚖️</span> 표본의 대표성과 편향 (Bias)</h3>
+    <p style="color:var(--muted); font-size:.9rem; margin-bottom:.8rem;">
+      좋은 표본은 모집단의 분포와 유사해야 합니다. 표본 추출 방법이 편향(biased)되면 모집단을 제대로 추정할 수 없습니다.
+    </p>
+    <div class="warn">편향은 의도적인 오류가 아니어도 발생합니다. 표본이 모집단을 제대로 대표하지 않으면 편향입니다.</div>
+    <ul class="concept-list">
+      <li><strong>사례 1:</strong> 평일 낮에 전화 여론조사 → 은퇴자 비율 과다 대표</li>
+      <li><strong>사례 2 (1948 Chicago Tribune):</strong> 전화 보유자만 조사 → 부유층 편향으로 선거 결과 오예측</li>
+      <li><strong>사례 3 (Google Flu 2013):</strong> 인터넷 검색어로 독감 환자 수 예측 → 140% 과대 추정</li>
+      <li><strong>타당성 (Validity):</strong> 실제로 답하고자 하는 질문에 제대로 답하고 있는지 고려해야 함</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">🔍</span> 이상값 (Outliers)</h3>
+    <p style="color:var(--muted); font-size:.9rem; margin-bottom:.8rem;">
+      나머지 자료에 비해 매우 크거나 작은 극단값. 유효한 자료일 수도 있고, 오류일 수도 있습니다.
+    </p>
+    <div class="keypoint">
+      <div class="kp-title">Key Point 6.8 — 이상값 판별 기준</div>
+      <div class="formula">x &lt; Q₁ − 1.5(Q₃ − Q₁) &nbsp;또는&nbsp; x &gt; Q₃ + 1.5(Q₃ − Q₁)</div>
+    </div>
+    <div class="example-box">
+      <div class="example-header">📘 판별 예시</div>
+      <div class="example-body">
+        <div class="example-q">Alana의 수학 수업 시간 자료. 나머지 값은 120~200시간 사이. 이상값이 다음과 같을 때 어떻게 해야 할까?</div>
+        <div class="example-step">
+          <div class="step-num">a</div>
+          <div class="step-body"><strong>−175</strong> → 음수는 불가능 → <span style="color:var(--red)">오류 → 제거</span></div>
+        </div>
+        <div class="example-step">
+          <div class="step-num">b</div>
+          <div class="step-body"><strong>4</strong> → 매우 작음. 단위 오류(시간→분?) 가능 → <span style="color:var(--yellow)">확인 필요 → 조사 후 판단</span></div>
+        </div>
+        <div class="example-step">
+          <div class="step-num">c</div>
+          <div class="step-body"><strong>240</strong> → 약간 크지만 가능한 범위 → <span style="color:var(--green)">유효할 수 있음 → 유지</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 2: 중심경향치 ===== -->
+<div id="s2" class="section">
+  <div class="sec-title">
+    <div class="num">2</div>
+    <div>
+      <h2>중심경향치 (Measures of Central Tendency)</h2>
+      <p>6B — 평균, 중앙값, 최빈값, 집단자료</p>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="sum-item">
+      <div class="sum-label">평균 (Mean) x̄</div>
+      <div class="sum-formula">x̄ = Σx / n</div>
+      <div class="sum-content" style="font-size:.82rem; color:var(--muted); margin-top:4px;">모든 값의 합 ÷ 개수. 이상값에 민감</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-label">중앙값 (Median)</div>
+      <div class="sum-content">크기 순 정렬 후 가운데 값. 이상값에 강건</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-label">최빈값 (Mode)</div>
+      <div class="sum-content">가장 자주 나타나는 값. 여러 개일 수 있음</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-label">집단자료 평균 추정</div>
+      <div class="sum-formula">각 구간의 중간값으로 대체하여 계산</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📐</span> 집단자료 — 중간값(Midpoint) 사용</h3>
+    <p style="color:var(--muted); font-size:.9rem; margin-bottom:.8rem;">
+      집단자료는 개별 값을 알 수 없으므로, 각 구간의 <strong style="color:var(--text)">중간값</strong>으로 대체하여 평균을 추정합니다.
+    </p>
+    <div class="tbl-wrap">
+      <table>
+        <tr>
+          <th>구간 (x)</th><th>중간값</th><th>빈도 (f)</th><th>중간값 × 빈도</th>
+        </tr>
+        <tr><td>0 ≤ x &lt; 4</td><td>2</td><td>15</td><td>30</td></tr>
+        <tr><td>4 ≤ x &lt; 10</td><td>7</td><td>35</td><td>245</td></tr>
+        <tr><td>10 ≤ x &lt; 20</td><td>15</td><td>50</td><td>750</td></tr>
+        <tr><td colspan="2" style="font-weight:700; color:var(--accent)">합계</td><td>100</td><td>1025</td></tr>
+      </table>
+    </div>
+    <div class="step-answer">
+      <strong>추정 평균 = 1025 ÷ 100 = 10.25</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📊</span> 최빈 구간 (Modal Class)</h3>
+    <p style="color:var(--muted); font-size:.9rem;">
+      집단자료에서는 최빈값을 구할 수 없고, 대신 <strong style="color:var(--text)">빈도가 가장 높은 구간</strong>을 최빈 구간이라 합니다.
+    </p>
+    <div class="warn">주의: 구간 너비가 다르면 단순히 빈도가 가장 높은 구간을 최빈 구간으로 볼 수 없습니다.</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">🔢</span> 사분위수 (Quartiles)</h3>
+    <p style="color:var(--muted); font-size:.9rem; margin-bottom:.8rem;">
+      자료를 크기 순으로 나열했을 때, 4등분하는 값들입니다.
+    </p>
+    <div class="def-grid">
+      <div class="def-chip">
+        <div class="term">Q₁ (하사분위수)</div>
+        <div class="meaning">자료의 1/4 지점 값 (Lower Quartile)</div>
+      </div>
+      <div class="def-chip">
+        <div class="term">Q₂ (중앙값)</div>
+        <div class="meaning">자료의 1/2 지점 값 (Median)</div>
+      </div>
+      <div class="def-chip">
+        <div class="term">Q₃ (상사분위수)</div>
+        <div class="meaning">자료의 3/4 지점 값 (Upper Quartile)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 3: 산포도 ===== -->
+<div id="s3" class="section">
+  <div class="sec-title">
+    <div class="num">3</div>
+    <div>
+      <h2>산포도 (Measures of Dispersion)</h2>
+      <p>6B — IQR, 표준편차, 분산, 이상값 판별</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📏</span> 산포도의 종류</h3>
+    <div class="summary-grid">
+      <div class="sum-item">
+        <div class="sum-label">범위 (Range)</div>
+        <div class="sum-formula">최댓값 − 최솟값</div>
+        <div class="sum-content" style="font-size:.82rem; color:var(--muted); margin-top:4px;">이상값에 매우 민감</div>
+      </div>
+      <div class="sum-item">
+        <div class="sum-label">사분위 범위 (IQR)</div>
+        <div class="sum-formula">Q₃ − Q₁</div>
+        <div class="sum-content" style="font-size:.82rem; color:var(--muted); margin-top:4px;">중앙 50% 자료의 범위. 이상값에 강건</div>
+      </div>
+      <div class="sum-item">
+        <div class="sum-label">표준편차 (σ)</div>
+        <div class="sum-content">각 값과 평균 사이의 평균 거리. GDC로 계산</div>
+      </div>
+      <div class="sum-item">
+        <div class="sum-label">분산 (Variance)</div>
+        <div class="sum-formula">σ²</div>
+        <div class="sum-content" style="font-size:.82rem; color:var(--muted); margin-top:4px;">표준편차의 제곱</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="keypoint">
+    <div class="kp-title">Key Point 6.7 — 사분위 범위</div>
+    <div class="formula">IQR = Q₃ − Q₁</div>
+  </div>
+
+  <div class="keypoint">
+    <div class="kp-title">Key Point 6.8 — 이상값 판별</div>
+    <div class="formula">x &lt; Q₁ − 1.5 × IQR &nbsp;&nbsp;또는&nbsp;&nbsp; x &gt; Q₃ + 1.5 × IQR</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📘</span> 이상값 판별 예시</h3>
+    <div class="example-box">
+      <div class="example-header">예제 6.13</div>
+      <div class="example-body">
+        <div class="example-q">Q₁ = 60, Q₃ = 70인 자료에서 이상값으로 분류되는 범위를 구하시오.</div>
+        <div class="example-step">
+          <div class="step-num">1</div>
+          <div class="step-body"><strong>IQR 계산:</strong> <span class="math">Q₃ − Q₁ = 70 − 60 = 10</span></div>
+        </div>
+        <div class="example-step">
+          <div class="step-num">2</div>
+          <div class="step-body"><strong>하한:</strong> <span class="math">60 − 1.5 × 10 = 60 − 15 = 45</span></div>
+        </div>
+        <div class="example-step">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>상한:</strong> <span class="math">70 + 1.5 × 10 = 70 + 15 = 85</span></div>
+        </div>
+        <div class="step-answer">
+          <strong>이상값: x &lt; 45 또는 x &gt; 85</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">⚠️</span> 타당성 주의 사항</h3>
+    <ul class="concept-list">
+      <li><strong>서로 다른 산포도 직접 비교 불가:</strong> IQR 16cm vs 표준편차 12cm → 어느 쪽이 더 큰지 알 수 없음</li>
+      <li><strong>표본 ≠ 모집단:</strong> 표본의 산포도가 더 크다고 해서 모집단도 그렇다고 단정할 수 없음</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== SECTION 4: 상수 변환 ===== -->
+<div id="s4" class="section">
+  <div class="sec-title">
+    <div class="num">4</div>
+    <div>
+      <h2>상수 변환의 영향 (Effect of Constant Changes)</h2>
+      <p>6B — 덧셈/곱셈 변환이 평균과 산포도에 미치는 영향</p>
+    </div>
+  </div>
+
+  <div class="keypoint">
+    <div class="kp-title">Key Point 6.9 — 상수 덧셈</div>
+    <div class="formula">모든 값에 k를 더하면:</div>
+    <ul style="margin-top:.5rem; padding-left:1rem; font-size:.88rem; color:var(--muted);">
+      <li style="margin:.2rem 0;">✅ <strong style="color:var(--green)">평균, 중앙값, 최빈값</strong>이 k만큼 변화</li>
+      <li style="margin:.2rem 0;">❌ <strong style="color:var(--red)">표준편차, IQR</strong>은 변화 없음 (형태가 유지되므로)</li>
+    </ul>
+  </div>
+
+  <div class="keypoint">
+    <div class="kp-title">Key Point 6.10 — 양의 상수 곱셈</div>
+    <div class="formula">모든 값에 양의 상수 k를 곱하면:</div>
+    <ul style="margin-top:.5rem; padding-left:1rem; font-size:.88rem; color:var(--muted);">
+      <li style="margin:.2rem 0;">✅ <strong style="color:var(--green)">평균, 중앙값, 최빈값</strong>이 k배</li>
+      <li style="margin:.2rem 0;">✅ <strong style="color:var(--yellow)">표준편차, IQR</strong>도 k배 (자료가 늘어나므로)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📋</span> 변환 요약표</h3>
+    <div class="tbl-wrap">
+      <table>
+        <tr>
+          <th>변환</th>
+          <th>평균 (x̄)</th>
+          <th>중앙값</th>
+          <th>최빈값</th>
+          <th>표준편차 (σ)</th>
+          <th>IQR</th>
+        </tr>
+        <tr>
+          <td><span class="badge badge-blue">+ k</span></td>
+          <td><span class="math">x̄ + k</span></td>
+          <td>Med + k</td>
+          <td>Mode + k</td>
+          <td><span style="color:var(--green)">σ (불변)</span></td>
+          <td><span style="color:var(--green)">IQR (불변)</span></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-yellow">× k</span></td>
+          <td><span class="math">k × x̄</span></td>
+          <td>k × Med</td>
+          <td>k × Mode</td>
+          <td><span style="color:var(--yellow)">k × σ</span></td>
+          <td><span style="color:var(--yellow)">k × IQR</span></td>
+        </tr>
+      </table>
+    </div>
+    <div class="example-box" style="margin-top:1rem;">
+      <div class="example-header">예제 6.15</div>
+      <div class="example-body">
+        <div class="example-q">중앙값 2.4, IQR 3.6인 자료를 모두 절반으로 줄이면?</div>
+        <div class="example-step">
+          <div class="step-num">→</div>
+          <div class="step-body">
+            k = 1/2 곱셈 변환<br>
+            <strong>새 중앙값 = 2.4 ÷ 2 = <span class="math">1.2</span></strong><br>
+            <strong>새 IQR = 3.6 ÷ 2 = <span class="math">1.8</span></strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 5: 자료 표현 ===== -->
+<div id="s5" class="section">
+  <div class="sec-title">
+    <div class="num">5</div>
+    <div>
+      <h2>자료 표현 (Presenting Data)</h2>
+      <p>6C — 히스토그램, 누적빈도, 상자그림</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📊</span> 히스토그램 (Histogram)</h3>
+    <ul class="concept-list">
+      <li>연속 집단자료를 표현하는 막대 그래프 (막대 사이 간격 없음)</li>
+      <li>가로축: 자료값 / 세로축: 빈도 (frequency)</li>
+      <li>GDC나 기술로 그리는 것을 권장</li>
+      <li><strong>누적빈도(cf):</strong> 각 구간까지의 빈도를 누적하여 그린 S자 곡선</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">📦</span> 상자그림 (Box-and-Whisker Diagram)</h3>
+    <p style="color:var(--muted); font-size:.9rem; margin-bottom:.8rem;">
+      5가지 핵심 통계량을 한눈에 보여주는 그래프입니다.
+    </p>
+    <div class="def-grid">
+      <div class="def-chip">
+        <div class="term">① 최솟값 (Min)</div>
+        <div class="meaning">이상값 제외한 가장 작은 값</div>
+      </div>
+      <div class="def-chip">
+        <div class="term">② Q₁ (하사분위수)</div>
+        <div class="meaning">상자의 왼쪽 끝</div>
+      </div>
+      <div class="def-chip">
+        <div class="term">③ 중앙값 (Median)</div>
+        <div class="meaning">상자 내부의 선</div>
+      </div>
+      <div class="def-chip">
+        <div class="term">④ Q₃ (상사분위수)</div>
+        <div class="meaning">상자의 오른쪽 끝</div>
+      </div>
+      <div class="def-chip">
+        <div class="term">⑤ 최댓값 (Max)</div>
+        <div class="meaning">이상값 제외한 가장 큰 값</div>
+      </div>
+      <div class="def-chip">
+        <div class="term">× 이상값 (Outlier)</div>
+        <div class="meaning">별도로 ×(십자 표시)로 표시</div>
+      </div>
+    </div>
+
+    <div class="example-box" style="margin-top:1rem;">
+      <div class="example-header">예제 6.20 — 상자그림 작성</div>
+      <div class="example-body">
+        <div class="example-q">자료: 3, 6, 7, 7, 7, 9, 9, 11, 15, 20</div>
+        <div class="example-step">
+          <div class="step-num">1</div>
+          <div class="step-body">GDC로 구함: <strong>Q₁ = 7, 중앙값 = 8, Q₃ = 11</strong></div>
+        </div>
+        <div class="example-step">
+          <div class="step-num">2</div>
+          <div class="step-body">IQR = 11 − 7 = 4<br>
+          이상값 하한: 7 − 1.5×4 = <strong class="math">1</strong><br>
+          이상값 상한: 11 + 1.5×4 = <strong class="math">17</strong></div>
+        </div>
+        <div class="example-step">
+          <div class="step-num">3</div>
+          <div class="step-body"><strong>20 &gt; 17</strong> → 이상값(×)으로 표시</div>
+        </div>
+        <div class="step-answer">
+          <strong>상자그림:</strong> 최솟값=3, Q₁=7, 중앙값=8, Q₃=11, 최댓값=15, 이상값: ×20
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="icon">💡</span> 누적빈도에서 읽는 값</h3>
+    <ul class="concept-list">
+      <li><strong>중앙값:</strong> 전체 빈도의 50% 지점</li>
+      <li><strong>Q₁:</strong> 전체 빈도의 25% 지점</li>
+      <li><strong>Q₃:</strong> 전체 빈도의 75% 지점</li>
+      <li><strong>p번째 백분위수:</strong> 전체 빈도의 p% 지점</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== SECTION 6: 기초 문제 ===== -->
+<div id="s6" class="section">
+  <div class="sec-title">
+    <div class="num">📝</div>
+    <div>
+      <h2>기초 연습 문제</h2>
+      <p>풀이 보기 버튼을 눌러 단계별 풀이를 확인하세요</p>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="prob-card">
+    <div class="prob-header">
+      <div class="prob-num">1</div>
+      <div class="prob-meta">
+        <div class="prob-title">평균 구하기 — 공식 활용</div>
+        <div class="prob-tags">
+          <span class="badge badge-blue">중심경향치</span>
+          <span class="badge badge-green">기초</span>
+        </div>
+      </div>
+    </div>
+    <div class="prob-q">
+      1, 2, 4, 5, a, 2a의 평균이 8일 때, a의 값을 구하시오.
+    </div>
+    <div class="prob-divider"></div>
+    <button class="sol-toggle" onclick="toggleSol(this)">
+      💡 풀이 보기
+      <span class="arrow">▼</span>
+    </button>
+    <div class="sol-body">
+      <div class="sol-step">
+        <div class="sol-step-num">1</div>
+        <div class="sol-step-body">
+          <strong>공식 적용:</strong> <span class="hi">x̄ = Σx / n</span><br>
+          값이 6개이므로: <span class="hi">(1+2+4+5+a+2a) / 6 = 8</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">2</div>
+        <div class="sol-step-body">
+          <strong>분자 정리:</strong> <span class="hi">12 + 3a = 48</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">3</div>
+        <div class="sol-step-body">
+          <strong>풀기:</strong> <span class="hi">3a = 36 → a = 12</span>
+        </div>
+      </div>
+      <div class="answer-final"><strong>a = 12</strong></div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="prob-card">
+    <div class="prob-header">
+      <div class="prob-num">2</div>
+      <div class="prob-meta">
+        <div class="prob-title">빈도표의 미지수 — 평균 이용</div>
+        <div class="prob-tags">
+          <span class="badge badge-blue">중심경향치</span>
+          <span class="badge badge-yellow">중급</span>
+        </div>
+      </div>
+    </div>
+    <div class="prob-q">
+      아래 자료의 평균이 4.2일 때, y의 값을 구하시오.<br><br>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:.85rem;">
+      자료값: 1 &nbsp; 2.5 &nbsp; 6 &nbsp; y<br>
+      빈 &nbsp; 도: 4 &nbsp;&nbsp; 5 &nbsp;&nbsp; 8 &nbsp; 3
+      </span>
+    </div>
+    <div class="prob-divider"></div>
+    <button class="sol-toggle" onclick="toggleSol(this)">
+      💡 풀이 보기
+      <span class="arrow">▼</span>
+    </button>
+    <div class="sol-body">
+      <div class="sol-step">
+        <div class="sol-step-num">1</div>
+        <div class="sol-step-body">
+          <strong>전체 빈도:</strong> <span class="hi">4+5+8+3 = 20</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">2</div>
+        <div class="sol-step-body">
+          <strong>공식 적용:</strong><br>
+          <span class="hi">(1×4 + 2.5×5 + 6×8 + 3y) / 20 = 4.2</span><br>
+          <span class="hi">(4 + 12.5 + 48 + 3y) / 20 = 4.2</span><br>
+          <span class="hi">(64.5 + 3y) / 20 = 4.2</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">3</div>
+        <div class="sol-step-body">
+          <strong>풀기:</strong><br>
+          <span class="hi">64.5 + 3y = 84</span><br>
+          <span class="hi">3y = 19.5 → y = 6.5</span>
+        </div>
+      </div>
+      <div class="answer-final"><strong>y = 6.5</strong></div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="prob-card">
+    <div class="prob-header">
+      <div class="prob-num">3</div>
+      <div class="prob-meta">
+        <div class="prob-title">이상값 판별</div>
+        <div class="prob-tags">
+          <span class="badge badge-purple">산포도</span>
+          <span class="badge badge-yellow">중급</span>
+        </div>
+      </div>
+    </div>
+    <div class="prob-q">
+      다음 자료에서 이상값을 판별하시오.<br>
+      <span class="math">3, 6, 1, 3, 2, 11, 3, 6, 8, 4, 5</span>
+    </div>
+    <div class="prob-divider"></div>
+    <button class="sol-toggle" onclick="toggleSol(this)">
+      💡 풀이 보기
+      <span class="arrow">▼</span>
+    </button>
+    <div class="sol-body">
+      <div class="sol-step">
+        <div class="sol-step-num">1</div>
+        <div class="sol-step-body">
+          <strong>정렬:</strong> <span class="hi">1, 2, 3, 3, 3, 4, 5, 6, 6, 8, 11</span> (11개)
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">2</div>
+        <div class="sol-step-body">
+          <strong>중앙값 (6번째):</strong> <span class="hi">4</span><br>
+          <strong>Q₁ (하위 5개의 중앙값, 3번째):</strong> <span class="hi">3</span><br>
+          <strong>Q₃ (상위 5개의 중앙값, 9번째):</strong> <span class="hi">6</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">3</div>
+        <div class="sol-step-body">
+          <strong>IQR:</strong> <span class="hi">Q₃ − Q₁ = 6 − 3 = 3</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">4</div>
+        <div class="sol-step-body">
+          <strong>이상값 경계:</strong><br>
+          하한: <span class="hi">3 − 1.5×3 = 3 − 4.5 = −1.5</span><br>
+          상한: <span class="hi">6 + 1.5×3 = 6 + 4.5 = 10.5</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">5</div>
+        <div class="sol-step-body">
+          <strong>11 &gt; 10.5</strong> → 이상값!<br>
+          나머지 값은 −1.5보다 크고 10.5보다 작으므로 정상
+        </div>
+      </div>
+      <div class="answer-final"><strong>이상값: 11</strong></div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="prob-card">
+    <div class="prob-header">
+      <div class="prob-num">4</div>
+      <div class="prob-meta">
+        <div class="prob-title">상수 덧셈 변환</div>
+        <div class="prob-tags">
+          <span class="badge badge-blue">상수 변환</span>
+          <span class="badge badge-green">기초</span>
+        </div>
+      </div>
+    </div>
+    <div class="prob-q">
+      어떤 자료의 평균은 34, 표준편차는 8이다. 모든 자료에 12를 더했을 때, 새로운 평균과 표준편차를 구하시오.
+    </div>
+    <div class="prob-divider"></div>
+    <button class="sol-toggle" onclick="toggleSol(this)">
+      💡 풀이 보기
+      <span class="arrow">▼</span>
+    </button>
+    <div class="sol-body">
+      <div class="sol-step">
+        <div class="sol-step-num">1</div>
+        <div class="sol-step-body">
+          상수를 <strong>더하면</strong> → 평균은 같은 양만큼 증가, 표준편차는 변하지 않음 (Key Point 6.9)
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">2</div>
+        <div class="sol-step-body">
+          <strong>새 평균:</strong> <span class="hi">34 + 12 = 46</span><br>
+          <strong>새 표준편차:</strong> <span class="hi">8 (불변)</span>
+        </div>
+      </div>
+      <div class="answer-final"><strong>평균 = 46, 표준편차 = 8</strong></div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="prob-card">
+    <div class="prob-header">
+      <div class="prob-num">5</div>
+      <div class="prob-meta">
+        <div class="prob-title">상수 곱셈 변환 — IQR</div>
+        <div class="prob-tags">
+          <span class="badge badge-blue">상수 변환</span>
+          <span class="badge badge-green">기초</span>
+        </div>
+      </div>
+    </div>
+    <div class="prob-q">
+      어떤 자료의 중앙값이 36, IQR이 18이다. 모든 자료에 10을 곱했을 때, 새로운 중앙값과 IQR을 구하시오.
+    </div>
+    <div class="prob-divider"></div>
+    <button class="sol-toggle" onclick="toggleSol(this)">
+      💡 풀이 보기
+      <span class="arrow">▼</span>
+    </button>
+    <div class="sol-body">
+      <div class="sol-step">
+        <div class="sol-step-num">1</div>
+        <div class="sol-step-body">
+          상수를 <strong>곱하면</strong> → 중앙값, IQR 모두 같은 배율로 변함 (Key Point 6.10)
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">2</div>
+        <div class="sol-step-body">
+          <strong>새 중앙값:</strong> <span class="hi">36 × 10 = 360</span><br>
+          <strong>새 IQR:</strong> <span class="hi">18 × 10 = 180</span>
+        </div>
+      </div>
+      <div class="answer-final"><strong>중앙값 = 360, IQR = 180</strong></div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="prob-card">
+    <div class="prob-header">
+      <div class="prob-num">6</div>
+      <div class="prob-meta">
+        <div class="prob-title">집단자료 — 평균 추정 & 최빈 구간</div>
+        <div class="prob-tags">
+          <span class="badge badge-blue">중심경향치</span>
+          <span class="badge badge-yellow">중급</span>
+        </div>
+      </div>
+    </div>
+    <div class="prob-q">
+      아래 빈도표에서 (i) 평균을 추정하고, (ii) 최빈 구간을 구하시오.<br><br>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:.85rem;">
+      구간: 0≤x&lt;10 | 10≤x&lt;20 | 20≤x&lt;30<br>
+      빈도: &nbsp;&nbsp; 15 &nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;12 &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;8
+      </span>
+    </div>
+    <div class="prob-divider"></div>
+    <button class="sol-toggle" onclick="toggleSol(this)">
+      💡 풀이 보기
+      <span class="arrow">▼</span>
+    </button>
+    <div class="sol-body">
+      <div class="sol-step">
+        <div class="sol-step-num">1</div>
+        <div class="sol-step-body">
+          <strong>각 구간의 중간값:</strong><br>
+          <span class="hi">0≤x&lt;10 → 5</span><br>
+          <span class="hi">10≤x&lt;20 → 15</span><br>
+          <span class="hi">20≤x&lt;30 → 25</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">2</div>
+        <div class="sol-step-body">
+          <strong>Σ(중간값×빈도):</strong><br>
+          <span class="hi">5×15 + 15×12 + 25×8 = 75 + 180 + 200 = 455</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">3</div>
+        <div class="sol-step-body">
+          <strong>전체 빈도:</strong> <span class="hi">15+12+8 = 35</span><br>
+          <strong>추정 평균:</strong> <span class="hi">455 ÷ 35 = 13</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">4</div>
+        <div class="sol-step-body">
+          <strong>최빈 구간:</strong> 빈도가 가장 높은 구간 → <span class="hi">0 ≤ x &lt; 10 (빈도=15)</span>
+        </div>
+      </div>
+      <div class="answer-final"><strong>추정 평균 = 13, 최빈 구간: 0 ≤ x &lt; 10</strong></div>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="prob-card">
+    <div class="prob-header">
+      <div class="prob-num">7</div>
+      <div class="prob-meta">
+        <div class="prob-title">단위 변환 — 화씨→섭씨</div>
+        <div class="prob-tags">
+          <span class="badge badge-purple">상수 변환 응용</span>
+          <span class="badge badge-yellow">중급</span>
+        </div>
+      </div>
+    </div>
+    <div class="prob-q">
+      Texas Austin의 1월 평균 기온은 51°F, 표준편차 3.6°F이다.<br>
+      변환 공식 <span class="math">C = (5/9)F − 160/9</span> 를 이용하여 섭씨 평균과 표준편차를 구하시오.
+    </div>
+    <div class="prob-divider"></div>
+    <button class="sol-toggle" onclick="toggleSol(this)">
+      💡 풀이 보기
+      <span class="arrow">▼</span>
+    </button>
+    <div class="sol-body">
+      <div class="sol-step">
+        <div class="sol-step-num">1</div>
+        <div class="sol-step-body">
+          변환: <span class="hi">C = (5/9)F − 160/9</span><br>
+          이는 F에 <strong>5/9를 곱한 뒤</strong> 160/9를 <strong>뺀</strong> 것
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">2</div>
+        <div class="sol-step-body">
+          <strong>평균:</strong> <span class="hi">(5/9) × 51 − 160/9 = 255/9 − 160/9 = 95/9 ≈ 10.6°C</span>
+        </div>
+      </div>
+      <div class="sol-step">
+        <div class="sol-step-num">3</div>
+        <div class="sol-step-body">
+          <strong>표준편차:</strong> 곱셈만 영향 줌 (덧셈/뺄셈은 영향 없음)<br>
+          <span class="hi">σ_C = (5/9) × 3.6 = 2°C</span>
+        </div>
+      </div>
+      <div class="answer-final"><strong>섭씨 평균 ≈ 10.6°C, 표준편차 = 2°C</strong></div>
+    </div>
+  </div>
+
+</div><!-- /s6 -->
+
+</main>
+
+<script>
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleSol(btn) {
+  const body = btn.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  btn.innerHTML = isOpen
+    ? '💡 풀이 보기 <span class="arrow">▼</span>'
+    : '🔒 풀이 닫기 <span class="arrow">▼</span>';
+}
+</script>
+</body>
+</html>
