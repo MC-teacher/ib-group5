@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>삼각함수</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── 리셋 ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── 전체 구조: 가로 스냅 스크롤 ── */
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #1a1a2e; }
+#deck {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+.slide {
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 0; left: 0;
+  transition: opacity .35s ease, transform .35s ease;
+  opacity: 0;
+  transform: translateX(40px);
+  overflow: hidden;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+  transform: translateX(0);
+}
+/* ── 색상 변수 ── */
+:root {
+  --ink: #1a1a2e;
+  --cream: #f5f0e8;
+  --red: #c0392b;
+  --gold: #c89a2a;
+  --green: #1a6b3a;
+  --green-bg: #e8f5ed;
+  --blue: #1e3a5f;
+  --blue-bg: #e8f0fb;
+  --amber-bg: #fef9ec;
+  --border: #ddd8ce;
+  --gray: #6b7280;
+}
+/* ══════════════════════════════
+   표지 슬라이드
+══════════════════════════════ */
+.cover-slide {
+  background: var(--ink);
+  color: var(--cream);
+  justify-content: center;
+  align-items: flex-start;
+  padding: 72px 10vw;
+  position: relative;
+  overflow: hidden;
+}
+.cover-slide::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0;
+  width: 42%;
+  height: 100%;
+  background: linear-gradient(145deg, rgba(192,57,43,.15), rgba(200,154,42,.1));
+  clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+.cover-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .22em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.cover-slide h1 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(36px, 5.5vw, 66px);
+  font-weight: 900;
+  line-height: 1.12;
+  margin-bottom: 22px;
+}
+.cover-slide h1 em { color: var(--gold); font-style: normal; }
+.cover-desc {
+  font-size: 15px;
+  color: rgba(245,240,232,.55);
+  line-height: 1.9;
+  max-width: 440px;
+  margin-bottom: 40px;
+}
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag {
+  font-size: 11px;
+  padding: 5px 14px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 20px;
+  color: rgba(255,255,255,.65);
+  letter-spacing: .04em;
+}
+/* ══════════════════════════════
+   섹션 구분 슬라이드
+══════════════════════════════ */
+.section-slide {
+  color: var(--cream);
+  justify-content: flex-end;
+  padding: 56px 8vw;
+  position: relative;
+  overflow: hidden;
+}
+.section-bg-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(120px, 20vw, 240px);
+  font-weight: 700;
+  color: rgba(255,255,255,.06);
+  position: absolute;
+  right: 4vw; top: -20px;
+  line-height: 1;
+  user-select: none;
+}
+.section-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  opacity: .55;
+  margin-bottom: 14px;
+}
+.section-slide h2 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.section-slide p { font-size: 14px; opacity: .68; }
+/* ══════════════════════════════
+   개념 설명 슬라이드 (좌우 분할)
+══════════════════════════════ */
+.concept-slide {
+  flex-direction: row;
+  overflow: hidden;
+}
+.concept-left {
+  width: 38%;
+  flex-shrink: 0;
+  background: var(--ink);
+  color: var(--cream);
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-y: auto;
+}
+.concept-left::-webkit-scrollbar { width: 3px; }
+.concept-left::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius:2px; }
+.concept-right {
+  flex: 1;
+  background: var(--cream);
+  color: var(--ink);
+  padding: 48px 44px;
+  overflow-y: auto;
+}
+.concept-right::-webkit-scrollbar { width: 4px; }
+.concept-right::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius:2px; }
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+.eyebrow.dark { color: var(--red); }
+.concept-left h3, .concept-right h3 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(18px, 2.2vw, 28px);
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 18px;
+}
+.def-box {
+  border-left: 3px solid var(--gold);
+  background: rgba(255,255,255,.06);
+  padding: 14px 18px;
+  border-radius: 0 8px 8px 0;
+  font-size: 14px;
+  line-height: 1.85;
+  margin: 12px 0;
+}
+.def-box.light {
+  background: #fff;
+  border-color: var(--red);
+  color: var(--ink);
+}
+.def-box .formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  color: var(--gold);
+  display: block;
+  margin: 8px 0 4px;
+}
+.def-box.light .formula { color: #8b2000; }
+.prop-list { list-style: none; margin: 0; }
+.prop-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+.prop-list.light li { border-bottom: 1px solid rgba(0,0,0,.07); }
+.prop-list li:last-child { border-bottom: none; }
+.pn {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  flex-shrink: 0; margin-top: 1px;
+}
+.pn.red { background: var(--red); color: #fff; }
+.cmp {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 14px 0;
+}
+.cmp th {
+  background: var(--ink);
+  color: var(--gold);
+  padding: 9px 14px;
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.cmp td {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+}
+.cmp tr:nth-child(even) td { background: #f9f5ef; }
+.tok {
+  background: var(--blue-bg);
+  border: 1.5px solid #3b82f6;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 14px 0;
+}
+.tok .tok-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: #1d4ed8; margin-bottom: 7px;
+}
+.tok .tok-label::before { content: '◆ '; font-size: 8px; }
+.tok p { font-size: 13px; line-height: 1.7; color: var(--blue); }
+.tok.dark {
+  background: rgba(59,130,246,.1);
+  border-color: rgba(59,130,246,.35);
+}
+.tok.dark .tok-label { color: #93c5fd; }
+.tok.dark p { color: #bfdbfe; }
+.graph-box {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 14px 0;
+  overflow-x: auto;
+}
+.graph-box svg { max-width: 100%; height: auto; }
+.fml {
+  font-family: 'JetBrains Mono', monospace;
+  background: #fff8ec;
+  border: 1px solid #e5c87a;
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-size: 14px;
+  color: #7a4f00;
+  margin: 8px 0;
+}
+.fml.dark {
+  background: rgba(200,154,42,.12);
+  border-color: rgba(200,154,42,.35);
+  color: var(--gold);
+}
+/* ══════════════════════════════
+   TOK 전용 슬라이드
+══════════════════════════════ */
+.tok-slide {
+  background: #0b1e38;
+  color: var(--cream);
+  justify-content: center;
+  padding: 56px 8vw;
+  overflow-y: auto;
+}
+.tok-slide .big-q {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(20px, 3.2vw, 40px);
+  font-weight: 700;
+  color: #93c5fd;
+  line-height: 1.4;
+  margin-bottom: 30px;
+}
+.tok-slide .big-q em { color: var(--gold); font-style: normal; }
+.tok-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.tok-card {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(59,130,246,.28);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.tok-card h4 {
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: #60a5fa; margin-bottom: 8px;
+}
+.tok-card p { font-size: 13px; line-height: 1.7; color: #c1cfe8; }
+/* ══════════════════════════════
+   문제 슬라이드
+══════════════════════════════ */
+.prob-slide {
+  flex-direction: column;
+  background: #f8f6f2;
+  color: var(--ink);
+  overflow: hidden;
+}
+.prob-head {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 18px 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+  border-bottom: 2px solid var(--gold);
+}
+.prob-head h3 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 17px;
+  font-weight: 700;
+}
+.pbadge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 3px 11px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.22);
+  letter-spacing: .07em;
+  white-space: nowrap;
+}
+.prob-body {
+  flex: 1;
+  overflow-y: scroll;
+  padding: 22px 40px 100px;
+  scrollbar-width: thin;
+  scrollbar-color: #c9bfaa #f0ece4;
+}
+.prob-body::-webkit-scrollbar { width: 7px; }
+.prob-body::-webkit-scrollbar-track { background: #f0ece4; border-radius:4px; }
+.prob-body::-webkit-scrollbar-thumb { background: #c9bfaa; border-radius:4px; }
+.pcard {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.pcard-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 12px;
+  transition: background .18s;
+}
+.pcard-head:hover { background: #fdf9f2; }
+.pcard.open .pcard-head { border-radius: 12px 12px 0 0; }
+.pbnum {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  flex-shrink: 0;
+}
+.nb0 { background: #f0ece4; color: #666; }
+.nb1 { background: #fef3c7; color: #92400e; }
+.nb2 { background: #fee2e2; color: #991b1b; }
+.nb3 { background: #ede9fe; color: #5b21b6; }
+.pq {
+  flex: 1;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--ink);
+}
+.pq strong { color: var(--red); }
+.stars { font-size: 11px; color: var(--gold); margin-left: 6px; }
+.parrow {
+  font-size: 13px;
+  color: #bbb;
+  flex-shrink: 0;
+  margin-top: 4px;
+  transition: transform .25s;
+}
+.pcard.open .parrow { transform: rotate(180deg); color: var(--green); }
+.panel {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 16px 18px 18px 58px;
+}
+.pcard.open .panel { display: block; }
+.ans-box {
+  background: var(--green-bg);
+  border-left: 3px solid var(--green);
+  border-radius: 0 8px 8px 0;
+  padding: 11px 16px;
+  margin-bottom: 10px;
+}
+.ans-box .alabel {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .13em; text-transform: uppercase;
+  color: var(--green); margin-bottom: 5px;
+}
+.ans-box p { font-size: 13px; line-height: 1.8; color: #145a30; }
+.sol-box {
+  background: var(--amber-bg);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 11px 16px;
+  margin-bottom: 10px;
+}
+.sol-box .slabel {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .13em; text-transform: uppercase;
+  color: #7a4f00; margin-bottom: 5px;
+}
+.sol-box p { font-size: 13px; line-height: 1.85; color: #5a3a00; }
+.step { display: block; padding-left: 10px; border-left: 2px solid #e5c87a; margin: 3px 0; }
+.tok-hint {
+  background: var(--blue-bg);
+  border-left: 3px solid #3b82f6;
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-top: 8px;
+}
+.tok-hint .thlabel {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: #1d4ed8; margin-bottom: 4px;
+}
+.tok-hint p { font-size: 12px; line-height: 1.65; color: var(--blue); }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.key-box {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 10px 0;
+  font-size: 13.5px;
+  line-height: 1.8;
+}
+.key-box strong { color: var(--red); font-family: 'JetBrains Mono', monospace; }
+.quad-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 2px 9px;
+  border-radius: 12px;
+  margin-right: 4px;
+}
+.q1 { background: #e8f5ed; color: #1a6b3a; }
+.q2 { background: #fdeee9; color: #c0392b; }
+.q3 { background: #fef3c7; color: #92400e; }
+.q4 { background: #e8f0fb; color: #1e3a5f; }
+/* ══════════════════════════════
+   네비게이션
+══════════════════════════════ */
+#nav {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 999;
+  background: rgba(26,26,46,.92);
+  border: 1px solid rgba(255,255,255,.14);
+  backdrop-filter: blur(14px);
+  padding: 8px 18px;
+  border-radius: 50px;
+}
+#nav button {
+  background: none;
+  border: none;
+  color: var(--cream);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 18px;
+  transition: background .18s;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+#nav button:hover { background: rgba(255,255,255,.12); }
+#nav button:disabled { opacity: .3; cursor: default; }
+#ctr {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  min-width: 52px;
+  text-align: center;
+}
+#pbar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: var(--gold);
+  transition: width .35s;
+  z-index: 9999;
+}
+#hint {
+  position: fixed;
+  bottom: 68px; right: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.2);
+  letter-spacing: .07em;
+}
+</style>
+</head>
+<body>
+<div id="pbar"></div>
+<p id="hint">← → 이동 &nbsp;|&nbsp; 문제 클릭 → 풀이</p>
+<div id="deck">
+
+<!-- ══ S0 표지 ══ -->
+<div class="slide active cover-slide">
+  <p class="cover-eyebrow">II. 삼각함수 · Math II</p>
+  <h1>삼각<em>함수</em></h1>
+  <p class="cover-desc">교과서 전 개념·전 문제 수록<br>클릭하면 풀이가 열립니다 &nbsp;·&nbsp; TOK 사고 포인트 포함</p>
+  <div class="tag-row">
+    <span class="tag">일반각·호도법</span>
+    <span class="tag">삼각함수의 정의</span>
+    <span class="tag">삼각함수의 그래프</span>
+    <span class="tag">부채꼴</span>
+    <span class="tag">✓ 풀이 수록</span>
+  </div>
+</div>
+
+<!-- ══ S1 섹션 01 ══ -->
+<div class="slide section-slide" style="background:#c0392b;">
+  <div class="section-bg-num">01</div>
+  <p class="section-eyebrow">SECTION 01</p>
+  <h2>일반각과 호도법</h2>
+  <p>0°~360°를 넘어서는 각의 확장 &nbsp;·&nbsp; 라디안이라는 새 단위</p>
+</div>
+
+<!-- ══ S2 일반각 ══ -->
+<div class="slide concept-slide">
+  <div class="concept-left">
+    <p class="eyebrow">정의</p>
+    <h3>일반각</h3>
+    <div class="def-box">
+      평면 위 두 반직선 OX, OP에 대하여 ∠XOP의 크기는 <strong style="color:var(--gold);">OX(시초선)</strong>의 위치에서 <strong style="color:var(--gold);">OP(동경)</strong>가 회전한 양으로 정한다.<br><br>
+      반시계방향: <strong style="color:var(--gold);">양(+)의 방향</strong><br>
+      시계방향: <strong style="color:var(--gold);">음(−)의 방향</strong>
+    </div>
+    <div class="def-box" style="margin-top:10px;">
+      동경 OP가 나타내는 일반각
+      <span class="formula">360° × n + a° &nbsp; (n은 정수)</span>
+      같은 동경이라도 회전 수(n)에 따라 각의 크기는 무수히 많다.
+    </div>
+    <ul class="prop-list" style="margin-top:14px;">
+      <li><span class="pn">1</span><span>390° = 360°×1+30°, 750°=360°×2+30°, −330°=360°×(−1)+30° &nbsp;→ 모두 같은 동경</span></li>
+      <li><span class="pn">2</span><span>좌표평면에서 시초선은 보통 <strong>x축의 양의 부분</strong></span></li>
+    </ul>
+    <div class="tok dark" style="margin-top:16px;">
+      <div class="tok-label">TOK</div>
+      <p>피겨스케이팅의 트리플 악셀은 3바퀴 이상 회전한다. "360°를 넘는 각"이라는 개념은 왜 필요해졌을까? 수학은 현실의 필요에 의해 확장되는가, 아니면 그 자체의 논리로 확장되는가?</p>
+    </div>
+  </div>
+  <div class="concept-right">
+    <p class="eyebrow dark">사분면의 각</p>
+    <h3>일반각과 사분면</h3>
+    <p style="font-size:13.5px;color:#555;line-height:1.85;margin-bottom:14px;">
+      좌표평면에서 x축의 양의 부분을 시초선으로 할 때, 동경 OP가 제1·2·3·4사분면 중 어디에 있느냐에 따라 그 각을 <strong>제n사분면의 각</strong>이라 한다.
+    </p>
+    <div class="graph-box">
+      <svg viewBox="0 0 300 300" width="280" height="280" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="150" cy="150" r="110" fill="none" stroke="#ddd8ce" stroke-width="1"/>
+        <path d="M150,150 L260,150 A110,110 0 0,0 150,40 Z" fill="#e8f0fb" opacity=".8"/>
+        <path d="M150,150 L150,40 A110,110 0 0,0 40,150 Z" fill="#fdeee9" opacity=".8"/>
+        <path d="M150,150 L40,150 A110,110 0 0,0 150,260 Z" fill="#fef3c7" opacity=".8"/>
+        <path d="M150,150 L150,260 A110,110 0 0,0 260,150 Z" fill="#e8f5ed" opacity=".8"/>
+        <line x1="20" y1="150" x2="280" y2="150" stroke="#999" stroke-width="1.3"/>
+        <line x1="150" y1="20" x2="150" y2="280" stroke="#999" stroke-width="1.3"/>
+        <text x="205" y="95" font-size="13" font-weight="700" fill="#1e3a5f">제1사분면</text>
+        <text x="55" y="95" font-size="13" font-weight="700" fill="#c0392b">제2사분면</text>
+        <text x="50" y="215" font-size="13" font-weight="700" fill="#92400e">제3사분면</text>
+        <text x="195" y="215" font-size="13" font-weight="700" fill="#1a6b3a">제4사분면</text>
+        <text x="265" y="146" font-size="11" fill="#888">x</text>
+        <text x="155" y="30" font-size="11" fill="#888">y</text>
+      </svg>
+    </div>
+    <table class="cmp">
+      <thead><tr><th>각</th><th>계산</th><th>사분면</th></tr></thead>
+      <tbody>
+        <tr><td>490°</td><td>360°×1+130°</td><td><span class="quad-tag q2">제2사분면</span></td></tr>
+        <tr><td>−780°</td><td>360°×(−2)−60°</td><td><span class="quad-tag q4">제4사분면</span></td></tr>
+      </tbody>
+    </table>
+    <div class="tok" style="margin-top:12px;">
+      <div class="tok-label">생각 톡톡</div>
+      <p>어느 사분면에도 속하지 않는 동경은 어디에 위치할까? (힌트: 좌표축 위)</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S3 호도법 ══ -->
+<div class="slide concept-slide">
+  <div class="concept-left">
+    <p class="eyebrow">새로운 단위</p>
+    <h3>호도법</h3>
+    <div class="def-box">
+      반지름 r인 원에서 길이 r인 호 AB에 대한 중심각의 크기 a°는<br>
+      <span class="formula">r : 2πr = a° : 360°</span>
+      r에 관계없이 <strong style="color:var(--gold);">a° = 180°/π</strong>로 항상 일정하다.
+    </div>
+    <div class="def-box" style="margin-top:10px;">
+      이 일정한 각 180°/π를 <strong style="color:var(--gold);">1라디안</strong>이라 하고, 이를 단위로 각을 나타내는 방법을 <strong style="color:var(--gold);">호도법</strong>이라 한다.
+      <span class="formula" style="font-size:15px;">1라디안 = 180°/π &nbsp;&nbsp; 1° = π/180 라디안</span>
+    </div>
+    <div class="fml dark" style="margin-top:10px;">45° = 45×π/180 = π/4</div>
+    <div class="fml dark">−5/6π = −5/6π × 180°/π = −150°</div>
+    <div class="tok dark" style="margin-top:14px;">
+      <div class="tok-label">생각 톡톡</div>
+      <p>π는 몇 도(°)일까? &nbsp;|&nbsp; 라디안은 "단위가 없는 것처럼" 실수로 쓴다 — 각도에 단위가 없다는 것은 무엇을 의미하는가?</p>
+    </div>
+  </div>
+  <div class="concept-right">
+    <p class="eyebrow dark">부채꼴의 호의 길이와 넓이</p>
+    <h3>l = rθ, S = ½r²θ</h3>
+    <div class="graph-box">
+      <svg viewBox="0 0 260 220" width="260" height="220" xmlns="http://www.w3.org/2000/svg">
+        <path d="M130,150 L220,150 A90,90 0 0,0 165.6,66.2 Z" fill="#e8f5ed" stroke="#1a6b3a" stroke-width="1.5"/>
+        <line x1="40" y1="150" x2="260" y2="150" stroke="#ddd" stroke-width="1"/>
+        <line x1="130" y1="150" x2="220" y2="150" stroke="#1a6b3a" stroke-width="2"/>
+        <line x1="130" y1="150" x2="165.6" y2="66.2" stroke="#1a6b3a" stroke-width="2"/>
+        <path d="M170,150 A40,40 0 0,0 154,113.5" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+        <text x="150" y="140" font-size="13" fill="#c0392b">θ</text>
+        <text x="175" y="146" font-size="13" fill="#1a6b3a">r</text>
+        <text x="185" y="90" font-size="13" fill="#1a6b3a" font-weight="700">l</text>
+        <text x="150" y="115" font-size="13" fill="#333" font-weight="700">S</text>
+        <text x="118" y="153" font-size="12" fill="#888">O</text>
+      </svg>
+    </div>
+    <div class="key-box">
+      반지름 r, 중심각 θ(라디안)인 부채꼴의 호의 길이 l과 넓이 S:
+      <div class="fml" style="margin-top:8px;">l = rθ &nbsp;&nbsp;&nbsp; S = ½r²θ = ½rl</div>
+      <span style="font-size:12px;color:#888;">※ θ의 단위는 반드시 라디안!</span>
+    </div>
+    <p style="font-size:13px;color:#666;margin-top:10px;">예) r=3, θ=π/6 → l = 3×π/6 = π/2, &nbsp; S = ½×9×π/6 = 3π/4</p>
+    <div class="tok" style="margin-top:14px;">
+      <div class="tok-label">TOK 포인트</div>
+      <p>정사각형 색종이를 접어 펼치면 중심각이 약 57°인 부채꼴이 된다(1라디안≈57.3°). 종이 접기라는 물리적 행위가 수학적 상수를 "보여줄" 수 있는가?</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S4 Section01 문제 ══ -->
+<div class="slide prob-slide">
+  <div class="prob-head">
+    <span class="pbadge">01 일반각과 호도법</span>
+    <h3>문제 1 · 2 · 3 · 4 · 5 · 6 · 7</h3>
+  </div>
+  <div class="prob-body">
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb0">1</div>
+        <div class="pq"><strong>문제 1</strong><span class="stars">★☆☆</span><br>시초선 OX에서 크기가 다음과 같은 각을 나타내는 동경 OP를 그리시오.<br>(1) 50° &nbsp; (2) 210° &nbsp; (3) −70° &nbsp; (4) −190°</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) 50°: x축 양의 방향에서 반시계로 50° &nbsp;→ 제1사분면</span>
+          <span class="step">(2) 210°: 반시계로 210° &nbsp;→ 제3사분면</span>
+          <span class="step">(3) −70°: 시계방향으로 70° &nbsp;→ 제4사분면</span>
+          <span class="step">(4) −190°: 시계방향으로 190°, 즉 반시계 170°와 같은 위치 &nbsp;→ 제2사분면</span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb0">2</div>
+        <div class="pq"><strong>문제 2</strong><span class="stars">★☆☆</span><br>다음 각의 동경이 나타내는 일반각을 360°×n+a°의 꼴로 나타내시오. (단, n은 정수, 0°≤a°&lt;360°)<br>(1) 80° &nbsp; (2) 560° &nbsp; (3) −250° &nbsp; (4) −1500°</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) 360°×n+80° &nbsp;|&nbsp; (2) 360°×n+200° &nbsp;|&nbsp; (3) 360°×n+110° &nbsp;|&nbsp; (4) 360°×n+300°</p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) 80° = 360°×0+80° → <strong>360°×n+80°</strong></span>
+          <span class="step">(2) 560° = 360°×1+200° → <strong>360°×n+200°</strong></span>
+          <span class="step">(3) −250° = 360°×(−1)+110° → <strong>360°×n+110°</strong></span>
+          <span class="step">(4) −1500° = 360°×(−5)+300° &nbsp;(360×(−5)=−1800, −1500−(−1800)=300) → <strong>360°×n+300°</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">3</div>
+        <div class="pq"><strong>문제 3</strong><span class="stars">★★☆</span> &nbsp;크기가 다음과 같은 각은 제몇 사분면의 각인지 말하시오.<br>(1) 530° &nbsp; (2) 1160° &nbsp; (3) −395° &nbsp; (4) −840°</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) <span class="quad-tag q2">제2사분면</span> (2) <span class="quad-tag q1">제1사분면</span> (3) <span class="quad-tag q4">제4사분면</span> (4) <span class="quad-tag q3">제3사분면</span></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) 530°−360°=170° → 90°&lt;170°&lt;180° → <strong>제2사분면</strong></span>
+          <span class="step">(2) 1160°−360°×3=80° → 0°&lt;80°&lt;90° → <strong>제1사분면</strong></span>
+          <span class="step">(3) −395°=360°×(−2)+325° → 270°&lt;325°&lt;360° → <strong>제4사분면</strong></span>
+          <span class="step">(4) −840°=360°×(−3)+240° → 180°&lt;240°&lt;270° → <strong>제3사분면</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb0">4</div>
+        <div class="pq"><strong>문제 4</strong><span class="stars">★☆☆</span><br>그림에서 □ 안에 알맞은 각을 육십분법 또는 호도법으로 나타내시오.<br>135°=□, ?=7/6π, −30°=?</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>135°=<strong>3π/4</strong> &nbsp;|&nbsp; 7/6π=<strong>210°</strong> &nbsp;|&nbsp; −30°=<strong>−π/6</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">135° = 135×π/180 = <strong>3π/4</strong></span>
+          <span class="step">7/6π = 7/6×180° = <strong>210°</strong></span>
+          <span class="step">−30° = −30×π/180 = <strong>−π/6</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">5</div>
+        <div class="pq"><strong>문제 5</strong><span class="stars">★★☆</span> &nbsp;다음 각의 동경이 나타내는 일반각을 2nπ+θ의 꼴로 나타내시오. (단, n은 정수, 0≤θ&lt;2π)<br>(1) 5π &nbsp; (2) 20/3π &nbsp; (3) −7/4π &nbsp; (4) −12/5π</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) 2nπ+π &nbsp;|&nbsp; (2) 2nπ+2π/3 &nbsp;|&nbsp; (3) 2nπ+π/4 &nbsp;|&nbsp; (4) 2nπ+8π/5</p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) 5π = 2π×2+π → <strong>2nπ+π</strong></span>
+          <span class="step">(2) 20/3π = 2π×3+2/3π → <strong>2nπ+2π/3</strong></span>
+          <span class="step">(3) −7/4π = 2π×(−1)+π/4 → <strong>2nπ+π/4</strong></span>
+          <span class="step">(4) −12/5π = 2π×2+8/5π &nbsp;(2π×2=20/5π, −12/5π−(−20/5π)... 재계산: −12/5π+4π=8/5π) → <strong>2nπ+8π/5</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">6</div>
+        <div class="pq"><strong>문제 6</strong><span class="stars">★★☆</span> &nbsp;반지름의 길이가 6이고 중심각의 크기가 π/3인 부채꼴의 호의 길이와 넓이를 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>호의 길이 l = <strong>2π</strong>, &nbsp;넓이 S = <strong>6π</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">l = rθ = 6×π/3 = <strong>2π</strong></span>
+          <span class="step">S = ½r²θ = ½×6²×π/3 = ½×36×π/3 = <strong>6π</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">7</div>
+        <div class="pq"><strong>문제 7</strong><span class="stars">★★☆</span> &nbsp;호의 길이가 π이고 넓이가 2π인 부채꼴의 반지름의 길이와 중심각의 크기를 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>반지름 r = <strong>4</strong>, &nbsp;중심각 θ = <strong>π/4</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">S = ½rl 이므로 2π = ½×r×π → r = <strong>4</strong></span>
+          <span class="step">l = rθ 이므로 π = 4×θ → θ = <strong>π/4</strong></span>
+        </p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S5 섹션 02 ══ -->
+<div class="slide section-slide" style="background:#1a6b3a;">
+  <div class="section-bg-num">02</div>
+  <p class="section-eyebrow">SECTION 02</p>
+  <h2>삼각함수</h2>
+  <p>일반각으로 확장된 sin θ, cos θ, tan θ의 정의</p>
+</div>
+
+<!-- ══ S6 삼각함수 정의 ══ -->
+<div class="slide concept-slide">
+  <div class="concept-left">
+    <p class="eyebrow">확장</p>
+    <h3>삼각함수의 정의</h3>
+    <div class="def-box">
+      중학교: 0°~90°의 삼각비는 <strong style="color:var(--gold);">직각삼각형의 크기와 무관</strong>하게 일정했다 (∠A 공통인 △ABC, △ADE에서 sinA, cosA, tanA 값은 서로 같다).<br><br>
+      고등: 이 개념을 <strong style="color:var(--gold);">일반각</strong>으로 확장한다.
+    </div>
+    <div class="def-box" style="margin-top:10px;">
+      원점 O 중심, 반지름 r인 원 위의 점 P(x,y), 동경 OP가 나타내는 일반각 θ에 대하여
+      <span class="formula" style="font-size:16px;">sinθ = y/r &nbsp; cosθ = x/r &nbsp; tanθ = y/x (x≠0)</span>
+      이 셋을 통틀어 θ에 대한 <strong style="color:var(--gold);">삼각함수</strong>라 한다.
+    </div>
+    <div class="tok dark" style="margin-top:14px;">
+      <div class="tok-label">생각 톡톡</div>
+      <p>동경이 x축 위에 있을 때, sinθ의 값은 얼마일까?</p>
+    </div>
+  </div>
+  <div class="concept-right">
+    <p class="eyebrow dark">단위원 위의 정의</p>
+    <h3>sinθ = y/r, cosθ = x/r, tanθ = y/x</h3>
+    <div class="graph-box">
+      <svg viewBox="0 0 300 260" width="300" height="260" xmlns="http://www.w3.org/2000/svg">
+        <line x1="20" y1="180" x2="280" y2="180" stroke="#999" stroke-width="1.2"/>
+        <line x1="150" y1="20" x2="150" y2="250" stroke="#999" stroke-width="1.2"/>
+        <circle cx="150" cy="180" r="110" fill="none" stroke="#ddd8ce" stroke-width="1.3"/>
+        <line x1="150" y1="180" x2="95" y2="84.7" stroke="#c0392b" stroke-width="2.2"/>
+        <line x1="95" y1="180" x2="95" y2="84.7" stroke="#1a6b3a" stroke-dasharray="4,3" stroke-width="1.5"/>
+        <line x1="150" y1="180" x2="95" y2="180" stroke="#1e3a5f" stroke-dasharray="4,3" stroke-width="1.5"/>
+        <path d="M175,180 A25,25 0 0,0 165.5,159.4" fill="none" stroke="#c89a2a" stroke-width="1.5"/>
+        <text x="178" y="172" font-size="12" fill="#c89a2a">θ</text>
+        <circle cx="95" cy="84.7" r="4" fill="#c0392b"/>
+        <text x="72" y="76" font-size="13" font-weight="700" fill="#c0392b">P(x, y)</text>
+        <text x="118" y="176" font-size="12" fill="#1e3a5f">x</text>
+        <text x="100" y="135" font-size="12" fill="#1a6b3a">y</text>
+        <text x="115" y="140" font-size="12" fill="#333">r</text>
+        <text x="272" y="176" font-size="11" fill="#888">x</text>
+        <text x="155" y="30" font-size="11" fill="#888">y</text>
+        <text x="140" y="195" font-size="11" fill="#888">O</text>
+      </svg>
+    </div>
+    <p style="font-size:12px;color:#888;margin-bottom:14px;">r의 값에 관계없이 θ의 값에 따라 y/r, x/r, y/x는 각각 하나로 정해진다.</p>
+    <div class="key-box">
+      <strong>예제 1</strong> — P(3, −4)를 지나는 동경이 나타내는 각 θ<br>
+      OP = √(3²+(−4)²) = 5<br>
+      sinθ = <strong>−4/5</strong>, cosθ = <strong>3/5</strong>, tanθ = <strong>−4/3</strong>
+    </div>
+    <div class="key-box" style="margin-top:10px;">
+      <strong>예제 2</strong> — θ = 4/3π일 때 (반지름 1인 원에서)<br>
+      OH=cos(π/3)=1/2, PH=sin(π/3)=√3/2, 제3사분면이므로 P(−1/2, −√3/2)<br>
+      sinθ = <strong>−√3/2</strong>, cosθ = <strong>−1/2</strong>, tanθ = <strong>√3</strong>
+    </div>
+    <div class="tok" style="margin-top:12px;">
+      <div class="tok-label">TOK 포인트</div>
+      <p>sin, cos, tan 기호는 17~18세기에 여러 수학자(핀케, 건터, 오일러)를 거쳐 정착됐다. 표기법의 발명과 개념의 발견은 어떻게 다른가?</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S7 부호와 관계 ══ -->
+<div class="slide concept-slide">
+  <div class="concept-left">
+    <p class="eyebrow">부호</p>
+    <h3>삼각함수 값의 부호</h3>
+    <p style="font-size:13px;color:rgba(245,240,232,.7);line-height:1.8;margin-bottom:12px;">동경 위의 점 P(x,y)의 부호에 따라 결정되므로, θ를 나타내는 동경이 위치한 <strong style="color:var(--gold);">사분면</strong>에 따라 정해진다.</p>
+    <ul class="prop-list">
+      <li><span class="pn">1</span><span><strong style="color:var(--gold);">제1사분면</strong>: sin+, cos+, tan+ (모두 양수)</span></li>
+      <li><span class="pn">2</span><span><strong style="color:var(--gold);">제2사분면</strong>: sin+, cos−, tan−</span></li>
+      <li><span class="pn">3</span><span><strong style="color:var(--gold);">제3사분면</strong>: sin−, cos−, tan+</span></li>
+      <li><span class="pn">4</span><span><strong style="color:var(--gold);">제4사분면</strong>: sin−, cos+, tan−</span></li>
+    </ul>
+    <div class="fml dark" style="margin-top:12px;">110°는 제2사분면 → sin110°&gt;0, cos110°&lt;0, tan110°&lt;0</div>
+    <div class="fml dark">10/3π는 제3사분면 → sin&lt;0, cos&lt;0, tan&gt;0</div>
+  </div>
+  <div class="concept-right">
+    <p class="eyebrow dark">삼각함수 사이의 관계</p>
+    <h3>tanθ = sinθ/cosθ, &nbsp; sin²θ+cos²θ=1</h3>
+    <div class="key-box">
+      단위원(반지름 1) 위의 점 P(x,y): x=cosθ, y=sinθ<br>
+      tanθ=y/x 이므로 <strong>tanθ = sinθ/cosθ</strong><br>
+      x²+y²=1 이므로 <strong>sin²θ+cos²θ=1</strong>
+    </div>
+    <div class="graph-box" style="margin-top:12px;">
+      <svg viewBox="0 0 260 260" width="240" height="240" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="130" cy="130" r="90" fill="none" stroke="#ddd" stroke-width="1"/>
+        <path d="M130,130 L220,130 A90,90 0 0,0 130,40 Z" fill="#e8f0fb"/>
+        <path d="M130,130 L130,40 A90,90 0 0,0 40,130 Z" fill="#fdeee9"/>
+        <path d="M130,130 L40,130 A90,90 0 0,0 130,220 Z" fill="#fef3c7"/>
+        <path d="M130,130 L130,220 A90,90 0 0,0 220,130 Z" fill="#e8f5ed"/>
+        <line x1="20" y1="130" x2="240" y2="130" stroke="#999" stroke-width="1"/>
+        <line x1="130" y1="20" x2="130" y2="240" stroke="#999" stroke-width="1"/>
+        <text x="165" y="90" font-size="11" fill="#1e3a5f">sin+ cos+ tan+</text>
+        <text x="45" y="90" font-size="11" fill="#c0392b">sin+ cos− tan−</text>
+        <text x="42" y="175" font-size="11" fill="#92400e">sin− cos− tan+</text>
+        <text x="155" y="175" font-size="11" fill="#1a6b3a">sin− cos+ tan−</text>
+      </svg>
+    </div>
+    <div class="key-box" style="margin-top:12px;">
+      <strong>예제 3</strong> — θ가 제2사분면, sinθ=4/5<br>
+      cos²θ=1−16/25=9/25, 제2사분면이므로 cosθ&lt;0 → cosθ=<strong>−3/5</strong>, tanθ=<strong>−4/3</strong>
+    </div>
+    <div class="key-box" style="margin-top:10px;">
+      <strong>예제 4</strong> — sinθ+cosθ=1/2일 때 sinθcosθ = ?<br>
+      양변 제곱: 1+2sinθcosθ=1/4 → sinθcosθ=<strong>−3/8</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S8 Section02 문제 ══ -->
+<div class="slide prob-slide">
+  <div class="prob-head">
+    <span class="pbadge">02 삼각함수</span>
+    <h3>문제 1 · 2 · 3 · 4 · 5 · 6 &nbsp;+ 탐구·융합</h3>
+  </div>
+  <div class="prob-body">
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">1</div>
+        <div class="pq"><strong>문제 1</strong><span class="stars">★★☆</span> &nbsp;원점 O와 점 P(−√3, 1)을 지나는 동경 OP가 나타내는 각의 크기를 θ라 할 때, sinθ, cosθ, tanθ의 값을 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>sinθ=<strong>1/2</strong>, cosθ=<strong>−√3/2</strong>, tanθ=<strong>−√3/3</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">OP = √{(−√3)²+1²} = √4 = 2</span>
+          <span class="step">sinθ = 1/2, &nbsp; cosθ = −√3/2, &nbsp; tanθ = 1/(−√3) = <strong>−√3/3</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">2</div>
+        <div class="pq"><strong>문제 2</strong><span class="stars">★★☆</span> &nbsp;각 θ가 다음과 같을 때, sinθ, cosθ, tanθ의 값을 구하시오.<br>(1) 2/3π &nbsp; (2) −π/4 &nbsp; (3) 390°</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) 2/3π=120°: sinθ=<strong>√3/2</strong>, cosθ=<strong>−1/2</strong>, tanθ=<strong>−√3</strong></span>
+          <span class="step">(2) −π/4=−45°: sinθ=<strong>−√2/2</strong>, cosθ=<strong>√2/2</strong>, tanθ=<strong>−1</strong></span>
+          <span class="step">(3) 390°=360°+30°: sinθ=<strong>1/2</strong>, cosθ=<strong>√3/2</strong>, tanθ=<strong>√3/3</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">3</div>
+        <div class="pq"><strong>문제 3</strong><span class="stars">★★☆</span> &nbsp;각 θ가 다음과 같을 때, sinθ, cosθ, tanθ의 값의 부호를 말하시오.<br>(1) 220° &nbsp; (2) 430° &nbsp; (3) 11/6π &nbsp; (4) −5/4π</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) sin−,cos−,tan+ &nbsp;(2) 모두+ &nbsp;(3) sin−,cos+,tan− &nbsp;(4) sin+,cos−,tan−</p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) 220°: <span class="quad-tag q3">제3사분면</span> → sin−, cos−, tan+</span>
+          <span class="step">(2) 430°−360°=70°: <span class="quad-tag q1">제1사분면</span> → 모두 +</span>
+          <span class="step">(3) 11/6π=330°: <span class="quad-tag q4">제4사분면</span> → sin−, cos+, tan−</span>
+          <span class="step">(4) −5/4π+2π=3/4π=135°: <span class="quad-tag q2">제2사분면</span> → sin+, cos−, tan−</span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">4</div>
+        <div class="pq"><strong>문제 4</strong><span class="stars">★★☆</span> &nbsp;다음을 만족시키는 θ는 제몇 사분면의 각인지 말하시오.<br>(1) sinθ&gt;0, cosθ&lt;0 &nbsp; (2) sinθtanθ&gt;0</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) <strong>제2사분면</strong> &nbsp;|&nbsp; (2) <strong>제1사분면 또는 제4사분면</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) sin+, cos− 조합은 <strong>제2사분면</strong>뿐</span>
+          <span class="step">(2) sinθ와 tanθ가 같은 부호. 제1사분면: sin+,tan+ (곱+) ✓ &nbsp;제2사분면: sin+,tan− (곱−) &nbsp;제3사분면: sin−,tan+ (곱−) &nbsp;제4사분면: sin−,tan− (곱+) ✓</span>
+          <span class="step">→ <strong>제1사분면 또는 제4사분면</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">5</div>
+        <div class="pq"><strong>문제 5</strong><span class="stars">★★★</span> &nbsp;θ가 제4사분면의 각이고 cosθ=1/3일 때, sinθ와 tanθ의 값을 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>sinθ=<strong>−2√2/3</strong>, tanθ=<strong>−2√2</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">sin²θ = 1−cos²θ = 1−1/9 = 8/9</span>
+          <span class="step">제4사분면이므로 sinθ&lt;0 → sinθ = <strong>−2√2/3</strong></span>
+          <span class="step">tanθ = sinθ/cosθ = (−2√2/3)÷(1/3) = <strong>−2√2</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">6</div>
+        <div class="pq"><strong>문제 6</strong><span class="stars">★★★</span> &nbsp;θ가 제1사분면의 각이고 sinθ−cosθ=√3/3일 때, 다음 식의 값을 구하시오.<br>(1) sinθcosθ &nbsp; (2) sinθ+cosθ</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) sinθcosθ = <strong>1/3</strong> &nbsp;|&nbsp; (2) sinθ+cosθ = <strong>√15/3</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) (sinθ−cosθ)² = 1−2sinθcosθ = 1/3 → sinθcosθ = <strong>1/3</strong></span>
+          <span class="step">(2) (sinθ+cosθ)² = 1+2sinθcosθ = 1+2/3 = 5/3</span>
+          <span class="step">제1사분면이므로 sinθ+cosθ&gt;0 → <strong>√15/3</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">탐</div>
+        <div class="pq"><strong>탐구 &amp; 융합</strong><span class="stars">★★★</span> &nbsp;빛의 굴절과 스넬 법칙: sinθ₁/sinθ₂ = n₂/n₁<br>
+        1. 공기(n=1), 물(n=4/3), 입사각 θ₁=π/4일 때 sinθ₂는?<br>
+        2. 입사각 π/3, 굴절각 π/6일 때 이 물질의 굴절률은?</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>1. sinθ₂ = <strong>3√2/8</strong> &nbsp;|&nbsp; 2. 굴절률 = <strong>√3</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">1. sinθ₁/sinθ₂ = n₂/n₁ = (4/3)/1 → sinθ₂ = sinθ₁×(3/4) = (√2/2)×(3/4) = <strong>3√2/8</strong></span>
+          <span class="step">2. n₂/n₁ = sinθ₁/sinθ₂ = sin(π/3)/sin(π/6) = (√3/2)/(1/2) = √3 → n₂ = <strong>√3</strong></span>
+        </p></div>
+        <div class="tok-hint"><div class="thlabel">TOK</div><p>물속 물고기가 실제보다 크고 떠 보이는 것은 빛이 삼각함수 비율로 정확히 굴절하기 때문이다. 우리가 "보는" 세계와 수식이 기술하는 세계 중 무엇이 더 참인가?</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S9 섹션 03 ══ -->
+<div class="slide section-slide" style="background:#4a1580;">
+  <div class="section-bg-num">03</div>
+  <p class="section-eyebrow">SECTION 03</p>
+  <h2>삼각함수의 그래프</h2>
+  <p>y = sin x, y = cos x — 주기함수의 성질과 변환</p>
+</div>
+
+<!-- ══ S10 그래프의 성질 ══ -->
+<div class="slide concept-slide">
+  <div class="concept-left">
+    <p class="eyebrow">그래프</p>
+    <h3>사인함수·코사인함수의<br>그래프</h3>
+    <div class="def-box">
+      단위원 위의 점 P(x,y): sinθ=y, cosθ=x<br>
+      θ가 변할 때 sinθ, cosθ의 값의 변화는 각각 점 P의 y좌표, x좌표의 변화와 같다.
+    </div>
+    <ul class="prop-list" style="margin-top:14px;">
+      <li><span class="pn">1</span><span>정의역: <strong>실수 전체</strong>, 치역: <strong>{y|−1≤y≤1}</strong></span></li>
+      <li><span class="pn">2</span><span>y=sinx: 원점 대칭 → <strong>sin(−x) = −sinx</strong></span></li>
+      <li><span class="pn">3</span><span>y=cosx: y축 대칭 → <strong>cos(−x) = cosx</strong></span></li>
+      <li><span class="pn">4</span><span>주기 <strong>2π</strong>인 주기함수 → sin(x+2nπ)=sinx, cos(x+2nπ)=cosx</span></li>
+    </ul>
+    <div class="tok dark" style="margin-top:14px;">
+      <div class="tok-label">생각 톡톡</div>
+      <p>y=sinx와 y=cosx의 최댓값과 최솟값은 각각 얼마일까?</p>
+    </div>
+  </div>
+  <div class="concept-right">
+    <p class="eyebrow dark">그래프 &amp; 변환</p>
+    <h3>y = sinx, y = cosx</h3>
+    <div class="graph-box">
+      <svg viewBox="0 0 660 220" width="100%" height="150" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="110" x2="655" y2="110" stroke="#ccc" stroke-width="1"/>
+        <line x1="330" y1="15" x2="330" y2="205" stroke="#ccc" stroke-width="1"/>
+        <line x1="330" y1="40" x2="642" y2="40" stroke="#eee" stroke-dasharray="3,3"/>
+        <line x1="330" y1="180" x2="642" y2="180" stroke="#eee" stroke-dasharray="3,3"/>
+        <polyline points="18,110 44,75 70,49.4 96,40 122,49.4 148,75 174,110 200,145 226,170.6 252,180 278,170.6 304,145 330,110 356,75 382,49.4 408,40 434,49.4 460,75 486,110 512,145 538,170.6 564,180 590,170.6 616,145 642,110" fill="none" stroke="#c0392b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="595" y="35" font-size="12" fill="#c0392b" font-weight="700">y=sinx</text>
+        <text x="6" y="120" font-size="10" fill="#888">−1</text>
+        <text x="316" y="38" font-size="10" fill="#888">1</text>
+        <text x="90" y="122" font-size="10" fill="#888">−3π/2</text>
+        <text x="240" y="122" font-size="10" fill="#888">−π/2</text>
+        <text x="395" y="122" font-size="10" fill="#888">π/2</text>
+        <text x="545" y="122" font-size="10" fill="#888">3π/2</text>
+      </svg>
+    </div>
+    <div class="graph-box">
+      <svg viewBox="0 0 660 220" width="100%" height="150" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="110" x2="655" y2="110" stroke="#ccc" stroke-width="1"/>
+        <line x1="330" y1="15" x2="330" y2="205" stroke="#ccc" stroke-width="1"/>
+        <line x1="330" y1="40" x2="642" y2="40" stroke="#eee" stroke-dasharray="3,3"/>
+        <line x1="330" y1="180" x2="642" y2="180" stroke="#eee" stroke-dasharray="3,3"/>
+        <polyline points="18,40 44,49.4 70,75 96,110 122,145 148,170.6 174,180 200,170.6 226,145 252,110 278,75 304,49.4 330,40 356,49.4 382,75 408,110 434,145 460,170.6 486,180 512,170.6 538,145 564,110 590,75 616,49.4 642,40" fill="none" stroke="#1a6b3a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="595" y="35" font-size="12" fill="#1a6b3a" font-weight="700">y=cosx</text>
+        <text x="6" y="120" font-size="10" fill="#888">−1</text>
+        <text x="316" y="38" font-size="10" fill="#888">1</text>
+        <text x="150" y="122" font-size="10" fill="#888">−π</text>
+        <text x="480" y="122" font-size="10" fill="#888">π</text>
+      </svg>
+    </div>
+    <table class="cmp" style="margin-top:10px;">
+      <thead><tr><th>함수</th><th>치역</th><th>주기</th></tr></thead>
+      <tbody>
+        <tr><td>y = 2sinx</td><td>{y|−2≤y≤2}</td><td>2π</td></tr>
+        <tr><td>y = ⅔cosx</td><td>{y|−2/3≤y≤2/3}</td><td>2π</td></tr>
+        <tr><td>y = cos2x</td><td>{y|−1≤y≤1}</td><td>π</td></tr>
+        <tr><td>y = sin(x/2)</td><td>{y|−1≤y≤1}</td><td>4π</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:#888;margin-top:6px;">y=sin(ax), y=cos(ax)의 주기는 2π/|a| (a≠0)</p>
+  </div>
+</div>
+
+<!-- ══ S11 평행이동·대칭 공식 ══ -->
+<div class="slide concept-slide">
+  <div class="concept-left">
+    <p class="eyebrow">변환</p>
+    <h3>그래프의 평행이동</h3>
+    <div class="def-box">
+      y=f(x−a)+b: y=f(x)를 x축으로 a, y축으로 b만큼 평행이동
+      <span class="formula" style="font-size:15px;">y = sin(x−π/6)+1</span>
+      → y=sinx를 x축으로 π/6, y축으로 1만큼 이동. 치역 {y|0≤y≤2}, 주기 2π
+    </div>
+    <div class="def-box" style="margin-top:10px;">
+      <span class="formula" style="font-size:15px;">y = cos(x−π/3)−1</span>
+      → 치역 {y|−2≤y≤0}, 주기 2π
+    </div>
+    <div class="tok dark" style="margin-top:16px;">
+      <div class="tok-label">TOK</div>
+      <p>스위스 베른의 미술관(그림)은 사인함수 그래프를 본떠 설계됐다. 수학적 곡선이 "아름답다"고 느껴지는 것은 보편적 감각인가, 문화적으로 학습된 것인가?</p>
+    </div>
+  </div>
+  <div class="concept-right">
+    <p class="eyebrow dark">π만큼의 이동 · 대칭</p>
+    <h3>sin(π±x), cos(π±x), sin(π/2±x), cos(π/2±x)</h3>
+    <table class="cmp">
+      <thead><tr><th>공식</th><th>결과</th></tr></thead>
+      <tbody>
+        <tr><td>sin(π+x)</td><td>−sinx</td></tr>
+        <tr><td>cos(π+x)</td><td>−cosx</td></tr>
+        <tr><td>sin(π−x)</td><td>sinx</td></tr>
+        <tr><td>cos(π−x)</td><td>−cosx</td></tr>
+        <tr><td>sin(π/2+x)</td><td>cosx</td></tr>
+        <tr><td>cos(π/2+x)</td><td>−sinx</td></tr>
+        <tr><td>sin(π/2−x)</td><td>cosx</td></tr>
+        <tr><td>cos(π/2−x)</td><td>sinx</td></tr>
+      </tbody>
+    </table>
+    <div class="key-box" style="margin-top:12px;">
+      <strong>유도</strong>: y=sinx, y=cosx의 그래프를 x축으로 −π(또는 −π/2)만큼 평행이동하면 위 공식이 그래프의 겹침으로 확인된다.<br>
+      sin(π−x) = −sin(−x) = <strong>sinx</strong> &nbsp;(π+x 공식에 x 대신 −x 대입)
+    </div>
+    <div class="key-box" style="margin-top:10px;">
+      <strong>보기</strong><br>
+      sin(−π/4)=−sin(π/4)=−√2/2, &nbsp; cos(−π/3)=cos(π/3)=1/2<br>
+      sin(13/6π)=sin(2π+π/6)=1/2, &nbsp; cos(7/4π)=cos(2π−π/4)=√2/2
+    </div>
+    <div class="tok" style="margin-top:12px;">
+      <div class="tok-label">탐구 · 논쟁</div>
+      <p>sin(2/3π)를 은우는 sin(π/2+π/6)으로, 수연이는 sin(π−π/3)으로 구했다. 두 방법 모두 옳은가? — 답은 √3/2로 동일. 같은 값에 도달하는 서로 다른 경로들은 수학적으로 "같은 증명"인가?</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S12 Section03 문제 ══ -->
+<div class="slide prob-slide">
+  <div class="prob-head">
+    <span class="pbadge">03 삼각함수의 그래프</span>
+    <h3>문제 1 · 2 · 3 · 4 · 5 · 6</h3>
+  </div>
+  <div class="prob-body">
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb0">1</div>
+        <div class="pq"><strong>문제 1</strong><span class="stars">★☆☆</span><br>다음 삼각함수의 값을 구하시오.<br>(1) sin(−π/6) &nbsp; (2) cos(9/4π) &nbsp; (3) sin(5/3π) &nbsp; (4) cos(23/6π)</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) −1/2 &nbsp;(2) √2/2 &nbsp;(3) −√3/2 &nbsp;(4) √3/2</p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) sin(−π/6) = −sin(π/6) = <strong>−1/2</strong></span>
+          <span class="step">(2) cos(9/4π) = cos(2π+π/4) = cos(π/4) = <strong>√2/2</strong></span>
+          <span class="step">(3) sin(5/3π) = sin(2π−π/3) = sin(−π/3) = −sin(π/3) = <strong>−√3/2</strong></span>
+          <span class="step">(4) cos(23/6π) = cos(2π+11/6π) = cos(11/6π) = cos(−π/6) = cos(π/6) = <strong>√3/2</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb0">2</div>
+        <div class="pq"><strong>문제 2</strong><span class="stars">★☆☆</span><br>함수 y=⅔cosx의 치역과 주기를 구하고, 그래프를 그리시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>치역: <strong>{y|−2/3≤y≤2/3}</strong>, &nbsp;주기: <strong>2π</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">−1≤cosx≤1이므로 −2/3≤⅔cosx≤2/3 → 치역 {y|−2/3≤y≤2/3}</span>
+          <span class="step">⅔cosx=⅔cos(x+2π)이므로 주기는 <strong>2π</strong></span>
+          <span class="step">y=cosx의 그래프를 y축 방향으로 ⅔배 축소한 모양</span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">3</div>
+        <div class="pq"><strong>문제 3</strong><span class="stars">★★☆</span> &nbsp;함수 y=sin(x/2)의 치역과 주기를 구하고, 그래프를 그리시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>치역: <strong>{y|−1≤y≤1}</strong>, &nbsp;주기: <strong>4π</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">치역은 sinx와 같이 {y|−1≤y≤1}</span>
+          <span class="step">주기 = 2π/|1/2| = <strong>4π</strong> — y=sinx보다 가로로 2배 늘어난 그래프</span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">4</div>
+        <div class="pq"><strong>문제 4</strong><span class="stars">★★☆</span> &nbsp;함수 y=cos(x−π/3)−1의 치역과 주기를 구하고, 그래프를 그리시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>치역: <strong>{y|−2≤y≤0}</strong>, &nbsp;주기: <strong>2π</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">−1≤cos(x−π/3)≤1에서 −2≤cos(x−π/3)−1≤0 → 치역 {y|−2≤y≤0}</span>
+          <span class="step">y=cosx를 x축으로 π/3, y축으로 −1만큼 평행이동한 것이므로 주기는 <strong>2π</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">5</div>
+        <div class="pq"><strong>문제 5</strong><span class="stars">★★☆</span> &nbsp;다음 삼각함수의 값을 구하시오.<br>(1) sin(5/4π) &nbsp; (2) cos(7/6π) &nbsp; (3) sin(5/6π) &nbsp; (4) cos(2/3π)</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) −√2/2 &nbsp;(2) −√3/2 &nbsp;(3) 1/2 &nbsp;(4) −1/2</p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) sin(5π/4)=sin(π+π/4)=−sin(π/4)=<strong>−√2/2</strong></span>
+          <span class="step">(2) cos(7π/6)=cos(π+π/6)=−cos(π/6)=<strong>−√3/2</strong></span>
+          <span class="step">(3) sin(5π/6)=sin(π−π/6)=sin(π/6)=<strong>1/2</strong></span>
+          <span class="step">(4) cos(2π/3)=cos(π−π/3)=−cos(π/3)=<strong>−1/2</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">6</div>
+        <div class="pq"><strong>문제 6 〔탐구〕</strong><span class="stars">★★★</span> &nbsp;은우: "sin(π/2+π/6)으로 구하면 되겠네." &nbsp; 수연: "sin(π−π/3)로 구해도 되는데?"<br>(1) sin(2/3π)의 값을 두 학생의 방법으로 각각 구하시오.<br>(2) cos(3/4π)의 값을 여러 가지 방법으로 구하고, 자신의 방법을 설명하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) 두 방법 모두 <strong>√3/2</strong> &nbsp;|&nbsp; (2) <strong>−√2/2</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) 은우: sin(π/2+π/6) = cos(π/6) = <strong>√3/2</strong></span>
+          <span class="step">&nbsp;&nbsp;&nbsp;수연: sin(π−π/3) = sin(π/3) = <strong>√3/2</strong> — 두 방법 모두 결과가 같음을 확인</span>
+          <span class="step">(2) 방법1: cos(3π/4)=cos(π−π/4)=−cos(π/4)=<strong>−√2/2</strong></span>
+          <span class="step">&nbsp;&nbsp;&nbsp;방법2: cos(3π/4)=cos(π/2+π/4)=−sin(π/4)=<strong>−√2/2</strong> — 서로 다른 공식이라도 결과는 항상 일치</span>
+        </p></div>
+        <div class="tok-hint"><div class="thlabel">TOK</div><p>여러 방법으로 같은 답에 도달할 때, 우리는 그 답이 "더 확실하다"고 느낀다. 수학적 확실성은 방법의 다양성에서 오는가, 논리 자체에서 오는가?</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S13 TOK 마무리 ══ -->
+<div class="slide tok-slide">
+  <p style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;color:#60a5fa;margin-bottom:22px;">TOK · THEORY OF KNOWLEDGE</p>
+  <p class="big-q">각도는 <em>얼마나</em> 도는가, 아니면<br>얼마나 <em>먼</em> 것인가? — 호도법이 여는 질문</p>
+  <div class="tok-grid">
+    <div class="tok-card"><h4>360°는 왜 360인가</h4><p>육십분법의 360이라는 숫자는 고대 바빌로니아의 60진법에서 왔다. 반면 라디안은 원의 기하학 자체에서 "자연스럽게" 유도된다. 단위의 선택은 자의적인가, 필연적인가?</p></div>
+    <div class="tok-card"><h4>일반각의 무한성</h4><p>동경 하나가 나타내는 각은 무한히 많다(360°×n+a°). 하나의 "위치"에 무한한 "이름"이 대응할 수 있다는 사실은, 수학적 대상과 그 표현의 관계에 대해 무엇을 말해주는가?</p></div>
+    <div class="tok-card"><h4>파동과 삼각함수</h4><p>소리, 빛, 전파 등 모든 파동은 사인함수의 그래프로 분해될 수 있다(푸리에 해석의 토대). 서로 무관해 보이는 자연 현상들이 같은 수학적 형태를 공유하는 것은 우연인가, 발견인가?</p></div>
+    <div class="tok-card"><h4>스넬의 법칙과 예측력</h4><p>17세기에 발견된 굴절 법칙은 sinθ의 비율만으로 빛의 경로를 정확히 예측한다. 감각으로 확인하기 전에 수식이 먼저 답을 준다는 것은, 수학이 자연법칙 그 자체인지 아니면 자연을 기술하는 언어일 뿐인지에 대한 단서가 될 수 있는가?</p></div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<div id="nav">
+  <button id="prev" onclick="go(-1)" disabled>&#8592;</button>
+  <span id="ctr">1 / 14</span>
+  <button id="next" onclick="go(1)">&#8594;</button>
+</div>
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total = slides.length;
+let cur = 0;
+function go(dir) {
+  const nxt = cur + dir;
+  if (nxt < 0 || nxt >= total) return;
+  slides[cur].classList.remove('active');
+  cur = nxt;
+  slides[cur].classList.add('active');
+  const body = slides[cur].querySelector('.prob-body');
+  if (body) body.scrollTop = 0;
+  update();
+}
+function update() {
+  document.getElementById('ctr').textContent = cur + 1 + ' / ' + total;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === total - 1;
+  document.getElementById('pbar').style.width = ((cur + 1) / total * 100) + '%';
+}
+function tog(card) {
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  if (!wasOpen) {
+    const body = card.closest('.prob-body');
+    if (body) {
+      setTimeout(() => {
+        body.scrollTo({ top: card.offsetTop - 20, behavior: 'smooth' });
+      }, 60);
+    }
+  }
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1);
+});
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const dx = tx - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 55) go(dx > 0 ? 1 : -1);
+});
+update();
+</script>
+</body>
+</html>
