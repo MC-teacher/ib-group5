@@ -556,6 +556,8 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #1a1a2e; }
     <span class="tag">삼각함수의 정의</span>
     <span class="tag">삼각함수의 그래프</span>
     <span class="tag">부채꼴</span>
+    <span class="tag">사인법칙·코사인법칙</span>
+    <span class="tag">삼각형의 넓이</span>
     <span class="tag">✓ 풀이 수록</span>
   </div>
 </div>
@@ -1251,6 +1253,565 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #1a1a2e; }
           <span class="step">&nbsp;&nbsp;&nbsp;방법2: cos(3π/4)=cos(π/2+π/4)=−sin(π/4)=<strong>−√2/2</strong> — 서로 다른 공식이라도 결과는 항상 일치</span>
         </p></div>
         <div class="tok-hint"><div class="thlabel">TOK</div><p>여러 방법으로 같은 답에 도달할 때, 우리는 그 답이 "더 확실하다"고 느낀다. 수학적 확실성은 방법의 다양성에서 오는가, 논리 자체에서 오는가?</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S13 섹션 04 ══ -->
+<div class="slide section-slide" style="background:#1e3a5f;">
+  <div class="section-bg-num">04</div>
+  <p class="section-eyebrow">SECTION 04</p>
+  <h2>삼각형의 활용</h2>
+  <p>사인법칙 · 코사인법칙 &nbsp;·&nbsp; 삼각함수로 구하는 삼각형의 넓이</p>
+</div>
+
+<!-- ══ S14 사인법칙 ══ -->
+<div class="slide concept-slide">
+  <div class="concept-left">
+    <p class="eyebrow">삼각형의 결정</p>
+    <h3>사인법칙</h3>
+    <div class="def-box">
+      △ABC의 외접원의 반지름의 길이를 R이라 하면
+      <span class="formula" style="font-size:17px;">a/sinA = b/sinB = c/sinC = 2R</span>
+    </div>
+    <div class="def-box" style="margin-top:10px;">
+      즉, △ABC에서
+      <span class="formula" style="font-size:15px;">a : b : c = sinA : sinB : sinC</span>
+      ∠A의 크기가 90° 미만·90°·90° 초과인 세 경우 모두, 원주각의 성질과 반원에 대한 원주각(90°)을 이용하면 같은 식이 성립함을 보일 수 있다.
+    </div>
+    <ul class="prop-list" style="margin-top:14px;">
+      <li><span class="pn">1</span><span>터널·다리처럼 직접 잴 수 없는 두 지점 사이의 거리를 구하는 데 쓰인다</span></li>
+      <li><span class="pn">2</span><span>변 하나 + 그 대각, 그리고 다른 각(또는 변)을 알면 나머지를 모두 구할 수 있다</span></li>
+    </ul>
+    <div class="tok dark" style="margin-top:14px;">
+      <div class="tok-label">TOK</div>
+      <p>구미 죽장리 오층 석탑처럼 오를 수 없는 대상의 높이도, 두 지점에서 "보이는 각"만으로 정확히 계산된다. 직접 만지거나 오르지 않고도 얻은 지식은, 직접 경험으로 얻은 지식과 같은 확실성을 가지는가?</p>
+    </div>
+  </div>
+  <div class="concept-right">
+    <p class="eyebrow dark">외접원과 사인법칙</p>
+    <h3>a/sinA = b/sinB = c/sinC = 2R</h3>
+    <div class="graph-box">
+      <svg viewBox="0 0 280 260" width="260" height="240" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="140" cy="130" r="100" fill="none" stroke="#ddd8ce" stroke-width="1.3"/>
+        <polygon points="140,32 230,175 55,190" fill="none" stroke="#1a1a2e" stroke-width="2"/>
+        <line x1="140" y1="130" x2="140" y2="32" stroke="#c89a2a" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <circle cx="140" cy="130" r="3" fill="#1a1a2e"/>
+        <text x="146" y="85" font-size="12" fill="#c89a2a">R</text>
+        <text x="132" y="24" font-size="13" font-weight="700" fill="#1a1a2e">A</text>
+        <text x="236" y="182" font-size="13" font-weight="700" fill="#1a1a2e">B</text>
+        <text x="36" y="200" font-size="13" font-weight="700" fill="#1a1a2e">C</text>
+        <text x="146" y="122" font-size="11" fill="#888">O</text>
+      </svg>
+    </div>
+    <div class="key-box">
+      <strong>예제 1</strong> — a=4, A=45°, B=60°<br>
+      (1) 사인법칙 a/sinA=b/sinB에서 b = 4sin60°/sin45° = <strong>2√6</strong><br>
+      (2) 2R = a/sinA = 4/sin45° 에서 R = <strong>2√2</strong>
+    </div>
+    <div class="key-box" style="margin-top:10px;">
+      <strong>예제 2</strong> — sin²A = sin²B+sin²C를 만족시키는 △ABC<br>
+      sinA=a/2R 등을 대입해 정리하면 a²=b²+c² → <strong>A=90°인 직각삼각형</strong>
+    </div>
+    <div class="tok" style="margin-top:12px;">
+      <div class="tok-label">생각 톡톡</div>
+      <p>변의 길이 비율(a:b:c)이 곧 사인값의 비율(sinA:sinB:sinC)과 같다는 사실은, "길이"와 "각도"라는 서로 다른 두 종류의 양이 사실은 하나의 정보로 연결되어 있음을 보여준다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S15 코사인법칙 ══ -->
+<div class="slide concept-slide">
+  <div class="concept-left">
+    <p class="eyebrow">피타고라스 정리의 확장</p>
+    <h3>코사인법칙</h3>
+    <div class="def-box">
+      △ABC에서
+      <span class="formula" style="font-size:14.5px;">a² = b²+c²−2bc cosA</span>
+      <span class="formula" style="font-size:14.5px;">b² = c²+a²−2ca cosB</span>
+      <span class="formula" style="font-size:14.5px;">c² = a²+b²−2ab cosC</span>
+    </div>
+    <div class="def-box" style="margin-top:10px;">
+      변형 — 세 변의 길이를 알 때 각을 구한다
+      <span class="formula" style="font-size:14.5px;">cosA = (b²+c²−a²)/2bc</span>
+      즉, 세 변 a, b, c를 알면 세 내각 A, B, C를 모두 구할 수 있다.
+    </div>
+    <div class="tok dark" style="margin-top:14px;">
+      <div class="tok-label">수학 이야기</div>
+      <p>사인·코사인이라는 용어가 없던 고대 그리스에서도 유클리드는 『원론』 명제 12·13에서 이미 코사인법칙과 동치인 관계를 기하학적 넓이 비교만으로 증명해 두었다. 이름과 기호가 붙기 전에도 그 관계는 "존재"했다고 말할 수 있는가?</p>
+    </div>
+  </div>
+  <div class="concept-right">
+    <p class="eyebrow dark">삼각형과 코사인법칙</p>
+    <h3>c² = a²+b²−2ab cosC</h3>
+    <div class="graph-box">
+      <svg viewBox="0 0 280 200" width="260" height="190" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="70,170 230,170 150,40" fill="none" stroke="#1a1a2e" stroke-width="2"/>
+        <line x1="150" y1="40" x2="150" y2="170" stroke="#c0392b" stroke-dasharray="4,3" stroke-width="1.5"/>
+        <text x="55" y="188" font-size="13" font-weight="700" fill="#1a1a2e">B</text>
+        <text x="234" y="188" font-size="13" font-weight="700" fill="#1a1a2e">C</text>
+        <text x="146" y="28" font-size="13" font-weight="700" fill="#1a1a2e">A</text>
+        <text x="100" y="112" font-size="12" fill="#1e3a5f">c</text>
+        <text x="188" y="112" font-size="12" fill="#1e3a5f">b</text>
+        <text x="145" y="185" font-size="12" fill="#1e3a5f">a</text>
+        <text x="203" y="162" font-size="11" fill="#c0392b">C</text>
+      </svg>
+    </div>
+    <div class="key-box">
+      <strong>예제 4</strong><br>
+      (1) A=60°, b=6, c=4 → a²=6²+4²−2×6×4×cos60°=28 → a=<strong>2√7</strong><br>
+      (2) a=7, b=3, c=5 → cosA=(3²+5²−7²)/(2×3×5)=−1/2 → A=<strong>120°</strong>
+    </div>
+    <div class="key-box" style="margin-top:10px;">
+      <strong>예제 5</strong> — a cosB = b cosA를 만족시키는 △ABC<br>
+      cosA, cosB를 대입해 정리하면 a²=b² → <strong>a=b인 이등변삼각형</strong>
+    </div>
+    <div class="tok" style="margin-top:12px;">
+      <div class="tok-label">생각 톡톡</div>
+      <p>C=90°이면 cosC=0이 되어 코사인법칙은 곧바로 피타고라스 정리 c²=a²+b²가 된다. 코사인법칙은 피타고라스 정리를 "일반화"한 것인가, 피타고라스 정리가 코사인법칙의 "특수한 경우"일 뿐인가?</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S16 Section04-1 문제 ══ -->
+<div class="slide prob-slide">
+  <div class="prob-head">
+    <span class="pbadge">04 사인법칙과 코사인법칙</span>
+    <h3>문제 1 · 2 · 3 · 4 · 5 · 6</h3>
+  </div>
+  <div class="prob-body">
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">1</div>
+        <div class="pq"><strong>문제 1</strong><span class="stars">★★☆</span> &nbsp;△ABC에서 다음을 구하시오.<br>(1) a=2, b=2√3, B=120°일 때, 예각 A의 크기<br>(2) A=45°, B=75°, c=3일 때, 외접원의 반지름의 길이 R<br>(3) a=3, B=105°, C=30°일 때, c의 값</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) A=<strong>30°</strong> &nbsp;|&nbsp; (2) R=<strong>√3</strong> &nbsp;|&nbsp; (3) c=<strong>3√2/2</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) 사인법칙에서 sinA = a sinB/b = 2sin120°/(2√3) = 2×(√3/2)/(2√3) = 1/2 → A=<strong>30°</strong></span>
+          <span class="step">(2) C=180°−(45°+75°)=60°. 2R=c/sinC=3/sin60°=2√3 → R=<strong>√3</strong></span>
+          <span class="step">(3) A=180°−(105°+30°)=45°. c=a sinC/sinA=3sin30°/sin45°=3×(1/2)/(√2/2)=<strong>3√2/2</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">2</div>
+        <div class="pq"><strong>문제 2</strong><span class="stars">★★☆</span> &nbsp;다음을 만족시키는 △ABC는 어떤 삼각형인지 말하시오.<br>(1) a sinA = b sinB &nbsp; (2) a sinA + b sinB = c sinC</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) <strong>a=b인 이등변삼각형</strong> &nbsp;|&nbsp; (2) <strong>C=90°인 직각삼각형</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) a=2RsinA, b=2RsinB를 대입하면 sin²A=sin²B → A=B → <strong>a=b인 이등변삼각형</strong></span>
+          <span class="step">(2) 마찬가지로 대입하면 sin²A+sin²B=sin²C → a²+b²=c² → <strong>C=90°인 직각삼각형</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">3</div>
+        <div class="pq"><strong>문제 3</strong><span class="stars">★★★</span> &nbsp;골프 코스에서 두 지점 T, G 사이의 거리가 250m이다. 세라가 T 지점에서 친 공이 A 지점에 도착했다. △AGT에서 ∠ATG=30°, ∠AGT=50°일 때, 세라가 처음 친 공이 날아간 거리 TA를 소수점 아래 셋째 자리에서 반올림하여 구하시오. (단, sin50°=0.77, sin80°=0.98로 계산한다.)</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>TA ≈ <strong>196.43 m</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">∠A = 180°−(30°+50°)=100°, sin100°=sin80°=0.98</span>
+          <span class="step">사인법칙: TA/sinG = GT/sinA → TA = 250×sin50°/sin100° = 250×0.77/0.98 ≈ <strong>196.43 m</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">4</div>
+        <div class="pq"><strong>문제 4</strong><span class="stars">★★☆</span> &nbsp;△ABC에서 다음을 구하시오.<br>(1) B=120°, a=8, c=7일 때, b의 값<br>(2) a=4, b=√2, c=√10일 때, C의 크기</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) b=<strong>13</strong> &nbsp;|&nbsp; (2) C=<strong>45°</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) b²=a²+c²−2ac cosB=64+49−2×8×7×cos120°=113+56=169 → b=<strong>13</strong></span>
+          <span class="step">(2) cosC=(a²+b²−c²)/2ab=(16+2−10)/(2×4×√2)=8/(8√2)=√2/2 → C=<strong>45°</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">5</div>
+        <div class="pq"><strong>문제 5</strong><span class="stars">★★★</span> &nbsp;다음을 만족시키는 △ABC는 어떤 삼각형인지 말하시오.<br>(1) a cosB − b cosA = c &nbsp; (2) sinA = 2cosB sinC</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) <strong>A=90°인 직각삼각형</strong> &nbsp;|&nbsp; (2) <strong>b=c인 이등변삼각형</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) 코사인법칙의 변형을 대입해 정리하면 (a²−b²)/c = c → a²=b²+c² → <strong>A=90°인 직각삼각형</strong></span>
+          <span class="step">(2) sinA=sin(B+C)=sinBcosC+cosBsinC. 조건과 비교하면 sinBcosC=cosBsinC → sin(B−C)=0 → B=C → <strong>b=c인 이등변삼각형</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">6</div>
+        <div class="pq"><strong>문제 6 〔과학〕</strong><span class="stars">★★★</span> &nbsp;남극대륙에서 분리된 빙산 A-76의 길이를 구하기 위해 O 지점에서 양 끝 P, Q까지 거리와 각을 측정했다. OP=70km, OQ=124km, ∠POQ=120°일 때, 두 지점 P, Q 사이의 거리를 소수점 아래 첫째 자리에서 반올림하여 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>PQ ≈ <strong>170 km</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">코사인법칙: PQ²=OP²+OQ²−2×OP×OQ×cos120°=4900+15376−2×70×124×(−1/2)=20276+8680=28956</span>
+          <span class="step">PQ=√28956 ≈ <strong>170 km</strong></span>
+        </p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S17 삼각형의 넓이 ══ -->
+<div class="slide concept-slide">
+  <div class="concept-left">
+    <p class="eyebrow">삼각함수의 활용</p>
+    <h3>삼각형의 넓이</h3>
+    <div class="def-box">
+      △ABC의 넓이를 S라 하면
+      <span class="formula" style="font-size:15px;">S = ½ab sinC = ½bc sinA = ½ca sinB</span>
+    </div>
+    <div class="def-box" style="margin-top:10px;">
+      두 변의 길이와 그 <strong style="color:var(--gold);">끼인각</strong>을 알면 높이를 몰라도 곧바로 넓이를 구할 수 있다.<br>
+      (∠C가 예각·직각·둔각인 세 경우 모두 h=b sinC로 같은 식이 성립한다.)
+    </div>
+    <ul class="prop-list" style="margin-top:14px;">
+      <li><span class="pn">1</span><span>세 변의 길이만 알 때: 코사인법칙으로 한 각의 cos 값을 구한 뒤 sin으로 변환</span></li>
+      <li><span class="pn">2</span><span>한 변과 그 양 끝각을 알 때: 사인법칙으로 다른 변을 구한 뒤 넓이 공식 적용</span></li>
+    </ul>
+    <div class="tok dark" style="margin-top:16px;">
+      <div class="tok-label">TOK</div>
+      <p>정밀한 측량 기술이 없던 시대에는 다각형 경작지를 삼각형으로 쪼개 넓이를 구했다. "쪼개어 더한다"는 발상은 넓이뿐 아니라 적분학 전체의 뿌리이기도 하다 — 복잡한 것을 이해하는 가장 오래된 방법은 무엇일까?</p>
+    </div>
+  </div>
+  <div class="concept-right">
+    <p class="eyebrow dark">두 변과 끼인각</p>
+    <h3>S = ½ab sinC</h3>
+    <div class="graph-box">
+      <svg viewBox="0 0 280 200" width="260" height="190" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="60,170 240,170 170,45" fill="#e8f5ed" stroke="#1a6b3a" stroke-width="2"/>
+        <line x1="170" y1="45" x2="170" y2="170" stroke="#c0392b" stroke-dasharray="4,3" stroke-width="1.5"/>
+        <text x="45" y="188" font-size="13" font-weight="700" fill="#1a1a2e">B</text>
+        <text x="245" y="188" font-size="13" font-weight="700" fill="#1a1a2e">C</text>
+        <text x="166" y="35" font-size="13" font-weight="700" fill="#1a1a2e">A</text>
+        <text x="175" y="105" font-size="11" fill="#c0392b">h</text>
+        <text x="130" y="185" font-size="11" fill="#1a6b3a">a</text>
+        <text x="200" y="160" font-size="11" fill="#1a6b3a">b</text>
+      </svg>
+    </div>
+    <div class="key-box">
+      <strong>예제 1</strong> — a=5, b=7, c=8인 △ABC의 넓이<br>
+      코사인법칙: cosA=(7²+8²−5²)/(2×7×8)=11/14<br>
+      sinA=√(1−(11/14)²)=5√3/14<br>
+      S=½bc sinA = ½×7×8×5√3/14 = <strong>10√3</strong>
+    </div>
+    <div class="key-box" style="margin-top:10px;">
+      <strong>예제 2</strong> — a=20, B=72°, C=78°인 △ABC의 넓이<br>
+      A=180°−(72°+78°)=30°, 사인법칙으로 b=20sin72°/sin30°=38<br>
+      S=½ab sinC=½×20×38×sin78° = <strong>372.4</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S18 Section04-2 문제 ══ -->
+<div class="slide prob-slide">
+  <div class="prob-head">
+    <span class="pbadge">04 삼각형의 넓이</span>
+    <h3>문제 1 · 2 · 3</h3>
+  </div>
+  <div class="prob-body">
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb0">1</div>
+        <div class="pq"><strong>문제 1</strong><span class="stars">★☆☆</span><br>다음 △ABC의 넓이를 구하시오.<br>(1) b=6, c=4√2, A=135° &nbsp; (2) a=10, c=12, B=120°</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) <strong>12</strong> &nbsp;|&nbsp; (2) <strong>30√3</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) S=½bc sinA=½×6×4√2×sin135°=½×24√2×(√2/2)=<strong>12</strong></span>
+          <span class="step">(2) S=½ac sinB=½×10×12×sin120°=60×(√3/2)=<strong>30√3</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">2</div>
+        <div class="pq"><strong>문제 2</strong><span class="stars">★★☆</span> &nbsp;세 변의 길이가 4m, 6m, 8m인 △ABC 모양의 텃밭이 있다. 이 텃밭의 넓이를 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p><strong>3√15 m²</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">변 4에 대한 끼인각 A: cosA=(6²+8²−4²)/(2×6×8)=84/96=7/8</span>
+          <span class="step">sinA=√(1−49/64)=√15/8</span>
+          <span class="step">S=½×6×8×√15/8=<strong>3√15 m²</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">3</div>
+        <div class="pq"><strong>문제 3</strong><span class="stars">★★★</span> &nbsp;해안가 세 지점 A, B, C가 있다. AC=600m, ∠ABC=30°, ∠ACB=20°일 때, 두 지점 A와 B를 연결하는 방조제를 쌓아 만들 간척지 △ABC의 넓이를 구하시오. (단, sin20°=0.34, sin50°=0.77로 계산한다.)</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p><strong>94,248 m²</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">∠A=180°−(30°+20°)=130°, sin130°=sin50°=0.77</span>
+          <span class="step">사인법칙: BC = AC sinA/sinB = 600×0.77/0.5 = 924</span>
+          <span class="step">S = ½×AC×BC×sinC = ½×600×924×0.34 = <strong>94,248 m²</strong></span>
+        </p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S19 중단원 마무리 문제 (1) ══ -->
+<div class="slide prob-slide">
+  <div class="prob-head">
+    <span class="pbadge">중단원 마무리 · 기본</span>
+    <h3>01 · 02 · 03 · 04 · 05 · 06 · 07 · 08</h3>
+  </div>
+  <div class="prob-body">
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb0">01</div>
+        <div class="pq"><strong>01</strong><span class="stars">★☆☆</span> &nbsp;△ABC에서 a=8sinA일 때, 외접원의 반지름의 길이를 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>R=<strong>4</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p><span class="step">a/sinA=2R이므로 8sinA/sinA=2R → 8=2R → R=<strong>4</strong></span></p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb0">02</div>
+        <div class="pq"><strong>02</strong><span class="stars">★☆☆</span> &nbsp;△ABC에서 a=4√3, A=60°, B=45°일 때, (1) b의 값 (2) 외접원의 반지름의 길이 R을 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) b=<strong>4√2</strong> &nbsp;|&nbsp; (2) R=<strong>4</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) b=a sinB/sinA=4√3×sin45°/sin60°=4√3×(√2/√3)=<strong>4√2</strong></span>
+          <span class="step">(2) 2R=a/sinA=4√3/(√3/2)=8 → R=<strong>4</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">03</div>
+        <div class="pq"><strong>03</strong><span class="stars">★★☆</span> &nbsp;△ABC에서 (1) b=6, c=3, A=60°일 때 a의 값 &nbsp; (2) a=√7, b=2, c=3일 때 A의 크기를 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) a=<strong>3√3</strong> &nbsp;|&nbsp; (2) A=<strong>60°</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) a²=6²+3²−2×6×3×cos60°=45−18=27 → a=<strong>3√3</strong></span>
+          <span class="step">(2) cosA=(2²+3²−(√7)²)/(2×2×3)=(4+9−7)/12=1/2 → A=<strong>60°</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">04</div>
+        <div class="pq"><strong>04</strong><span class="stars">★★☆</span> &nbsp;다음 △ABC의 넓이를 구하시오.<br>(1) a=4, c=√2, B=135° &nbsp; (2) b=6, c=10, A=150°</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) <strong>2</strong> &nbsp;|&nbsp; (2) <strong>15</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) S=½ac sinB=½×4×√2×sin135°=½×4√2×√2/2=<strong>2</strong></span>
+          <span class="step">(2) S=½bc sinA=½×6×10×sin150°=30×½=<strong>15</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">05</div>
+        <div class="pq"><strong>05</strong><span class="stars">★★☆</span> &nbsp;반지름의 길이가 6인 원에 내접하는 △ABC의 둘레의 길이가 20일 때, sinA+sinB+sinC의 값을 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p><strong>5/3</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">a/sinA=2R=12이므로 sinA=a/12 (B,C도 마찬가지)</span>
+          <span class="step">sinA+sinB+sinC=(a+b+c)/12=20/12=<strong>5/3</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">06</div>
+        <div class="pq"><strong>06</strong><span class="stars">★★☆</span> &nbsp;△ABC의 외접원의 반지름의 길이가 4이고 A=60°, b=4√2일 때, C의 크기를 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>C=<strong>75°</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">b=2RsinB에서 4√2=8sinB → sinB=√2/2 → B=45° 또는 135°</span>
+          <span class="step">a=2RsinA=8sin60°=4√3&gt;b이므로 A&gt;B → B=135°이면 A+B&gt;180°이 되어 모순 → B=<strong>45°</strong></span>
+          <span class="step">C=180°−60°−45°=<strong>75°</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">07</div>
+        <div class="pq"><strong>07</strong><span class="stars">★★★</span> &nbsp;80m 떨어져 있는 민호와 지아의 하늘에 떠 있는 드론에 대한 올려본각이 각각 75°, 45°일 때, 드론과 민호 사이의 거리를 구하시오. (단, 민호와 지아의 눈높이는 같다.)</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p><strong>80√6/3 m</strong> (≈ 65.3m)</p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">민호(M), 지아(J), 드론(D)의 삼각형에서 ∠M=75°, ∠J=45°이므로 ∠D=180°−75°−45°=60°</span>
+          <span class="step">사인법칙: MD/sinJ = MJ/sinD → MD = 80×sin45°/sin60° = 80×(√2/2)/(√3/2) = <strong>80√6/3 m</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">08</div>
+        <div class="pq"><strong>08</strong><span class="stars">★★☆</span> &nbsp;세 변의 길이가 4, 5, 7인 삼각형의 세 내각 중에서 크기가 가장 큰 내각의 크기를 θ라 할 때, cosθ의 값을 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>cosθ=<strong>−1/5</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">가장 큰 각은 가장 긴 변 7의 대각. cosθ=(4²+5²−7²)/(2×4×5)=−8/40=<strong>−1/5</strong></span>
+        </p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S20 중단원 마무리 문제 (2) ══ -->
+<div class="slide prob-slide">
+  <div class="prob-head">
+    <span class="pbadge">중단원 마무리 · 표준·발전·서술형</span>
+    <h3>09 · 10 · 11 · 12 · 13 · 14 · 15 · 16</h3>
+  </div>
+  <div class="prob-body">
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">09</div>
+        <div class="pq"><strong>09 〔서술형〕</strong><span class="stars">★★★</span> &nbsp;△ABC에서 a=5, b=3, C=120°일 때, △ABC의 외접원의 반지름의 길이를 구하는 풀이 과정과 답을 쓰시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>R=<strong>7√3/3</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">코사인법칙: c²=a²+b²−2ab cosC=25+9−2×5×3×cos120°=34+15=49 → c=7</span>
+          <span class="step">사인법칙: 2R=c/sinC=7/sin120°=7/(√3/2)=14√3/3 → R=<strong>7√3/3</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">10</div>
+        <div class="pq"><strong>10</strong><span class="stars">★★☆</span> &nbsp;다음을 만족시키는 △ABC는 어떤 삼각형인지 말하시오.<br>(1) a sin²A = b sin²B &nbsp; (2) sinA = cosB sinC</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>(1) <strong>a=b인 이등변삼각형</strong> &nbsp;|&nbsp; (2) <strong>C=90°인 직각삼각형</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">(1) a,b를 2RsinA, 2RsinB로 바꾸면 sin³A=sin³B → sinA=sinB → A=B → <strong>a=b인 이등변삼각형</strong></span>
+          <span class="step">(2) sinA=sin(B+C)=sinBcosC+cosBsinC. 조건과 비교하면 sinBcosC=0 → cosC=0 → <strong>C=90°인 직각삼각형</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">11</div>
+        <div class="pq"><strong>11</strong><span class="stars">★★☆</span> &nbsp;어느 선수가 축구 골대의 두 기둥 A, B로부터 각각 3m, 8m 떨어진 지점 P에 있다. 골대의 폭이 7m일 때, ∠APB의 크기를 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>∠APB=<strong>60°</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">cos(∠APB)=(3²+8²−7²)/(2×3×8)=24/48=1/2 → ∠APB=<strong>60°</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb1">12</div>
+        <div class="pq"><strong>12</strong><span class="stars">★★☆</span> &nbsp;△ABC에서 a=6, b=8, sin(A+B)=1/2일 때, △ABC의 넓이를 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p><strong>12</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">A+B=180°−C이므로 sin(A+B)=sinC=1/2</span>
+          <span class="step">S=½ab sinC=½×6×8×1/2=<strong>12</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">13</div>
+        <div class="pq"><strong>13 〔발전〕</strong><span class="stars">★★★</span> &nbsp;점 O를 중심으로 하고 반지름의 길이가 2인 원에 내접하는 △ABC에서 B=60°, C=45°일 때, 변 BC의 길이를 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>BC=<strong>√6+√2</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">A=180°−60°−45°=75°. sin75°=sin(45°+30°)=(√6+√2)/4</span>
+          <span class="step">a=2RsinA=4×(√6+√2)/4=<strong>√6+√2</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">14</div>
+        <div class="pq"><strong>14 〔발전〕</strong><span class="stars">★★★</span> &nbsp;두 직선 y=3x와 y=x가 이루는 예각의 크기를 θ라 할 때, cosθ의 값을 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p>cosθ=<strong>2√5/5</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">기울기 3, 1인 두 직선의 방향벡터 (1,3), (1,1)의 사잇각</span>
+          <span class="step">cosθ=(1×1+3×1)/(√10×√2)=4/√20=<strong>2√5/5</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">15</div>
+        <div class="pq"><strong>15</strong><span class="stars">★★★</span> &nbsp;밑면의 반지름의 길이가 4cm이고 모선의 길이가 12cm인 원뿔이 있다. 밑면인 원의 둘레 위의 점 P에서 모선 OP의 중점 Q까지 원뿔의 표면을 따라 실을 감을 때, 감은 실의 길이의 최솟값을 구하시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p><strong>6√7 cm</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">원뿔의 옆면을 따라 펼치면 반지름 12인 부채꼴이 되고, 중심각 θ=(밑면 둘레)/12=8π/12=2π/3</span>
+          <span class="step">펼친 부채꼴에서 P는 반지름 12 위의 한 끝점, Q는 다른 쪽 반지름 위 O에서 6인 점. 최단 거리는 두 점을 잇는 선분</span>
+          <span class="step">PQ²=12²+6²−2×12×6×cos120°=144+36+72=252 → PQ=√252=<strong>6√7 cm</strong></span>
+        </p></div>
+      </div>
+    </div>
+    <div class="pcard" onclick="tog(this)">
+      <div class="pcard-head">
+        <div class="pbnum nb2">16</div>
+        <div class="pq"><strong>16 〔서술형〕</strong><span class="stars">★★★</span> &nbsp;원에 내접하는 □ABCD에서 AB=2, BC=3, CD=4, AD=5일 때, □ABCD의 넓이를 구하는 풀이 과정과 답을 쓰시오.</div>
+        <div class="parrow">▼</div>
+      </div>
+      <div class="panel">
+        <div class="ans-box"><div class="alabel">정답</div><p><strong>2√30</strong></p></div>
+        <div class="sol-box"><div class="slabel">풀이</div><p>
+          <span class="step">원에 내접하므로 B+D=180°, 대각선 AC를 두 삼각형에서 코사인법칙으로 표현</span>
+          <span class="step">△ABC: AC²=4+9−12cosB, &nbsp; △ACD: AC²=16+25−40cosD=41+40cosB (cosD=−cosB)</span>
+          <span class="step">13−12cosB=41+40cosB → cosB=−7/13 → sinB=2√30/13</span>
+          <span class="step">S=½×2×3×sinB+½×4×5×sinB=(3+10)×2√30/13=<strong>2√30</strong></span>
+        </p></div>
       </div>
     </div>
   </div>
