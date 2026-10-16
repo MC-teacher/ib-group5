@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>미분계수와 도함수</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" onload="renderMath()"></script>
+<style>
+:root{
+  --dark:#12161f;--dark2:#181d2c;--dark3:#1e2438;--dark4:#252d46;
+  --card:#1b2132;
+  --red:#d63050;--red-dim:#b02040;
+  --orange:#e07030;
+  --gold:#d4a043;--gold-dim:#b8862e;
+  --teal:#30b89a;--blue:#4a9fd4;--lime:#7ec870;--violet:#9b7de8;
+  --text:#ede8dc;--text-muted:#8892a8;--text-dim:#5a6280;
+  --mono:'JetBrains Mono',monospace;
+  --serif:'Noto Serif KR',serif;
+  --sans:'Noto Sans KR',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--dark);color:var(--text);font-size:15px;line-height:1.8;overflow-x:hidden}
+.katex{font-size:1.06em}
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(18,22,31,.97);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;height:52px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.nav-logo{padding:0 16px;font-size:12px;font-weight:700;color:var(--teal);white-space:nowrap;flex-shrink:0;line-height:1.3;border-right:1px solid rgba(255,255,255,.08);min-width:110px;text-decoration:none}
+.nav-logo span{display:block;font-weight:400;color:var(--text-muted);font-size:10px}
+.nav-links{display:flex;align-items:center;padding:0 6px;gap:2px}
+.nav-grp{font-size:9px;letter-spacing:.14em;color:var(--text-dim);padding:0 6px 0 12px;white-space:nowrap;font-family:var(--mono)}
+.nav-link{padding:5px 10px;border-radius:5px;font-size:12px;font-weight:500;color:var(--text-muted);white-space:nowrap;cursor:pointer;transition:all .15s;text-decoration:none}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-link.active{background:var(--teal);color:#0b1714}
+main{max-width:880px;margin:0 auto;padding:0 18px 80px}
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--dark3) 0%,#0e1a18 100%);border-radius:16px;margin:24px 0 28px;padding:36px 40px;border:1px solid rgba(255,255,255,.07);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(48,184,154,.14) 0%,transparent 70%)}
+.hero-num{width:50px;height:50px;border-radius:12px;background:var(--teal);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:24px;color:#0b1714;font-weight:700;margin-bottom:18px}
+.hero h1{font-family:var(--serif);font-size:34px;color:#fff;line-height:1.15;margin-bottom:8px}
+.hero-sub{color:var(--gold);font-size:14px;margin-bottom:20px;font-style:italic}
+.hero-objectives{list-style:none;display:flex;flex-direction:column;gap:6px}
+.hero-objectives li{font-size:13.5px;color:var(--text-muted);padding-left:20px;position:relative}
+.hero-objectives li::before{content:'✦';color:var(--teal);font-size:10px;position:absolute;left:0;top:4px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:18px;font-size:12px;color:var(--text-muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+/* PART BANNER */
+.part{margin:44px 0 0;padding:18px 22px;border-radius:12px;background:linear-gradient(90deg,rgba(48,184,154,.16),rgba(48,184,154,0));border-left:4px solid var(--teal)}
+.part.p2{background:linear-gradient(90deg,rgba(74,159,212,.16),rgba(74,159,212,0));border-left-color:var(--blue)}
+.part-tag{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--text-dim)}
+.part-title{font-family:var(--serif);font-size:22px;color:#fff}
+.part-src{font-size:12px;color:var(--text-muted)}
+/* SECTION */
+.sec-block{padding-top:26px;border-top:2px solid rgba(255,255,255,.07);margin-top:26px;scroll-margin-top:60px}
+.sec-tag{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;display:flex;justify-content:space-between}
+.sec-title{font-family:var(--serif);font-size:26px;color:var(--teal);margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.p2s .sec-title{color:var(--blue)}
+.sec-title-num{min-width:36px;height:36px;padding:0 6px;border-radius:8px;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:16px;color:#0b1714;font-weight:700;flex-shrink:0;font-family:var(--mono)}
+.p2s .sec-title-num{background:var(--blue)}
+.sec-desc{font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.6}
+/* GUIDING QUESTION */
+.gq{background:linear-gradient(135deg,#1c1a30,#1a2132);border:1px solid rgba(155,125,232,.35);border-radius:14px;padding:16px 20px 12px;margin-bottom:18px;position:relative}
+.gq-hd{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--violet);font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.gq-hd::before{content:'?';width:20px;height:20px;border-radius:50%;background:var(--violet);color:#120f20;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;letter-spacing:0}
+.gq-item{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-top:1px dashed rgba(255,255,255,.07)}
+.gq-item:first-of-type{border-top:none}
+.gq-tag{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;margin-top:3px;min-width:34px;text-align:center}
+.gq-tag.F{background:#1a2e4a;color:#6aaae8}
+.gq-tag.C{background:#1d4437;color:#5dca9a}
+.gq-tag.D{background:#3a2010;color:#e8a060}
+.gq-tag.TOK{background:#3a1424;color:#e87090}
+.gq-en{font-size:14px;color:var(--text);line-height:1.6}
+.gq-kr{font-size:13px;color:var(--text-muted);line-height:1.6}
+.gq details{margin-top:8px;border-top:1px solid rgba(255,255,255,.06);padding-top:8px}
+.gq summary{cursor:pointer;font-size:12px;color:var(--violet);list-style:none;display:flex;align-items:center;gap:6px}
+.gq summary::-webkit-details-marker{display:none}
+.gq summary::before{content:'▶';font-size:9px;transition:transform .2s}
+.gq details[open] summary::before{transform:rotate(90deg)}
+.gq-talk{font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.75}
+.gq-talk b{color:var(--text)}
+/* KEY POINT */
+.kp{background:#f3ede3;color:#1a1a1a;border-radius:12px;padding:16px 20px;margin-bottom:14px;border-left:4px solid var(--teal)}
+.kp h3{font-size:12px;font-weight:700;color:#1a6b60;letter-spacing:.06em;margin-bottom:10px}
+.kp-body{font-size:14px;line-height:1.95}
+.kp-cond{background:rgba(0,0,0,.06);border-radius:8px;padding:10px 16px;margin:8px 0;line-height:2}
+.kp-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+.kp-table th,.kp-table td{padding:7px 12px;border:1px solid rgba(0,0,0,.12);text-align:left;vertical-align:middle}
+.kp-table th{background:rgba(0,0,0,.07);white-space:nowrap;text-align:center}
+/* WORKED EXAMPLE */
+.we{background:var(--card);border-radius:12px;border:1px solid rgba(255,255,255,.07);margin-bottom:12px;overflow:hidden}
+.we-hd{padding:10px 18px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.we-badge{font-size:10px;font-weight:700;background:var(--orange);color:#fff;padding:2px 8px;border-radius:4px}
+.we-title{font-size:14px;font-weight:600;color:var(--text)}
+.we-body{padding:14px 18px;font-size:14px}
+.we-step{display:grid;grid-template-columns:140px 1fr;gap:10px;align-items:baseline;margin-bottom:8px}
+.we-lbl{font-size:11px;color:var(--text-dim);text-align:right;font-style:italic}
+.we-math{font-size:14px;color:var(--text);line-height:1.8}
+.we-ans{background:var(--dark3);border-radius:7px;padding:8px 16px;font-size:14px;color:var(--teal);font-weight:600;margin-top:6px}
+/* QUESTION */
+.q-wrap{margin-bottom:10px}
+.q-hd{background:var(--dark3);border-radius:10px 10px 0 0;padding:11px 18px;display:flex;align-items:center;gap:11px;border:1px solid rgba(255,255,255,.07);border-bottom:none;flex-wrap:wrap}
+.q-badge{font-size:11px;font-weight:700;background:var(--gold);color:var(--dark);padding:3px 10px;border-radius:5px;white-space:nowrap;font-family:var(--mono)}
+.q-badge.r{background:var(--red);color:#fff}
+.q-badge.v{background:var(--violet);color:#120f20}
+.q-badge.star::after{content:' ★'}
+.q-title{font-size:14.5px;font-weight:600;color:var(--text);flex:1;min-width:200px}
+.q-body{background:var(--card);border:1px solid rgba(255,255,255,.07);border-top:none;border-radius:0 0 10px 10px;overflow:hidden}
+.q-box{border-left:3px solid var(--gold-dim);margin:14px 18px 0;padding:11px 15px;background:var(--dark2);border-radius:0 8px 8px 0}
+.q-box .ql{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;font-weight:600}
+.q-box .qt{font-size:14px;color:var(--text);line-height:1.9}
+.qp{margin-top:6px;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px}
+.qp.one{grid-template-columns:1fr}
+.qpi{font-size:14px;color:var(--text);line-height:1.9;padding-left:30px;text-indent:-30px}
+.qpi b{color:var(--gold-dim);display:inline-block;min-width:30px;text-indent:0}
+.hint{margin:10px 18px 0;padding:7px 13px;background:rgba(212,160,67,.07);border-radius:6px;font-size:13px;color:var(--gold-dim);display:block}
+.hint::before{content:'💡';margin-right:8px}
+.sol-btn{width:100%;padding:11px 18px;background:var(--dark3);border:none;border-top:1px solid rgba(255,255,255,.06);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:10px;font-family:var(--sans);font-size:13px;font-weight:500;transition:background .15s;margin-top:12px}
+.sol-btn:hover,.sol-btn.open{background:var(--dark4);color:var(--text)}
+.sol-btn .tri{transition:transform .2s;font-size:10px;font-family:var(--mono)}
+.sol-btn.open .tri{transform:rotate(90deg)}
+.sol-btn-lbl{flex:1;text-align:left}
+.sol{display:none;background:var(--dark2);border-top:1px solid rgba(255,255,255,.05);padding:14px 18px}
+.sol.open{display:block}
+.sol-steps{display:flex;flex-direction:column;gap:9px;margin-bottom:10px}
+.ss{display:flex;align-items:baseline;gap:10px}
+.stag{font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.t-풀이{background:#1d4437;color:#5dca9a}
+.t-공식{background:#1a2e4a;color:#6aaae8}
+.t-계산{background:#2a2040;color:#9b7de8}
+.t-정리{background:#3a2010;color:#e8a060}
+.t-조건{background:#2a1040;color:#c870e8}
+.t-대입{background:#2e1a1a;color:#e87070}
+.st{font-size:14px;color:var(--text);line-height:1.8}
+.sol-ans{background:var(--dark3);border-radius:8px;padding:11px 16px;font-size:14px;color:var(--teal);font-weight:600;border-left:3px solid var(--teal);margin-top:4px}
+/* BOXES */
+.info{background:rgba(48,184,154,.08);border:1px solid rgba(48,184,154,.2);border-radius:9px;padding:12px 16px;margin:14px 0;font-size:13.5px;color:var(--text-muted)}
+.info strong{color:var(--teal)}
+.warn{background:rgba(214,48,80,.07);border:1px solid rgba(214,48,80,.22);border-radius:9px;padding:12px 16px;margin:14px 0;font-size:13.5px;color:var(--text-muted)}
+.warn strong{color:#f06080}
+.story{background:linear-gradient(135deg,#231c10,#1b2132);border:1px solid rgba(212,160,67,.25);border-radius:12px;padding:16px 20px;margin:16px 0;font-size:13.5px;color:var(--text-muted)}
+.story h4{color:var(--gold);font-size:14px;margin-bottom:6px}
+.subsec{font-size:16px;font-weight:700;color:var(--orange);margin:24px 0 12px;padding-left:12px;border-left:4px solid var(--orange)}
+.p2s .subsec{color:var(--blue);border-left-color:var(--blue)}
+/* FIGURES */
+.fig-row{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0 14px}
+.fig{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:8px;flex:1 1 230px;min-width:0;text-align:center}
+.fig svg{width:100%;height:auto;max-width:340px;display:block;margin:0 auto}
+.fig-cap{font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.6}
+.ex-split{display:grid;grid-template-columns:1fr 240px;gap:14px;align-items:center}
+.ex-split .fig{flex:none}
+/* EXPLORE */
+.explore{background:var(--dark2);border:1px solid rgba(74,159,212,.3);border-radius:12px;padding:16px 18px;margin:14px 0}
+.explore-hd{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--blue);margin-bottom:8px}
+.ctrl{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0;font-size:13.5px;color:var(--text-muted)}
+.ctrl input[type=range]{flex:1;min-width:160px;accent-color:var(--blue)}
+.ctrl .val{font-family:var(--mono);color:var(--text);min-width:120px}
+.btn{background:var(--dark4);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 14px;border-radius:7px;cursor:pointer;font-family:var(--sans);font-size:13px}
+.btn:hover{border-color:var(--blue)}
+.btn.sel{background:var(--blue);color:#0b1520;border-color:var(--blue)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.tbl th,.tbl td{padding:6px 10px;border:1px solid rgba(255,255,255,.08);text-align:center}
+.tbl th{background:var(--dark3);color:var(--text-muted);font-weight:500}
+.tbl td{font-family:var(--mono)}
+.pos{color:var(--lime)}.neg{color:#f06080}
+.badge-src{font-size:10px;color:var(--text-dim);font-family:var(--mono);letter-spacing:.06em}
+footer{text-align:center;padding:24px;border-top:1px solid rgba(255,255,255,.07);font-size:11px;color:var(--text-dim);letter-spacing:2px}
+@media(max-width:640px){
+  main{padding:0 12px 60px}
+  .hero{padding:24px 18px}
+  .hero h1{font-size:26px}
+  .we-step{grid-template-columns:1fr;gap:2px}
+  .we-lbl{text-align:left}
+  .qp{grid-template-columns:1fr}
+  .ex-split{grid-template-columns:1fr}
+  .sec-title{font-size:22px}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="./">수학Ⅱ · Ⅱ-1<br><span>미분계수와 도함수</span></a>
+  <div class="nav-links">
+    <a class="nav-link active" data-go="start">시작</a>
+    <span class="nav-grp">미분계수</span>
+    <a class="nav-link" data-go="s1">01 평균변화율</a>
+    <a class="nav-link" data-go="s2">02 미분계수</a>
+    <a class="nav-link" data-go="s3">03 기하적 의미</a>
+    <a class="nav-link" data-go="s4">04 미분가능성과 연속성</a>
+    <span class="nav-grp">도함수</span>
+    <a class="nav-link" data-go="s5">05 도함수</a>
+    <a class="nav-link" data-go="s6">06 xⁿ의 도함수</a>
+    <a class="nav-link" data-go="s7">07 실수배·합·차</a>
+    <a class="nav-link" data-go="s8">08 곱의 미분법</a>
+    <a class="nav-link" data-go="s9">탐구&amp;융합</a>
+    <span class="nav-grp">REVIEW</span>
+    <a class="nav-link" data-go="r1">중단원 마무리</a>
+  </div>
+</nav>
+<main>
+
+<div id="start" class="hero">
+  <div class="hero-num">Ⅱ</div>
+  <h1>미분계수와 도함수</h1>
+  <div class="hero-sub">Rate of change &nbsp;·&nbsp; Derivative &nbsp;·&nbsp; IB Math AA SL</div>
+  <ul class="hero-objectives">
+    <li>평균변화율과 미분계수의 뜻을 알고, 미분계수를 구할 수 있다.</li>
+    <li>미분계수의 기하적 의미(접선의 기울기)를 이해한다.</li>
+    <li>함수의 미분가능성과 연속성의 관계를 설명하고, 이를 활용할 수 있다.</li>
+    <li>함수 \(y=x^n\) (\(n\)은 양의 정수)의 도함수를 구할 수 있다.</li>
+    <li>함수의 실수배, 합, 차, 곱의 미분법을 알고, 다항함수의 도함수를 구할 수 있다.</li>
+  </ul>
+  <div class="legend">
+    <span><span class="gq-tag F">F</span>사실적 Factual</span>
+    <span><span class="gq-tag C">C</span>개념적 Conceptual</span>
+    <span><span class="gq-tag D">D</span>논쟁적 Debatable</span>
+    <span><span class="gq-tag TOK">TOK</span>지식이론</span>
+  </div>
+</div>
+
+<!-- ═════════ PART I ═════════ -->
+<div class="part">
+  <div class="part-tag">PART I</div>
+  <div class="part-title">미분계수</div>
+  <div class="part-src">교과서 Ⅱ-1 · 01 미분계수 (p.56–64)</div>
+</div>
+
+<!-- S1 평균변화율 -->
+<div id="s1" class="sec-block">
+  <div class="sec-tag"><span>Section 01</span><span>p.56–57</span></div>
+  <div class="sec-title"><span class="sec-title-num">01</span>평균변화율</div>
+  <div class="sec-desc">학습목표: 미분계수를 이해하고, 이를 구할 수 있다.</div>
+
+  <div class="gq">
+    <div class="gq-hd">GUIDING QUESTIONS</div>
+    <div class="gq-item"><span class="gq-tag F">F</span><div><div class="gq-en">The graph shows distance driven vs. electricity used by an electric car. Between A and B, how many km did it drive per 1 kWh on average?</div><div class="gq-kr">생각 열기 ❶ 두 점 A와 B 사이에서 이 전기차는 소비 전력량 1 kWh당 평균 몇 km 주행했는가?</div></div></div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">Find the slope of line AB and compare it with ❶. Why are they the same?</div><div class="gq-kr">❷ 두 점 A와 B를 지나는 직선의 기울기를 구하고 ❶의 값과 비교해 보자. 왜 같을까?</div></div></div>
+    <div class="gq-item"><span class="gq-tag D">D</span><div><div class="gq-en">An "average" hides what happens in between. When is an average rate of change useful, and when is it misleading?</div><div class="gq-kr">'평균'은 중간 과정을 숨긴다. 평균변화율은 언제 유용하고, 언제 오해를 부를까?</div></div></div>
+    <div class="fig" style="margin-top:10px"><svg id="fig-car" viewBox="0 0 300 220"></svg><div class="fig-cap">생각 열기: 소비 전력량(kWh) – 주행 거리(km)</div></div>
+    <details><summary>토론 포인트</summary>
+      <div class="gq-talk"><b>❶</b> \(\dfrac{12-6}{3-1}=3\) km/kWh &nbsp; <b>❷</b> 직선 AB의 기울기 \(=\dfrac{12-6}{3-1}=3\) → 같다. 평균변화율 = 두 점을 잇는 직선의 기울기.<br>
+      <b>D</b> 그래프는 A 근처에서 가파르고 B 근처에서 완만하다. 평균 3 km/kWh는 '어느 순간'의 효율을 말해 주지 않는다 → 다음 단원의 <b>순간변화율</b>이 필요한 이유.</div>
+    </details>
+  </div>
+
+  <div class="kp">
+    <h3>증분과 평균변화율</h3>
+    <div class="kp-body">함수 \(y=f(x)\)에서 \(x\)의 값이 \(a\)에서 \(b\)까지 변할 때, \(x\)의 값의 변화량 \(b-a\)를 \(x\)의 <strong>증분</strong>, \(y\)의 값의 변화량 \(f(b)-f(a)\)를 \(y\)의 <strong>증분</strong>이라 하고 각각 \(\Delta x,\ \Delta y\)로 나타낸다.
+      $$\Delta x=b-a,\qquad \Delta y=f(b)-f(a)=f(a+\Delta x)-f(a)$$
+      \(x\)의 증분에 대한 \(y\)의 증분의 비율을 <strong>평균변화율</strong>이라 한다.
+      <div class="kp-cond">$$\frac{\Delta y}{\Delta x}=\frac{f(b)-f(a)}{b-a}=\frac{f(a+\Delta x)-f(a)}{\Delta x}$$</div>
+      평균변화율은 그래프 위의 두 점 \(A(a,f(a))\), \(B(b,f(b))\)를 지나는 <b>직선 AB의 기울기</b>와 같다.
+    </div>
+  </div>
+  <div class="info"><strong>\(\Delta\)</strong>는 차이를 뜻하는 Difference의 첫 글자 D에 해당하는 그리스 문자로 '델타(delta)'라고 읽는다.</div>
+  <div class="warn"><strong>생각 톡톡</strong> 상수함수의 평균변화율은 얼마일까? <i>— \(f(b)-f(a)=c-c=0\)이므로 항상 0. 그래프가 수평선이니 기울기 0.</i></div>
+
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 1</span><span class="we-title">함수 \(f(x)=x^2\)에서 \(x\)의 값이 다음과 같이 변할 때의 평균변화율을 구하시오.</span></div>
+    <div class="we-body">
+      <div style="color:var(--text-muted);margin-bottom:8px">(1) −1에서 2까지 &nbsp;&nbsp; (2) \(a\)에서 \(a+\Delta x\)까지</div>
+      <div class="we-step"><span class="we-lbl">(1)</span><span class="we-math">\(\dfrac{f(2)-f(-1)}{2-(-1)}=\dfrac{4-1}{3}=1\)</span></div>
+      <div class="we-step"><span class="we-lbl">(2)</span><span class="we-math">\(\dfrac{(a+\Delta x)^2-a^2}{\Delta x}=\dfrac{2a\Delta x+(\Delta x)^2}{\Delta x}=2a+\Delta x\)</span></div>
+      <div class="we-ans">(1) 1 &nbsp;&nbsp; (2) \(2a+\Delta x\)</div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 1</span><span class="q-title">함수 \(f(x)=-x^2+3\)에서 \(x\)의 값이 다음과 같이 변할 때의 평균변화율을 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div><div class="qp">
+        <div class="qpi"><b>(1)</b> 1에서 2까지</div>
+        <div class="qpi"><b>(2)</b> 3에서 \(3+\Delta x\)까지</div>
+      </div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-계산">(1)</span><span class="st">\(\dfrac{f(2)-f(1)}{2-1}=\dfrac{(-1)-2}{1}=-3\)</span></div>
+        <div class="ss"><span class="stag t-계산">(2)</span><span class="st">\(\dfrac{\{-(3+\Delta x)^2+3\}-(-6)}{\Delta x}=\dfrac{-6\Delta x-(\Delta x)^2}{\Delta x}=-6-\Delta x\)</span></div>
+      </div><div class="sol-ans">(1) −3 &nbsp; (2) \(-6-\Delta x\)</div></div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge v">경제+ 문제 2</span><span class="q-title">어떤 제품 \(x\)단위를 생산하는 데 드는 비용이 \(f(x)=-0.1x^2+100x+5000\)이라 한다. 생산량이 100단위에서 150단위까지 변할 때의 비용의 평균변화율을 구하시오. (단, \(0\le x\le500\))</span></div>
+    <div class="q-body">
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-계산">함숫값</span><span class="st">\(f(150)=-2250+15000+5000=17750,\quad f(100)=-1000+10000+5000=14000\)</span></div>
+        <div class="ss"><span class="stag t-계산">평균변화율</span><span class="st">\(\dfrac{17750-14000}{150-100}=\dfrac{3750}{50}=75\)</span></div>
+      </div><div class="sol-ans">75 (1단위당 평균 75만큼 비용 증가)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S2 미분계수 -->
+<div id="s2" class="sec-block">
+  <div class="sec-tag"><span>Section 02</span><span>p.58–59</span></div>
+  <div class="sec-title"><span class="sec-title-num">02</span>미분계수 (순간변화율)</div>
+  <div class="sec-desc">평균변화율에서 \(\Delta x\to0\)으로 — 극한이 '순간'을 만든다.</div>
+
+  <div class="gq">
+    <div class="gq-hd">GUIDING QUESTIONS</div>
+    <div class="gq-item"><span class="gq-tag F">F</span><div><div class="gq-en">For \(f(x)=x^2\), the average rate from 1 to \(1+\Delta x\) is \(2+\Delta x\). What happens as \(\Delta x\to0\)?</div><div class="gq-kr">\(f(x)=x^2\)에서 1부터 \(1+\Delta x\)까지의 평균변화율은 \(2+\Delta x\)이다. \(\Delta x\to0\)이면 어떻게 될까?</div></div></div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">How can a "rate of change at an instant" make sense when no time passes in an instant?</div><div class="gq-kr">'한 순간'에는 시간이 흐르지 않는데, '순간'의 변화율이란 어떻게 의미를 가질 수 있을까?</div></div></div>
+    <div class="gq-item"><span class="gq-tag TOK">TOK</span><div><div class="gq-en">\(\frac{\Delta y}{\Delta x}\) becomes \(\frac00\) if we simply put \(\Delta x=0\). How does the concept of a limit rescue the idea of instantaneous speed?</div><div class="gq-kr">\(\Delta x=0\)을 그냥 대입하면 \(\frac00\)이 된다. 극한 개념은 '순간 속력'이라는 아이디어를 어떻게 구해 내는가? (극한 단원의 TOK 질문과 연결)</div></div></div>
+    <details><summary>토론 포인트</summary>
+      <div class="gq-talk">\(\lim_{\Delta x\to0}(2+\Delta x)=2\). 순간변화율은 '0초 동안의 변화'가 아니라 <b>평균변화율들이 한없이 가까워지는 값</b>으로 <b>정의</b>된 것. \(\Delta x\ne0\)인 상태에서 약분한 뒤 극한을 취하므로 \(\frac00\)을 피한다 — Part I 극한의 \(\frac00\) 꼴 처리와 똑같은 기술이다.</div>
+    </details>
+  </div>
+
+  <div class="kp">
+    <h3>미분계수</h3>
+    <div class="kp-body">함수 \(y=f(x)\)에서 \(x\)의 값이 \(a\)에서 \(a+\Delta x\)까지 변할 때의 평균변화율의 극한값
+      $$\lim_{\Delta x\to0}\frac{\Delta y}{\Delta x}=\lim_{\Delta x\to0}\frac{f(a+\Delta x)-f(a)}{\Delta x}$$
+      가 존재하면 \(y=f(x)\)는 \(x=a\)에서 <strong>미분가능</strong>하다고 한다. 이 극한값을 \(x=a\)에서의 <strong>순간변화율</strong> 또는 <strong>미분계수</strong>라 하고 \(f'(a)\)로 나타낸다.
+      <div class="kp-cond">$$f'(a)=\lim_{\Delta x\to0}\frac{f(a+\Delta x)-f(a)}{\Delta x}=\lim_{x\to a}\frac{f(x)-f(a)}{x-a}$$</div>
+      <span style="color:#666">\(a+\Delta x=x\)로 놓으면 \(\Delta x=x-a\)이고, \(\Delta x\to0\)일 때 \(x\to a\). &nbsp; \(f'(a)\)는 'f prime a'라고 읽는다.</span><br>
+      함수 \(y=f(x)\)가 어떤 열린구간에 속하는 모든 \(x\)에서 미분가능할 때 '\(f(x)\)는 그 구간에서 미분가능하다'고 한다.
+    </div>
+  </div>
+
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 2</span><span class="we-title">함수 \(f(x)=x^2+2x\)의 \(x=1\)에서의 미분계수를 구하시오.</span></div>
+    <div class="we-body">
+      <div class="we-step"><span class="we-lbl">풀이 1 (Δx 정의)</span><span class="we-math">\(\displaystyle\lim_{\Delta x\to0}\frac{\{(1+\Delta x)^2+2(1+\Delta x)\}-3}{\Delta x}=\lim_{\Delta x\to0}\frac{4\Delta x+(\Delta x)^2}{\Delta x}=\lim_{\Delta x\to0}(4+\Delta x)=4\)</span></div>
+      <div class="we-step"><span class="we-lbl">풀이 2 (x→a 정의)</span><span class="we-math">\(\displaystyle\lim_{x\to1}\frac{x^2+2x-3}{x-1}=\lim_{x\to1}\frac{(x+3)(x-1)}{x-1}=\lim_{x\to1}(x+3)=4\)</span></div>
+      <div class="we-ans">\(f'(1)=4\)</div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 3</span><span class="q-title">다음 함수의 \(x=2\)에서의 미분계수를 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div><div class="qp">
+        <div class="qpi"><b>(1)</b> \(f(x)=5x-4\)</div>
+        <div class="qpi"><b>(2)</b> \(f(x)=3x^2-2x\)</div>
+      </div></div>
+      <div class="hint">정의를 이용하자. 두 가지 식 중 편한 쪽을 골라도 된다.</div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">(1)</span><span class="st">\(\displaystyle\lim_{\Delta x\to0}\frac{\{5(2+\Delta x)-4\}-6}{\Delta x}=\lim_{\Delta x\to0}\frac{5\Delta x}{\Delta x}=5\)</span></div>
+        <div class="ss"><span class="stag t-풀이">(2)</span><span class="st">\(\displaystyle\lim_{x\to2}\frac{3x^2-2x-8}{x-2}=\lim_{x\to2}\frac{(3x+4)(x-2)}{x-2}=\lim_{x\to2}(3x+4)=10\)</span></div>
+      </div><div class="sol-ans">(1) 5 &nbsp; (2) 10</div></div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge v">탐구 · 문제 4</span><span class="q-title">함수 \(f(x)\)가 \(x=a\)에서 미분가능할 때 극한값 \(\displaystyle\lim_{x\to a}\frac{f(x)-f(a)}{x^2-a^2}\)를 미분계수의 정의를 이용하여 구하는 과정이다. □ 안에 알맞은 것을 써넣으시오. (단, \(a\ne0\))</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="qt">$$\lim_{x\to a}\frac{f(x)-f(a)}{x^2-a^2}=\lim_{x\to a}\frac{f(x)-f(a)}{(x+a)(\,\square\,)}=\lim_{x\to a}\frac{f(x)-f(a)}{\square}\times\lim_{x\to a}\frac1{x+a}=\square\times\frac1{2a}$$</div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">빈칸</span><span class="st">\(x-a\), \(x-a\), \(f'(a)\)</span></div>
+        <div class="ss"><span class="stag t-정리">핵심</span><span class="st">분모를 '\(x-a\)' 모양으로 만들어 미분계수의 정의가 보이게 한다.</span></div>
+      </div><div class="sol-ans">\(\dfrac{f'(a)}{2a}\)</div></div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge v">과학+ 문제 5</span><span class="q-title">화성 표면으로부터 3 m 높이에서 5 m/s의 속도로 표면과 수직으로 던져 올린 돌의 \(x\)초 후의 높이를 \(y\) m라 할 때, \(y=-2x^2+5x+3\ (0\le x\le3)\)이라 한다. \(x=2\)에서의 돌의 높이의 순간변화율은 몇 m/s인지 구하시오.</span></div>
+    <div class="q-body">
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-계산">함숫값</span><span class="st">\(f(2)=-8+10+3=5\)</span></div>
+        <div class="ss"><span class="stag t-풀이">정의</span><span class="st">\(\displaystyle\lim_{\Delta x\to0}\frac{\{-2(2+\Delta x)^2+5(2+\Delta x)+3\}-5}{\Delta x}=\lim_{\Delta x\to0}\frac{-3\Delta x-2(\Delta x)^2}{\Delta x}=-3\)</span></div>
+        <div class="ss"><span class="stag t-정리">해석</span><span class="st">음수 → 2초 순간에 돌은 <b>내려오는 중</b>이다.</span></div>
+      </div><div class="sol-ans">−3 m/s</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 기하적 의미 -->
+<div id="s3" class="sec-block">
+  <div class="sec-tag"><span>Section 03</span><span>p.60–61, 64</span></div>
+  <div class="sec-title"><span class="sec-title-num">03</span>미분계수의 기하적 의미</div>
+  <div class="sec-desc">할선(secant)이 접선(tangent)이 되는 순간</div>
+
+  <div class="gq">
+    <div class="gq-hd">GUIDING QUESTIONS</div>
+    <div class="gq-item"><span class="gq-tag F">F</span><div><div class="gq-en">As a point Q moves along the curve through A, B, C toward P, what line does PQ approach?</div><div class="gq-kr">생각 열기: 곡선 위를 움직이는 점 Q가 A, B, C를 차례로 지나 점 P에 한없이 가까워질 때, 직선 PQ는 어떤 직선에 가까워지는가?</div></div></div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">Why is the derivative \(f'(a)\) the slope of the tangent line at \((a,f(a))\)?</div><div class="gq-kr">왜 미분계수 \(f'(a)\)는 점 \((a,f(a))\)에서의 접선의 기울기와 같은가?</div></div></div>
+    <div class="gq-item"><span class="gq-tag D">D</span><div><div class="gq-en">"A tangent touches a curve at exactly one point." Is this a good definition?</div><div class="gq-kr">'접선은 곡선과 한 점에서만 만나는 직선이다' — 이것은 좋은 정의일까?</div></div></div>
+    <details><summary>토론 포인트</summary>
+      <div class="gq-talk"><b>F/C</b> PQ의 기울기 = 평균변화율 \(\frac{\Delta y}{\Delta x}\). Q → P (\(\Delta x\to0\))이면 직선 PQ는 점 P를 지나는 한 직선 \(l\)(접선)에 가까워지고, 기울기는 \(\lim\frac{\Delta y}{\Delta x}=f'(a)\)로 간다.<br>
+      <b>D</b> 아니다. \(y=x^3\)의 원점에서의 접선 \(y=0\)은 곡선을 <b>가로지른다</b>; 포물선의 축에 평행한 직선은 한 점에서만 만나지만 접선이 아니다. 원에서 배운 정의는 일반 곡선에서 통하지 않는다 → <b>극한으로 정의</b>해야 한다.</div>
+    </details>
+  </div>
+
+  <div class="explore">
+    <div class="explore-hd">공학 도구 · 할선 AB가 접선으로 — \(f(x)=x^2-3x+2\), \(A(2,0)\)</div>
+    <div class="ctrl">\(\Delta x\) <input type="range" id="sec-h" min="-2" max="2.5" step="0.05" value="1.5"><span class="val" id="sec-val"></span></div>
+    <div class="fig"><svg id="fig-sec" viewBox="0 0 320 240"></svg><div class="fig-cap"><span style="color:#e8506c">빨강: 직선 AB (할선)</span> &nbsp; <span style="color:#7ec870">초록: A에서의 접선</span></div></div>
+    <div style="font-size:13px;color:var(--text-muted)">점 B를 A에 가까이 보내면(\(\Delta x\to0\)) 직선 AB의 기울기 \(\frac{\Delta y}{\Delta x}=1+\Delta x\)는 \(f'(2)=1\)에 가까워진다. 왼쪽(\(\Delta x\lt0\))에서 다가가도 마찬가지!</div>
+  </div>
+
+  <div class="kp">
+    <h3>미분계수의 기하적 의미</h3>
+    <div class="kp-body">함수 \(y=f(x)\)의 \(x=a\)에서의 미분계수 \(f'(a)\)는 곡선 \(y=f(x)\) 위의 점 \((a,f(a))\)에서의 <strong>접선의 기울기</strong>와 같다.<br>
+    <span style="color:#666">직선 \(l\)을 점 P에서의 <b>접선</b>, 점 P를 이 접선의 <b>접점</b>이라고 한다.</span></div>
+  </div>
+
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 3</span><span class="we-title">곡선 \(y=x^2-3\) 위의 점 \((1,-2)\)에서의 접선의 기울기를 구하시오.</span></div>
+    <div class="we-body">
+      <div class="ex-split">
+        <div>
+          <div class="we-step"><span class="we-lbl">접선의 기울기 = f′(1)</span><span class="we-math">\(\displaystyle\lim_{\Delta x\to0}\frac{\{(1+\Delta x)^2-3\}-(-2)}{\Delta x}\)</span></div>
+          <div class="we-step"><span class="we-lbl">약분</span><span class="we-math">\(\displaystyle=\lim_{\Delta x\to0}\frac{2\Delta x+(\Delta x)^2}{\Delta x}=\lim_{\Delta x\to0}(2+\Delta x)=2\)</span></div>
+        </div>
+        <div class="fig"><svg id="fig-ex3" viewBox="0 0 300 220"></svg></div>
+      </div>
+      <div class="we-ans">2</div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 6</span><span class="q-title">다음 곡선 위의 주어진 점에서의 접선의 기울기를 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div><div class="qp">
+        <div class="qpi"><b>(1)</b> \(y=4x^2-3x\quad(2,\ 10)\)</div>
+        <div class="qpi"><b>(2)</b> \(y=-2x^2+5x+8\quad(-1,\ 1)\)</div>
+      </div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">(1)</span><span class="st">\(\displaystyle\lim_{x\to2}\frac{4x^2-3x-10}{x-2}=\lim_{x\to2}\frac{(4x+5)(x-2)}{x-2}=13\)</span></div>
+        <div class="ss"><span class="stag t-풀이">(2)</span><span class="st">\(\displaystyle\lim_{x\to-1}\frac{-2x^2+5x+7}{x+1}=\lim_{x\to-1}\frac{-(2x-7)(x+1)}{x+1}=\lim_{x\to-1}(-2x+7)=9\)</span></div>
+      </div><div class="sol-ans">(1) 13 &nbsp; (2) 9</div></div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge v">탐구 · 문제 7</span><span class="q-title">실수 전체의 집합에서 미분가능한 함수 \(y=f(x)\)의 그래프가 아래와 같다. 평균변화율과 미분계수의 기하적 의미를 이용하여 \(\dfrac{f(b)-f(a)}{b-a},\ f'(a),\ f'(b)\)를 작은 것부터 차례대로 나열하시오.</span></div>
+    <div class="q-body">
+      <div class="fig" style="margin:12px 18px 0"><svg id="fig-q7" viewBox="0 0 300 220"></svg></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">해석</span><span class="st">세 값은 각각 할선 AB, A에서의 접선, B에서의 접선의 기울기. 그래프가 점점 완만해지므로(위로 볼록하게 증가) A에서 가장 가파르고 B에서 가장 완만하다.</span></div>
+      </div><div class="sol-ans">\(f'(b)\lt\dfrac{f(b)-f(a)}{b-a}\lt f'(a)\)</div></div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge v">확인</span><span class="q-title">위의 공학 도구와 같은 방법으로 곡선 \(f(x)=-x^2+2x+1\) 위의 점 \(A(-1,-2)\)에서의 접선을 그려 보고, \(f(x)\)의 \(x=-1\)에서의 미분계수의 기하적 의미를 확인해 보자.</span></div>
+    <div class="q-body">
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="fig"><svg id="fig-chk" viewBox="0 0 300 220"></svg></div>
+        <div class="sol-steps" style="margin-top:8px">
+          <div class="ss"><span class="stag t-계산">f′(−1)</span><span class="st">\(\displaystyle\lim_{x\to-1}\frac{-x^2+2x+1-(-2)}{x+1}=\lim_{x\to-1}\frac{-(x-3)(x+1)}{x+1}=4\)</span></div>
+        </div><div class="sol-ans">접선의 기울기 = \(f'(-1)=4\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 미분가능성과 연속성 -->
+<div id="s4" class="sec-block">
+  <div class="sec-tag"><span>Section 04</span><span>p.62–63</span></div>
+  <div class="sec-title"><span class="sec-title-num">04</span>미분가능성과 연속성</div>
+  <div class="sec-desc">학습목표: 함수의 미분가능성과 연속성의 관계를 설명하고, 이를 활용할 수 있다.</div>
+
+  <div class="gq">
+    <div class="gq-hd">GUIDING QUESTIONS</div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">If a function is differentiable at \(x=a\), must it be continuous there? Why?</div><div class="gq-kr">\(x=a\)에서 미분가능하면 반드시 연속일까? 그 이유는?</div></div></div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">Can a graph be unbroken at a point and still have no tangent there?</div><div class="gq-kr">그래프가 끊어지지 않았는데도 접선을 그을 수 없는 점이 있을까? (\(y=|x|\)의 원점을 떠올려 보자.)</div></div></div>
+    <div class="gq-item"><span class="gq-tag D">D</span><div><div class="gq-en">"Smooth" vs "unbroken": which property is stronger, and how would you convince a classmate?</div><div class="gq-kr">'매끄럽다(미분가능)'와 '끊어지지 않았다(연속)' 중 어느 쪽이 더 강한 조건일까? 친구를 어떻게 설득할까?</div></div></div>
+    <details><summary>토론 포인트</summary>
+      <div class="gq-talk">\(f(x)-f(a)=\dfrac{f(x)-f(a)}{x-a}\times(x-a)\) → \(f'(a)\times0=0\). 미분가능하면 연속. 그러나 \(y=|x|\)는 원점에서 이어져 있지만 <b>뾰족</b>해서 좌·우 기울기가 −1, 1로 다르다 → 미분불가능. 즉 미분가능 ⊂ 연속, 미분가능이 더 강한 조건.</div>
+    </details>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge v">함께하기</span><span class="q-title">함수 \(f(x)\)가 \(x=a\)에서 미분가능하면 \(f(x)\)는 \(x=a\)에서 연속임을 보이는 과정이다. □ 안에 알맞은 것을 써넣어 보자.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="qt">
+        \(f(x)\)가 \(x=a\)에서 미분가능하면 \(\displaystyle f'(a)=\lim_{\Delta x\to0}\frac{f(a+\Delta x)-f(a)}{\Delta x}=\lim_{x\to a}\frac{f(x)-f(a)}{\square}\)가 존재하므로
+        $$\lim_{x\to a}\{f(x)-f(a)\}=\lim_{x\to a}\left\{\frac{f(x)-f(a)}{\square}\times(x-a)\right\}=\lim_{x\to a}\frac{f(x)-f(a)}{\square}\times\lim_{x\to a}(x-a)=\square\times0=0$$
+        따라서 \(\displaystyle\lim_{x\to a}f(x)=\square\)이므로 \(f(x)\)는 \(x=a\)에서 연속이다.
+      </div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-ans">\(x-a\), \(x-a\), \(x-a\), \(f'(a)\), \(f(a)\)</div>
+      <div class="info"><strong>참고:</strong> \(\lim_{x\to a}\{f(x)-k\}=0\)이면 \(\lim_{x\to a}f(x)=k\) (단, \(k\)는 실수)</div></div>
+    </div>
+  </div>
+
+  <div class="kp">
+    <h3>미분가능성과 연속성</h3>
+    <div class="kp-body">함수 \(f(x)\)가 \(x=a\)에서 <b>미분가능하면</b> \(f(x)\)는 \(x=a\)에서 <b>연속</b>이다.<br>
+    그러나 그 <b>역은 성립하지 않는다</b>. 즉, \(x=a\)에서 연속이지만 미분가능하지 않은 경우가 있다.
+    <div class="kp-cond" style="text-align:center">함수 ⊃ 연속인 함수 ⊃ 미분가능한 함수</div></div>
+  </div>
+
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 4</span><span class="we-title">함수 \(f(x)=|x|\)는 \(x=0\)에서 연속이지만 미분가능하지 않음을 보이시오.</span></div>
+    <div class="we-body">
+      <div class="ex-split">
+        <div>
+          <div class="we-step"><span class="we-lbl">연속</span><span class="we-math">\(f(0)=0,\ \lim_{x\to0}|x|=0\) → \(\lim_{x\to0}f(x)=f(0)\)</span></div>
+          <div class="we-step"><span class="we-lbl">우극한</span><span class="we-math">\(\displaystyle\lim_{x\to0+}\frac{|x|}{x}=\lim_{x\to0+}\frac{x}{x}=1\)</span></div>
+          <div class="we-step"><span class="we-lbl">좌극한</span><span class="we-math">\(\displaystyle\lim_{x\to0-}\frac{|x|}{x}=\lim_{x\to0-}\frac{-x}{x}=-1\)</span></div>
+          <div class="we-step"><span class="we-lbl">결론</span><span class="we-math">좌·우극한이 달라 \(\lim_{x\to0}\frac{f(x)-f(0)}{x-0}\)이 존재하지 않는다.</span></div>
+        </div>
+        <div class="fig"><svg id="fig-abs" viewBox="0 0 300 220"></svg><div class="fig-cap">원점에서 좌·우 기울기 −1, 1</div></div>
+      </div>
+      <div class="we-ans">\(x=0\)에서 연속이지만 미분가능하지 않다.</div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 8</span><span class="q-title">함수 \(f(x)=|x^2-1|\)은 \(x=1\)에서 연속이지만 미분가능하지 않음을 보이시오.</span></div>
+    <div class="q-body">
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol">
+        <div class="fig"><svg id="fig-q8" viewBox="0 0 300 220"></svg></div>
+        <div class="sol-steps" style="margin-top:8px">
+          <div class="ss"><span class="stag t-조건">연속</span><span class="st">\(f(1)=0,\ \lim_{x\to1}|x^2-1|=0=f(1)\)</span></div>
+          <div class="ss"><span class="stag t-계산">우극한</span><span class="st">\(x\to1+\)이면 \(x^2-1\gt0\): \(\dfrac{x^2-1}{x-1}=x+1\to2\)</span></div>
+          <div class="ss"><span class="stag t-계산">좌극한</span><span class="st">\(x\to1-\)이면 \(x^2-1\lt0\): \(\dfrac{-(x^2-1)}{x-1}=-(x+1)\to-2\)</span></div>
+        </div><div class="sol-ans">\(2\ne-2\) → 미분계수가 존재하지 않는다. 따라서 연속이지만 미분가능하지 않다.</div></div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge v">생각 넓히기</span><span class="q-title">함수 \(f(x)=\begin{cases}\square&(x\le3)\\\square&(x\gt3)\end{cases}\)가 \(x=3\)에서 연속이지만 미분가능하지 않도록 □ 안에 알맞은 일차식 또는 이차식을 써넣어 보자.</span></div>
+    <div class="q-body">
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기 (예시)</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-조건">조건 ①</span><span class="st">연속: 두 식의 \(x=3\)에서의 값이 같아야 한다.</span></div>
+        <div class="ss"><span class="stag t-조건">조건 ②</span><span class="st">미분불가능: \(x=3\)에서 두 식의 기울기(좌·우 미분계수)가 달라야 한다.</span></div>
+        <div class="ss"><span class="stag t-풀이">예 1</span><span class="st">\(x\) (\(x\le3\)), \(-x+6\) (\(x\gt3\)) : 값 3, 기울기 1과 −1</span></div>
+        <div class="ss"><span class="stag t-풀이">예 2</span><span class="st">\(x^2\) (\(x\le3\)), \(2x+3\) (\(x\gt3\)) : 값 9, 기울기 6과 2</span></div>
+      </div><div class="sol-ans">답은 여러 가지 — '같은 값, 다른 기울기'</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════ PART II ═════════ -->
+<div class="part p2">
+  <div class="part-tag">PART II</div>
+  <div class="part-title">도함수</div>
+  <div class="part-src">교과서 Ⅱ-1 · 02 도함수 (p.65–71)</div>
+</div>
+
+<!-- S5 도함수 -->
+<div id="s5" class="sec-block p2s">
+  <div class="sec-tag"><span>Section 05</span><span>p.65–66</span></div>
+  <div class="sec-title"><span class="sec-title-num">05</span>도함수</div>
+  <div class="sec-desc">학습목표: 함수 \(y=x^n\)의 도함수를 구할 수 있다.</div>
+
+  <div class="gq">
+    <div class="gq-hd">GUIDING QUESTIONS</div>
+    <div class="gq-item"><span class="gq-tag F">F</span><div><div class="gq-en">For \(f(x)=x^2\), \(f'(a)=2a\). Complete the table. What pattern do you see?</div><div class="gq-kr">생각 열기: \(f(x)=x^2\)의 \(f'(a)=2a\)이다. 표를 완성해 보자. 어떤 규칙이 보이는가?</div></div></div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">What is the difference between a derivative <i>value</i> \(f'(a)\) and the derivative <i>function</i> \(f'(x)\)?</div><div class="gq-kr">'미분계수' \(f'(a)\)(하나의 수)와 '도함수' \(f'(x)\)(하나의 함수)는 무엇이 다른가?</div></div></div>
+    <div class="explore" style="margin:10px 0 0">
+      <div class="ctrl"><span>\(a\)</span><button class="btn" data-a="0">0</button><button class="btn" data-a="1">1</button><button class="btn" data-a="2">2</button><button class="btn" data-a="3">3</button><button class="btn" data-a="4">4</button><span class="val" id="tbl-val">버튼을 눌러 표를 채워 보자</span></div>
+      <table class="tbl" id="fa-tbl"><tr><th>a</th><td>⋯</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>⋯</td></tr><tr><th>f′(a)</th><td>⋯</td><td id="fa0">?</td><td id="fa1">?</td><td id="fa2">?</td><td id="fa3">?</td><td id="fa4">?</td><td>⋯</td></tr></table>
+      <div class="fig" style="margin-top:8px"><svg id="fig-dtab" viewBox="0 0 300 220"></svg><div class="fig-cap">점 \((a,\ f'(a))\)를 모으면 → 도함수 \(y=f'(x)=2x\)의 그래프</div></div>
+    </div>
+    <details><summary>토론 포인트</summary>
+      <div class="gq-talk">\(f'(a)\)는 \(a\)의 값에 따라 <b>하나씩 정해지는 수</b> → \(a\)를 \(x\)로 바꾸면 \(x\)에 \(f'(x)\)를 대응시키는 <b>새로운 함수</b>가 된다. 미분계수는 도함수의 함숫값이다: \(f'(3)=2\times3=6\).</div>
+    </details>
+  </div>
+
+  <div class="kp">
+    <h3>도함수</h3>
+    <div class="kp-body">함수 \(y=f(x)\)가 미분가능한 각각의 \(x\)에 미분계수 \(f'(x)\)를 대응시키면 새로운 함수를 얻는다. 이 함수를 \(f(x)\)의 <strong>도함수</strong>라 하고
+      \(f'(x),\ y',\ \dfrac{dy}{dx},\ \dfrac{d}{dx}f(x)\) 와 같이 나타낸다.
+      <div class="kp-cond">$$f'(x)=\lim_{\Delta x\to0}\frac{f(x+\Delta x)-f(x)}{\Delta x}=\lim_{h\to0}\frac{f(x+h)-f(x)}{h}$$</div>
+      도함수를 구하는 것을 '\(f(x)\)를 \(x\)에 대하여 <b>미분한다</b>'고 하며, 그 계산법을 <b>미분법</b>이라고 한다. 미분계수 \(f'(a)\)는 도함수 \(f'(x)\)에 \(x=a\)를 대입한 값이다.
+    </div>
+  </div>
+  <div class="info"><strong>예:</strong> \(f(x)=x^2\)이면 \(f'(x)=2x,\ y'=2x,\ \dfrac{dy}{dx}=2x,\ \dfrac{d}{dx}f(x)=2x\). &nbsp; \(\frac{dy}{dx}\)는 'dy dx'라고 읽는다. <i>(IB에서는 \(\frac{dy}{dx}\) 표기를 특히 많이 쓴다.)</i></div>
+
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 1</span><span class="we-title">\(f(x)=x^2-3x\)의 도함수를 구하고, \(x=3\)에서의 미분계수를 구하시오.</span></div>
+    <div class="we-body">
+      <div class="we-step"><span class="we-lbl">정의</span><span class="we-math">\(\displaystyle f'(x)=\lim_{h\to0}\frac{\{(x+h)^2-3(x+h)\}-(x^2-3x)}{h}\)</span></div>
+      <div class="we-step"><span class="we-lbl">약분</span><span class="we-math">\(\displaystyle=\lim_{h\to0}\frac{2xh+h^2-3h}{h}=\lim_{h\to0}(2x+h-3)=2x-3\)</span></div>
+      <div class="we-step"><span class="we-lbl">대입</span><span class="we-math">\(f'(3)=2\times3-3=3\)</span></div>
+      <div class="we-ans">\(f'(x)=2x-3,\ f'(3)=3\)</div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 1</span><span class="q-title">다음 함수의 도함수를 구하고, \(x=1\)에서의 미분계수를 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div><div class="qp">
+        <div class="qpi"><b>(1)</b> \(f(x)=2x-5\)</div>
+        <div class="qpi"><b>(2)</b> \(f(x)=2x^2+3x-4\)</div>
+      </div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">(1)</span><span class="st">\(\displaystyle\lim_{h\to0}\frac{\{2(x+h)-5\}-(2x-5)}{h}=\lim_{h\to0}\frac{2h}{h}=2\) → \(f'(1)=2\)</span></div>
+        <div class="ss"><span class="stag t-풀이">(2)</span><span class="st">\(\displaystyle\lim_{h\to0}\frac{4xh+2h^2+3h}{h}=\lim_{h\to0}(4x+2h+3)=4x+3\) → \(f'(1)=7\)</span></div>
+      </div><div class="sol-ans">(1) \(f'(x)=2,\ f'(1)=2\) &nbsp; (2) \(f'(x)=4x+3,\ f'(1)=7\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S6 x^n -->
+<div id="s6" class="sec-block p2s">
+  <div class="sec-tag"><span>Section 06</span><span>p.67</span></div>
+  <div class="sec-title"><span class="sec-title-num">06</span>함수 \(y=x^n\)과 상수함수의 도함수</div>
+  <div class="sec-desc">정의로 매번 계산하지 않아도 되는 이유</div>
+
+  <div class="gq">
+    <div class="gq-hd">GUIDING QUESTIONS</div>
+    <div class="gq-item"><span class="gq-tag F">F</span><div><div class="gq-en">\((x)'=1,\ (x^2)'=2x\). Guess \((x^3)'\) and \((x^{10})'\). What is the pattern?</div><div class="gq-kr">\((x)'=1,\ (x^2)'=2x\)이다. \((x^3)'\)과 \((x^{10})'\)을 추측해 보자. 규칙은?</div></div></div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">A guess from a few cases is not a proof. Which algebraic identity turns the pattern into a proof for every positive integer \(n\)?</div><div class="gq-kr">몇 개의 예로 얻은 추측은 증명이 아니다. 어떤 인수분해 공식이 모든 양의 정수 \(n\)에 대한 증명을 가능하게 할까?</div></div></div>
+    <details><summary>토론 포인트</summary>
+      <div class="gq-talk">추측: \((x^n)'=nx^{n-1}\). 증명의 열쇠: \(a^n-b^n=(a-b)(a^{n-1}+a^{n-2}b+\cdots+ab^{n-2}+b^{n-1})\). \(a=x+h,\ b=x\)로 놓으면 \(h\)가 약분되고, \(h\to0\)이면 괄호 안의 \(n\)개 항이 모두 \(x^{n-1}\)이 된다. (IB HL에서 배우는 이항정리로도 증명 가능)</div>
+    </details>
+  </div>
+
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">증명</span><span class="we-title">\(n\ge2\)일 때 \(f(x)=x^n\)의 도함수</span></div>
+    <div class="we-body">
+      <div class="we-step"><span class="we-lbl">정의</span><span class="we-math">\(\displaystyle y'=\lim_{h\to0}\frac{(x+h)^n-x^n}{h}\)</span></div>
+      <div class="we-step"><span class="we-lbl">인수분해</span><span class="we-math">\(\displaystyle=\lim_{h\to0}\frac{\{(x+h)-x\}\{(x+h)^{n-1}+(x+h)^{n-2}x+\cdots+x^{n-1}\}}{h}\)</span></div>
+      <div class="we-step"><span class="we-lbl">약분 후 극한</span><span class="we-math">\(=\underbrace{x^{n-1}+x^{n-1}+\cdots+x^{n-1}}_{n\text{개}}=nx^{n-1}\)</span></div>
+      <div class="we-step"><span class="we-lbl">상수함수</span><span class="we-math">\(\displaystyle y'=\lim_{h\to0}\frac{c-c}{h}=\lim_{h\to0}\frac0h=0\)</span></div>
+    </div>
+  </div>
+
+  <div class="kp">
+    <h3>함수 \(y=x^n\)(\(n\)은 양의 정수)과 상수함수의 도함수</h3>
+    <div class="kp-body">
+      <div class="kp-cond">❶ \(y=x\)의 도함수는 \(y'=1\)<br>❷ \(y=x^n\) (\(n\ge2\)인 정수)의 도함수는 \(y'=nx^{n-1}\)<br>❸ \(y=c\) (\(c\)는 상수)의 도함수는 \(y'=0\)</div>
+      <span style="color:#666">기억법: \((x^n)'=n x^{n-1}\) — 지수를 앞으로 내리고, 지수는 1 줄인다.</span>
+    </div>
+  </div>
+  <div class="info"><strong>보기:</strong> ① \(y=x^{10}\)의 도함수는 \(y'=10x^9\) &nbsp; ② \(y=16\)의 도함수는 \(y'=0\)</div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 2</span><span class="q-title">다음 함수의 도함수를 구하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div><div class="qp">
+        <div class="qpi"><b>(1)</b> \(y=x^7\)</div>
+        <div class="qpi"><b>(2)</b> \(y=\dfrac52\)</div>
+      </div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-ans">(1) \(y'=7x^6\) &nbsp; (2) \(y'=0\) (상수함수)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S7 실수배 합 차 -->
+<div id="s7" class="sec-block p2s">
+  <div class="sec-tag"><span>Section 07</span><span>p.68–69</span></div>
+  <div class="sec-title"><span class="sec-title-num">07</span>함수의 실수배, 합, 차의 미분법</div>
+  <div class="sec-desc">학습목표: 함수의 실수배, 합, 차, 곱의 미분법을 알고, 다항함수의 도함수를 구할 수 있다.</div>
+
+  <div class="gq">
+    <div class="gq-hd">GUIDING QUESTIONS</div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">Why can we differentiate a polynomial term by term? Which limit laws make this work?</div><div class="gq-kr">다항함수를 왜 '항별로' 미분해도 될까? 극한의 어떤 성질이 이를 보장하는가?</div></div></div>
+    <div class="gq-item"><span class="gq-tag D">D</span><div><div class="gq-en">If differentiation splits nicely over sums, should it also split over products: \(\{f(x)g(x)\}'=f'(x)g'(x)\)?</div><div class="gq-kr">미분이 합에서는 잘 나누어진다면, 곱에서도 \(\{f(x)g(x)\}'=f'(x)g'(x)\)일까? (다음 단원 예고)</div></div></div>
+    <details><summary>토론 포인트</summary>
+      <div class="gq-talk">\(\lim kf(x)=k\lim f(x)\), \(\lim\{f+g\}=\lim f+\lim g\) → 미분도 실수배·합·차를 그대로 통과한다. 곱은? \(f=g=x\)이면 \((x^2)'=2x\)인데 \(f'g'=1\cdot1=1\) → <b>틀림!</b> 곱에는 다른 규칙이 필요하다.</div>
+    </details>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge v">함께하기</span><span class="q-title">두 함수 \(f(x)\)와 \(g(x)\)가 미분가능할 때 \(y=kf(x)\) (\(k\)는 실수), \(y=f(x)+g(x)\)의 도함수를 구하는 과정이다. □ 안에 알맞은 것을 써넣어 보자.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="qt">
+        ■ \(\displaystyle y=kf(x):\ y'=\lim_{h\to0}\frac{kf(x+h)-kf(x)}{h}=\lim_{h\to0}\frac{k\{\ \square\ \}}{h}=k\lim_{h\to0}\frac{\square}{h}=k\,\square\)<br>
+        ■ \(\displaystyle y=f(x)+g(x):\ y'=\lim_{h\to0}\frac{\{\square-f(x)\}+\{\square-g(x)\}}{h}=\lim_{h\to0}\frac{\square-f(x)}{h}+\lim_{h\to0}\frac{\square-g(x)}{h}=\square+g'(x)\)
+      </div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">실수배</span><span class="st">\(f(x+h)-f(x)\), \(f(x+h)-f(x)\), \(f'(x)\)</span></div>
+        <div class="ss"><span class="stag t-풀이">합</span><span class="st">\(f(x+h)\), \(g(x+h)\), \(f(x+h)\), \(g(x+h)\), \(f'(x)\)</span></div>
+        <div class="ss"><span class="stag t-정리">차</span><span class="st">\(\{f(x)-g(x)\}'=\{f(x)+(-1)\times g(x)\}'=f'(x)+(-1)\times g'(x)=f'(x)-g'(x)\)</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="kp">
+    <h3>함수의 실수배, 합, 차의 미분법</h3>
+    <div class="kp-body">두 함수 \(f(x)\)와 \(g(x)\)가 미분가능할 때,
+      <div class="kp-cond">❶ \(\{kf(x)\}'=kf'(x)\) (단, \(k\)는 실수)<br>❷ \(\{f(x)+g(x)\}'=f'(x)+g'(x)\)<br>❸ \(\{f(x)-g(x)\}'=f'(x)-g'(x)\)</div>
+      <span style="color:#666">❷와 ❸은 세 개 이상의 함수의 합과 차에 대해서도 성립한다.</span>
+    </div>
+  </div>
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">보기</span><span class="we-title">함수 \(y=2x^2-4x+6\)을 미분하면</span></div>
+    <div class="we-body">
+      <div class="we-step"><span class="we-lbl">❷❸</span><span class="we-math">\(y'=(2x^2)'-(4x)'+(6)'\)</span></div>
+      <div class="we-step"><span class="we-lbl">❶</span><span class="we-math">\(=2(x^2)'-4(x)'+(6)'=2\times2x-4\times1+0\)</span></div>
+      <div class="we-ans">\(y'=4x-4\)</div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 3</span><span class="q-title">다음 함수를 미분하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div><div class="qp">
+        <div class="qpi"><b>(1)</b> \(y=x^2-3x-1\)</div>
+        <div class="qpi"><b>(2)</b> \(y=2x^5-x^3-5x^2+x\)</div>
+      </div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-ans">(1) \(y'=2x-3\) &nbsp; (2) \(y'=10x^4-3x^2-10x+1\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S8 곱의 미분법 -->
+<div id="s8" class="sec-block p2s">
+  <div class="sec-tag"><span>Section 08</span><span>p.69–70</span></div>
+  <div class="sec-title"><span class="sec-title-num">08</span>함수의 곱의 미분법</div>
+  <div class="sec-desc">\(\{f(x)g(x)\}'\ne f'(x)g'(x)\) — 그럼 무엇일까?</div>
+
+  <div class="gq">
+    <div class="gq-hd">GUIDING QUESTIONS</div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">A rectangle has sides \(f(x)\) and \(g(x)\). When both sides grow a little, how much does the area grow?</div><div class="gq-kr">가로 \(f(x)\), 세로 \(g(x)\)인 직사각형의 두 변이 조금씩 늘어나면 넓이는 얼마나 늘어날까?</div></div></div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">In the proof, why do we add and subtract the same term \(f(x)g(x+h)\)?</div><div class="gq-kr">증명에서 왜 같은 항 \(f(x)g(x+h)\)를 빼고 더하는 '트릭'을 쓸까?</div></div></div>
+    <div class="explore" style="margin:10px 0 0">
+      <div class="ctrl">\(h\) <input type="range" id="rect-h" min="0" max="1" step="0.02" value="0.6"><span class="val" id="rect-val"></span></div>
+      <div class="fig"><svg id="fig-rect" viewBox="0 0 300 220"></svg><div class="fig-cap">증가한 넓이 = <span style="color:#4a9fd4">Δf·g</span> + <span style="color:#d4a043">f·Δg</span> + <span style="color:#e8506c">Δf·Δg</span> → \(h\to0\)이면 빨간 조각은 무시할 만큼 작아진다</div></div>
+    </div>
+    <details><summary>토론 포인트</summary>
+      <div class="gq-talk">\(\Delta(fg)=\Delta f\cdot g+f\cdot\Delta g+\Delta f\cdot\Delta g\). \(h\)로 나누고 \(h\to0\)이면 마지막 항은 \(\frac{\Delta f}{h}\cdot\Delta g\to f'\cdot0=0\). 남는 것: \(f'g+fg'\).<br>'빼고 더하기'는 식을 \(\frac{f(x+h)-f(x)}{h}\), \(\frac{g(x+h)-g(x)}{h}\)처럼 <b>미분계수의 정의 모양</b>으로 나누기 위한 것. \(\lim g(x+h)=g(x)\)는 미분가능 ⇒ 연속(Section 04) 덕분!</div>
+    </details>
+  </div>
+
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">유도</span><span class="we-title">\(y=f(x)g(x)\)의 도함수</span></div>
+    <div class="we-body">
+      <div class="we-step"><span class="we-lbl">정의</span><span class="we-math">\(\displaystyle y'=\lim_{h\to0}\frac{f(x+h)g(x+h)-f(x)g(x)}{h}\)</span></div>
+      <div class="we-step"><span class="we-lbl">빼고 더하기</span><span class="we-math">\(\displaystyle=\lim_{h\to0}\frac{\{f(x+h)-f(x)\}g(x+h)+f(x)\{g(x+h)-g(x)\}}{h}\)</span></div>
+      <div class="we-step"><span class="we-lbl">나누기</span><span class="we-math">\(\displaystyle=\lim_{h\to0}\frac{f(x+h)-f(x)}{h}\times\lim_{h\to0}g(x+h)+f(x)\times\lim_{h\to0}\frac{g(x+h)-g(x)}{h}\)</span></div>
+      <div class="we-step"><span class="we-lbl">g 연속</span><span class="we-math">\(=f'(x)g(x)+f(x)g'(x)\)</span></div>
+    </div>
+  </div>
+
+  <div class="kp">
+    <h3>함수의 곱의 미분법 (라이프니츠 법칙)</h3>
+    <div class="kp-body">두 함수 \(f(x)\)와 \(g(x)\)가 미분가능할 때,
+      <div class="kp-cond">$$\{f(x)g(x)\}'=f'(x)g(x)+f(x)g'(x)$$</div>
+      <span style="color:#666">라이프니츠(Leibniz, 1646~1716): 독일의 수학자로 함수의 곱의 미분법을 발견. IB에서는 <i>product rule</i>.</span>
+    </div>
+  </div>
+
+  <div class="we">
+    <div class="we-hd"><span class="we-badge">예제 2</span><span class="we-title">함수 \(y=(2x+3)(x^2-3x+4)\)를 미분하시오.</span></div>
+    <div class="we-body">
+      <div class="we-step"><span class="we-lbl">곱의 미분법</span><span class="we-math">\(y'=(2x+3)'(x^2-3x+4)+(2x+3)(x^2-3x+4)'\)</span></div>
+      <div class="we-step"><span class="we-lbl">계산</span><span class="we-math">\(=2(x^2-3x+4)+(2x+3)(2x-3)=6x^2-6x-1\)</span></div>
+      <div class="we-ans">\(y'=6x^2-6x-1\)</div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">문제 4</span><span class="q-title">다음 함수를 미분하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="ql">문제</div><div class="qp">
+        <div class="qpi"><b>(1)</b> \(y=(x+2)(3x-2)\)</div>
+        <div class="qpi"><b>(2)</b> \(y=(x-5)(3x^2+2x+4)\)</div>
+      </div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">(1)</span><span class="st">\(1\cdot(3x-2)+(x+2)\cdot3=6x+4\)</span></div>
+        <div class="ss"><span class="stag t-풀이">(2)</span><span class="st">\(1\cdot(3x^2+2x+4)+(x-5)(6x+2)=3x^2+2x+4+6x^2-28x-10=9x^2-26x-6\)</span></div>
+      </div><div class="sol-ans">(1) \(y'=6x+4\) &nbsp; (2) \(y'=9x^2-26x-6\)</div></div>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge v">생각 넓히기</span><span class="q-title">세 함수의 곱은 어떻게 미분할까? — "세 함수의 곱을 두 함수의 곱으로 생각해 봐!" &nbsp; \(y'=\{f(x)g(x)\}'h(x)+\{f(x)g(x)\}h'(x)\)</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="qp one">
+        <div class="qpi"><b>활동 ❶</b> 세 함수 \(f(x), g(x), h(x)\)가 미분가능할 때, \(y=f(x)g(x)h(x)\)를 미분하는 과정을 설명해 보자.</div>
+        <div class="qpi"><b>활동 ❷</b> 활동 ❶을 이용하여 함수 \(y=(x-2)(x^2+1)(x^2+2x+3)\)을 미분해 보자.</div>
+      </div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">활동 ❶</span><span class="st">\(\{f g\}'h+(fg)h'=(f'g+fg')h+fgh'\) → \(\boxed{y'=f'gh+fg'h+fgh'}\) (한 번에 하나씩만 미분)</span></div>
+        <div class="ss"><span class="stag t-계산">활동 ❷</span><span class="st">\(y'=(x^2+1)(x^2+2x+3)+(x-2)\cdot2x\cdot(x^2+2x+3)+(x-2)(x^2+1)(2x+2)\)</span></div>
+        <div class="ss"><span class="stag t-정리">정리</span><span class="st">전개하면 \(y=x^5-6x^2-x-6\)이므로 \(y'=5x^4-12x-1\) (두 방법의 결과 일치 확인!)</span></div>
+      </div><div class="sol-ans">\(y'=5x^4-12x-1\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S9 탐구 -->
+<div id="s9" class="sec-block p2s">
+  <div class="sec-tag"><span>탐구 &amp; 융합</span><span>p.71</span></div>
+  <div class="sec-title"><span class="sec-title-num">+</span>미분으로 한계 비용을 설명하다</div>
+  <div class="sec-desc">경제학의 '한계(marginal)' = 미분</div>
+
+  <div class="gq">
+    <div class="gq-hd">GUIDING QUESTIONS</div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">When production is 10,000 units, adding 1 more unit is a tiny change. Why can economists treat \(\Delta x=1\) as if \(\Delta x\to0\)?</div><div class="gq-kr">생산량이 1만 대일 때 1대 추가는 아주 미세한 증가량이다. 왜 \(\Delta x=1\)을 \(\Delta x\to0\)처럼 다룰 수 있을까?</div></div></div>
+    <div class="gq-item"><span class="gq-tag TOK">TOK</span><div><div class="gq-en">Mathematics treats \(x\) as continuous, but you can't produce 0.37 of a smartphone. When is it reasonable to model a discrete world with continuous mathematics?</div><div class="gq-kr">수학은 \(x\)를 연속으로 다루지만 스마트폰 0.37대는 만들 수 없다. 불연속적인 현실을 연속 모델로 다루는 것은 언제 타당할까?</div></div></div>
+    <details><summary>토론 포인트</summary>
+      <div class="gq-talk">\(x\)가 매우 크면 \(\frac{\Delta C}{\Delta x}\)(\(\Delta x=1\))와 \(C'(x)\)의 차이가 상대적으로 무시할 만큼 작다. 예: 아래 탐구에서 \(C(1001)-C(1000)=86.003\), \(C'(1000)=86\). 모델은 '정확한 현실'이 아니라 '충분히 좋은 근사'로 정당화된다 — IB의 수학적 모델링 관점.</div>
+    </details>
+  </div>
+
+  <div class="kp">
+    <h3>한계 비용 (marginal cost)</h3>
+    <div class="kp-body">제품 1단위를 더 생산하는 데 추가로 드는 비용을 <strong>한계 비용</strong>이라 한다. 총비용 함수 \(C(x)\)의 평균변화율 \(\frac{\Delta C}{\Delta x}=\frac{C(x+\Delta x)-C(x)}{\Delta x}\)에서 \(\Delta x\to0\)으로 보면
+      <div class="kp-cond">$$M(x)=\lim_{\Delta x\to0}\frac{\Delta C}{\Delta x}=C'(x)$$</div>
+      <span style="color:#666">(출처: Hoy, M. 외, 『Mathematics for Economics』)</span>
+    </div>
+  </div>
+
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge v">탐구</span><span class="q-title">어느 제약 회사에서 생산하는 항생제 \(x\)단위에 대한 총비용 함수가 \(C(x)=0.003x^2+80x+500000\)이라 할 때, 한계 비용 함수 \(M(x)\)를 구해 보자.</span></div>
+    <div class="q-body">
+      <div class="explore" style="margin:12px 18px 0">
+        <div class="ctrl">생산량 \(x\) <input type="range" id="mc-x" min="0" max="20000" step="500" value="10000"><span class="val" id="mc-val"></span></div>
+      </div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">미분</span><span class="st">\(M(x)=C'(x)=0.003\times2x+80+0=0.006x+80\)</span></div>
+        <div class="ss"><span class="stag t-정리">해석</span><span class="st">예: 1만 단위 생산 시 한 단위를 더 만드는 데 약 \(M(10000)=140\)의 비용이 든다.</span></div>
+      </div><div class="sol-ans">\(M(x)=0.006x+80\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW -->
+<div class="part p2">
+  <div class="part-tag">REVIEW</div>
+  <div class="part-title">중단원 마무리 문제</div>
+  <div class="part-src">Ⅱ-1 미분계수와 도함수 (p.72–75) · 기본 01–06 · 표준 07–17 · 발전 18–21</div>
+</div>
+
+<div id="r1" class="sec-block p2s">
+  <div class="sec-tag"><span>Ⅱ-1 미분계수와 도함수</span><span>p.72–75</span></div>
+  <div class="sec-title"><span class="sec-title-num">R</span>중단원 마무리 문제</div>
+  <div class="sec-desc">정답 및 풀이 169쪽 대응</div>
+
+  <div class="gq">
+    <div class="gq-hd">GUIDING QUESTION</div>
+    <div class="gq-item"><span class="gq-tag C">C</span><div><div class="gq-en">When you see \(\lim\frac{f(\square)-f(\square)}{\square}\), how do you recognise a hidden derivative, and what must you adjust to reveal it?</div><div class="gq-kr">\(\lim\frac{f(\square)-f(\square)}{\square}\) 꼴을 보면 어떻게 '숨은 미분계수'를 알아보는가? 그것을 드러내려면 무엇을 맞춰야 하는가?</div></div></div>
+    <details><summary>토론 포인트</summary>
+      <div class="gq-talk">분자의 '변화량'과 분모가 <b>같은 것</b>이 되도록 맞춘다: \(\frac{f(2+5h)-f(2)}{h}=\frac{f(2+5h)-f(2)}{5h}\times5\). 08, 09, 10, 18, 19번이 모두 이 원리다.</div>
+    </details>
+  </div>
+
+  <div class="subsec">기본</div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">01</span><span class="q-title">함수 \(f(x)=-x^2+5x\)에서 \(x\)의 값이 −2에서 1까지 변할 때의 평균변화율을 구하시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps"><div class="ss"><span class="stag t-계산">계산</span><span class="st">\(\dfrac{f(1)-f(-2)}{1-(-2)}=\dfrac{4-(-14)}{3}=6\)</span></div></div><div class="sol-ans">6</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">02</span><span class="q-title">함수 \(f(x)=2x^2-x+4\)의 \(x=1\)에서의 미분계수를 구하시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps"><div class="ss"><span class="stag t-풀이">도함수</span><span class="st">\(f'(x)=4x-1\) → \(f'(1)=3\)</span></div></div><div class="sol-ans">3</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">03</span><span class="q-title">곡선 \(y=2x^3-5x^2+1\) 위의 점 \((2,-3)\)에서의 접선의 기울기를 구하시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps"><div class="ss"><span class="stag t-풀이">도함수</span><span class="st">\(y'=6x^2-10x\) → \(x=2\): \(24-20=4\)</span></div></div><div class="sol-ans">4</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">04</span><span class="q-title">함수 \(f(x)=\begin{cases}x&(x\lt0)\\x^2&(x\ge0)\end{cases}\)은 \(x=0\)에서 연속이지만 미분가능하지 않음을 보이시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-조건">연속</span><span class="st">\(f(0)=0\), \(\lim_{x\to0-}x=0\), \(\lim_{x\to0+}x^2=0\) → \(\lim_{x\to0}f(x)=f(0)\)</span></div>
+        <div class="ss"><span class="stag t-계산">미분</span><span class="st">우: \(\lim_{x\to0+}\frac{x^2}{x}=0\), 좌: \(\lim_{x\to0-}\frac{x}{x}=1\) → 다르므로 미분계수 없음</span></div>
+      </div><div class="sol-ans">연속이지만 미분가능하지 않다.</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">05</span><span class="q-title">두 함수 \(f(x), g(x)\)에 대하여 \(f(3)=-3,\ f'(3)=4,\ g(3)=2,\ g'(3)=5\)일 때, 다음 함수의 \(x=3\)에서의 미분계수를 구하시오. &nbsp;(1) \(f(x)-2g(x)\) &nbsp;(2) \(f(x)g(x)\)</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">(1)</span><span class="st">\(f'(3)-2g'(3)=4-10=-6\)</span></div>
+        <div class="ss"><span class="stag t-풀이">(2)</span><span class="st">\(f'(3)g(3)+f(3)g'(3)=4\cdot2+(-3)\cdot5=-7\)</span></div>
+      </div><div class="sol-ans">(1) −6 &nbsp; (2) −7</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">06</span><span class="q-title">다음 함수를 미분하시오.</span></div>
+    <div class="q-body">
+      <div class="q-box"><div class="qp">
+        <div class="qpi"><b>(1)</b> \(y=3x^6\)</div><div class="qpi"><b>(2)</b> \(y=-x^4+4x^2+1\)</div>
+        <div class="qpi"><b>(3)</b> \(y=\frac13x^3-\frac32x^2-4x\)</div><div class="qpi"><b>(4)</b> \(y=(x^2+3)(-2x+1)\)</div>
+      </div></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">(4)</span><span class="st">\(2x(-2x+1)+(x^2+3)(-2)=-6x^2+2x-6\)</span></div>
+      </div><div class="sol-ans">(1) \(18x^5\) &nbsp; (2) \(-4x^3+8x\) &nbsp; (3) \(x^2-3x-4\) &nbsp; (4) \(-6x^2+2x-6\)</div></div></div>
+  </div>
+
+  <div class="subsec">표준</div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">07</span><span class="q-title">함수 \(f(x)=x^2+4x+5\)에 대하여 \(x\)의 값이 −1에서 \(a\)까지 변할 때의 평균변화율과 \(x=1\)에서의 순간변화율이 같을 때, 상수 \(a\)의 값을 구하시오. (단, \(a\gt-1\))</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-계산">평균</span><span class="st">\(\dfrac{f(a)-f(-1)}{a+1}=\dfrac{a^2+4a+3}{a+1}=\dfrac{(a+1)(a+3)}{a+1}=a+3\)</span></div>
+        <div class="ss"><span class="stag t-계산">순간</span><span class="st">\(f'(x)=2x+4\) → \(f'(1)=6\)</span></div>
+      </div><div class="sol-ans">\(a+3=6\) → \(a=3\)</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">08</span><span class="q-title">다항함수 \(f(x)\)에 대하여 \(f'(2)=3\)일 때, 다음 극한값을 구하시오. &nbsp;(1) \(\displaystyle\lim_{h\to0}\frac{f(2+5h)-f(2)}{h}\) &nbsp;(2) \(\displaystyle\lim_{h\to0}\frac{f(2+4h)-f(2)}{3h}\)</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">(1)</span><span class="st">\(\dfrac{f(2+5h)-f(2)}{5h}\times5\to3\times5=15\)</span></div>
+        <div class="ss"><span class="stag t-풀이">(2)</span><span class="st">\(\dfrac{f(2+4h)-f(2)}{4h}\times\dfrac43\to3\times\dfrac43=4\)</span></div>
+      </div><div class="sol-ans">(1) 15 &nbsp; (2) 4</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">09</span><span class="q-title">다항함수 \(f(x)\)에 대하여 \(f(4)=3,\ f'(4)=5\)일 때, 극한값 \(\displaystyle\lim_{x\to4}\frac{\{f(x)\}^2-9}{x-4}\)를 구하시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">인수분해</span><span class="st">\(\dfrac{f(x)-3}{x-4}\times\{f(x)+3\}=\dfrac{f(x)-f(4)}{x-4}\times\{f(x)+3\}\to f'(4)\times6\)</span></div>
+      </div><div class="sol-ans">30</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge r">10 서술형</span><span class="q-title">곡선 \(y=f(x)\) 위의 점 \((1,f(1))\)에서의 접선의 기울기가 7일 때, 극한값 \(\displaystyle\lim_{x\to1}\frac{f(x^2)-f(1)}{x-1}\)을 구하는 풀이 과정과 답을 쓰시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-조건">1단계</span><span class="st">접선의 기울기 = 미분계수 → \(f'(1)=7\)</span></div>
+        <div class="ss"><span class="stag t-풀이">2단계</span><span class="st">\(\dfrac{f(x^2)-f(1)}{x-1}=\dfrac{f(x^2)-f(1)}{x^2-1}\times(x+1)\)</span></div>
+        <div class="ss"><span class="stag t-정리">3단계</span><span class="st">\(x\to1\)이면 \(x^2\to1\)이므로 \(\to f'(1)\times2=14\)</span></div>
+      </div><div class="sol-ans">14</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">11</span><span class="q-title">모든 실수 \(x\)에서 미분가능한 함수 \(y=f(x)\)의 그래프가 다음과 같을 때, 네 수 \(f'(a),\ f'(b),\ f'(c),\ f'(d)\)의 대소를 비교하시오.</span></div>
+    <div class="q-body">
+      <div class="fig" style="margin:12px 18px 0"><svg id="fig-r11" viewBox="0 0 300 220"></svg></div>
+      <button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">접선</span><span class="st">\(x=a\): 감소하는 곳 → \(f'(a)\lt0\) &nbsp; \(x=b,\ d\): 꼭대기 → 접선 수평, \(f'(b)=f'(d)=0\) &nbsp; \(x=c\): 증가하는 곳 → \(f'(c)\gt0\)</span></div>
+      </div><div class="sol-ans">\(f'(a)\lt f'(b)=f'(d)\lt f'(c)\)</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">12</span><span class="q-title">\(x=2\)에서 미분가능한 함수를 보기에서 모두 고르시오. &nbsp; ㄱ. \(f(x)=x-2\) &nbsp; ㄴ. \(f(x)=\sqrt{(x-2)^2}\) &nbsp; ㄷ. \(f(x)=(x-2)|x-2|\)</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">ㄱ</span><span class="st">다항함수 → 미분가능</span></div>
+        <div class="ss"><span class="stag t-풀이">ㄴ</span><span class="st">\(\sqrt{(x-2)^2}=|x-2|\): 좌·우 미분계수 −1, 1 → 미분불가능</span></div>
+        <div class="ss"><span class="stag t-풀이">ㄷ</span><span class="st">\(\dfrac{f(x)-f(2)}{x-2}=|x-2|\to0\) (양쪽 모두) → 미분가능, \(f'(2)=0\)</span></div>
+      </div><div class="sol-ans">ㄱ, ㄷ</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge r">13 서술형</span><span class="q-title">함수 \(f(x)=\begin{cases}ax^2+bx&(x\lt1)\\2x^3+3&(x\ge1)\end{cases}\)가 \(x=1\)에서 미분가능할 때, 상수 \(a, b\)에 대하여 \(ab\)의 값을 구하는 풀이 과정과 답을 쓰시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-조건">1단계 연속</span><span class="st">미분가능 ⇒ 연속: \(a+b=5\)</span></div>
+        <div class="ss"><span class="stag t-조건">2단계 미분계수</span><span class="st">좌: \((ax^2+bx)'=2ax+b\to2a+b\), 우: \((2x^3+3)'=6x^2\to6\) → \(2a+b=6\)</span></div>
+        <div class="ss"><span class="stag t-정리">3단계</span><span class="st">\(a=1,\ b=4\)</span></div>
+      </div><div class="sol-ans">\(ab=4\)</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">14</span><span class="q-title">함수 \(f(x)=1+x+x^2+x^3+\cdots+x^{10}\)에 대하여 \(f(1)+f'(-1)\)의 값을 구하시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-계산">f(1)</span><span class="st">항이 11개 → 11</span></div>
+        <div class="ss"><span class="stag t-계산">f′(−1)</span><span class="st">\(f'(x)=1+2x+3x^2+\cdots+10x^9\) → \(1-2+3-4+\cdots+9-10=-5\)</span></div>
+      </div><div class="sol-ans">6</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">15</span><span class="q-title">함수 \(f(x)=x^3+ax^2-7\)에 대하여 \(f(-3)=-7,\ f'(-3)=m\)일 때, 상수 \(a\)와 \(m\)의 값을 구하시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-대입">a</span><span class="st">\(-27+9a-7=-7\) → \(a=3\)</span></div>
+        <div class="ss"><span class="stag t-계산">m</span><span class="st">\(f'(x)=3x^2+6x\) → \(f'(-3)=27-18=9\)</span></div>
+      </div><div class="sol-ans">\(a=3,\ m=9\)</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">16</span><span class="q-title">곡선 \(y=(x^3+2)(x^2-3x+10)\) 위의 \(x=1\)인 점에서의 접선의 기울기를 구하시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">곱의 미분</span><span class="st">\(y'=3x^2(x^2-3x+10)+(x^3+2)(2x-3)\) → \(x=1\): \(3\cdot8+3\cdot(-1)=21\)</span></div>
+      </div><div class="sol-ans">21</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">17</span><span class="q-title">함수 \(f(x)=(-x+3)(2x-1)(4x+a)\)에 대하여 \(f'(2)=7\)일 때, \(f(0)\)의 값을 구하시오. (단, \(a\)는 상수)</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-공식">세 함수의 곱</span><span class="st">\(f'(2)=(-1)(3)(8+a)+(1)(2)(8+a)+(1)(3)(4)=-(8+a)+12=4-a\)</span></div>
+        <div class="ss"><span class="stag t-계산">a</span><span class="st">\(4-a=7\) → \(a=-3\)</span></div>
+        <div class="ss"><span class="stag t-정리">f(0)</span><span class="st">\(3\cdot(-1)\cdot(-3)=9\)</span></div>
+      </div><div class="sol-ans">9</div></div></div>
+  </div>
+
+  <div class="subsec">발전</div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">18</span><span class="q-title">두 다항함수 \(f(x)\)와 \(g(x)\)가 \(\displaystyle\lim_{x\to2}\frac{f(x)+1}{x-2}=7,\ \lim_{x\to2}\frac{g(x)-5}{x-2}=3\)을 만족시킬 때, 함수 \(h(x)=f(x)g(x)\)에 대하여 \(h'(2)\)의 값을 구하시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-조건">분모 → 0</span><span class="st">분자 → 0: \(f(2)=-1,\ g(2)=5\). 그러면 두 극한은 각각 \(f'(2)=7,\ g'(2)=3\)</span></div>
+        <div class="ss"><span class="stag t-계산">곱의 미분</span><span class="st">\(h'(2)=f'(2)g(2)+f(2)g'(2)=7\cdot5+(-1)\cdot3\)</span></div>
+      </div><div class="sol-ans">32</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge r">19 서술형</span><span class="q-title">다항함수 \(f(x)\)가 (가) \(f(1)+f(3)=8\), (나) \(\displaystyle\lim_{x\to3}\frac{3f(x)-xf(1)}{x-3}=32\) 를 모두 만족시킬 때, \(f'(3)\)의 값을 구하는 풀이 과정과 답을 쓰시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-조건">1단계</span><span class="st">분모 → 0이므로 분자 → 0: \(3f(3)-3f(1)=0\) → \(f(3)=f(1)\). (가)와 함께 \(f(1)=f(3)=4\)</span></div>
+        <div class="ss"><span class="stag t-풀이">2단계</span><span class="st">\(F(x)=3f(x)-4x\)로 두면 \(F(3)=12-12=0\)이므로 (나)는 \(\lim_{x\to3}\frac{F(x)-F(3)}{x-3}=F'(3)=32\)</span></div>
+        <div class="ss"><span class="stag t-정리">3단계</span><span class="st">\(F'(x)=3f'(x)-4\) → \(3f'(3)-4=32\)</span></div>
+      </div><div class="sol-ans">\(f'(3)=12\)</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">20</span><span class="q-title">세 다항함수 \(f(x), g(x), h(x)\)에 대하여 보기에서 옳은 것을 모두 고르시오. &nbsp; ㄱ. \(f'(0)=0\)이면 \(f(0)=0\)이다. &nbsp; ㄴ. 모든 실수 \(a\)에서 \(\lim_{x\to a}g'(x)=g'(a)\)이다. &nbsp; ㄷ. 모든 실수 \(x\)에서 \(h(x)=h(-x)\)이면 \(h'(0)=0\)이다.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-풀이">ㄱ</span><span class="st">반례 \(f(x)=x^2+1\): \(f'(0)=0\)이지만 \(f(0)=1\) (거짓)</span></div>
+        <div class="ss"><span class="stag t-풀이">ㄴ</span><span class="st">\(g'(x)\)도 다항함수 → 연속 (참)</span></div>
+        <div class="ss"><span class="stag t-풀이">ㄷ</span><span class="st">\(h(x)\)는 짝수 차수 항만 가진다 → \(h'(x)\)는 홀수 차수 항만 → \(h'(0)=0\). (또는 정의: \(h'(0)=\lim\frac{h(t)-h(0)}{t}\)에서 \(t\to-t\) 치환하면 \(h'(0)=-h'(0)\)) (참)</span></div>
+      </div><div class="sol-ans">ㄴ, ㄷ</div></div></div>
+  </div>
+  <div class="q-wrap">
+    <div class="q-hd"><span class="q-badge">21</span><span class="q-title">다항식 \(x^7-3x^5-4x^2+5\)를 \((x-1)^2\)으로 나누었을 때의 나머지를 \(R(x)\)라 할 때, \(R(-1)\)의 값을 구하시오.</span></div>
+    <div class="q-body"><button class="sol-btn"><span class="tri">▶</span><span class="sol-btn-lbl">해설 보기</span><span>▼</span></button>
+      <div class="sol"><div class="sol-steps">
+        <div class="ss"><span class="stag t-공식">설정</span><span class="st">\(P(x)=x^7-3x^5-4x^2+5=(x-1)^2Q(x)+ax+b\)</span></div>
+        <div class="ss"><span class="stag t-대입">x=1</span><span class="st">\(P(1)=1-3-4+5=-1=a+b\)</span></div>
+        <div class="ss"><span class="stag t-계산">미분 후 x=1</span><span class="st">\(P'(x)=2(x-1)Q(x)+(x-1)^2Q'(x)+a\) → \(P'(1)=a\). \(P'(x)=7x^6-15x^4-8x\) → \(a=-16\), \(b=15\)</span></div>
+        <div class="ss"><span class="stag t-정리">R(−1)</span><span class="st">\(R(x)=-16x+15\) → \(R(-1)=31\)</span></div>
+      </div><div class="sol-ans">31</div></div></div>
+  </div>
+</div>
+
+</main>
+<footer>CCA · IB Group 5 · Mathematics &nbsp;·&nbsp; SL · 미분계수와 도함수</footer>
+
+<script>
+function renderMath(){
+  if(window.renderMathInElement) renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+}
+/* ── solution toggles ── */
+document.querySelectorAll('.sol-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const panel=btn.nextElementSibling, open=panel.classList.toggle('open');
+    btn.classList.toggle('open',open);
+    const l=btn.querySelector('.sol-btn-lbl');
+    l.textContent=open?l.textContent.replace('보기','닫기'):l.textContent.replace('닫기','보기');
+  });
+});
+/* ── nav ── */
+const navLinks=[...document.querySelectorAll('.nav-link')];
+navLinks.forEach(a=>a.addEventListener('click',()=>{
+  const el=document.getElementById(a.dataset.go);
+  if(el) window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-58,behavior:'smooth'});
+}));
+window.addEventListener('scroll',()=>{
+  let cur=navLinks[0];
+  navLinks.forEach(a=>{const el=document.getElementById(a.dataset.go); if(el&&el.getBoundingClientRect().top<90) cur=a;});
+  navLinks.forEach(a=>a.classList.toggle('active',a===cur));
+  const nv=document.querySelector('nav'); const l=cur.offsetLeft, r=l+cur.offsetWidth; if(l<nv.scrollLeft+110||r>nv.scrollLeft+nv.clientWidth) nv.scrollLeft=l-130;
+},{passive:true});
+
+/* ── tiny plotting helper ── */
+const C={blue:'#4a9fd4',teal:'#30b89a',gold:'#d4a043',red:'#e8506c',axis:'#5a6280',grid:'rgba(255,255,255,0.05)',text:'#8892a8',bg:'#181d2c',lime:'#7ec870',violet:'#9b7de8'};
+function plot(id,c){
+  const svg=document.getElementById(id); if(!svg) return;
+  const vb=svg.viewBox.baseVal, W=vb.width||300, H=vb.height||220, p=c.pad||22;
+  const [x0,x1]=c.x,[y0,y1]=c.y;
+  const sx=x=>p+(x-x0)/(x1-x0)*(W-2*p), sy=y=>H-p-(y-y0)/(y1-y0)*(H-2*p);
+  let s='';
+  if(c.grid!==false){
+    for(let gx=Math.ceil(x0);gx<=x1;gx++) s+=`<line x1="${sx(gx)}" y1="${sy(y0)}" x2="${sx(gx)}" y2="${sy(y1)}" stroke="${C.grid}"/>`;
+    for(let gy=Math.ceil(y0);gy<=y1;gy+=(c.gstep||1)) s+=`<line x1="${sx(x0)}" y1="${sy(gy)}" x2="${sx(x1)}" y2="${sy(gy)}" stroke="${C.grid}"/>`;
+  }
+  (c.bands||[]).forEach(b=>{s+=`<rect x="${sx(b[0])}" y="${sy(y1)}" width="${sx(b[1])-sx(b[0])}" height="${sy(y0)-sy(y1)}" fill="${b[2]||'rgba(126,200,112,0.15)'}"/>`;});
+  const ax=c.axisY!==undefined?c.axisY:0, ay=c.base!==undefined?c.base:0;
+  if(c.axes!==false&&y0<=ay&&ay<=y1) s+=`<line x1="${sx(x0)}" y1="${sy(ay)}" x2="${sx(x1)}" y2="${sy(ay)}" stroke="${C.axis}" stroke-width="1.2"/><path d="M${sx(x1)} ${sy(ay)} l-6 -3 v6z" fill="${C.axis}"/><text x="${sx(x1)-4}" y="${sy(ay)+14}" fill="${C.text}" font-size="11" font-style="italic" text-anchor="end">${c.xl||'x'}</text>`;
+  if(c.axes!==false&&x0<=ax&&ax<=x1) s+=`<line x1="${sx(ax)}" y1="${sy(y0)}" x2="${sx(ax)}" y2="${sy(y1)}" stroke="${C.axis}" stroke-width="1.2"/><path d="M${sx(ax)} ${sy(y1)} l-3 6 h6z" fill="${C.axis}"/><text x="${sx(ax)+6}" y="${sy(y1)+10}" fill="${C.text}" font-size="11" font-style="italic">${c.yl||'y'}</text>`;
+  if(x0<=0&&0<=x1&&y0<=0&&0<=y1&&c.O!==false) s+=`<text x="${sx(0)-4}" y="${sy(0)+13}" fill="${C.text}" font-size="10" text-anchor="end">O</text>`;
+  (c.tx||[]).forEach(t=>{const [v,l]=Array.isArray(t)?t:[t,t]; s+=`<line x1="${sx(v)}" y1="${sy(ay)-3}" x2="${sx(v)}" y2="${sy(ay)+3}" stroke="${C.axis}"/><text x="${sx(v)}" y="${sy(ay)+14}" fill="${C.text}" font-size="10" text-anchor="middle">${l}</text>`;});
+  (c.ty||[]).forEach(t=>{const [v,l]=Array.isArray(t)?t:[t,t]; s+=`<line x1="${sx(ax)-3}" y1="${sy(v)}" x2="${sx(ax)+3}" y2="${sy(v)}" stroke="${C.axis}"/><text x="${sx(ax)-6}" y="${sy(v)+3.5}" fill="${C.text}" font-size="10" text-anchor="end">${l}</text>`;});
+  (c.dash||[]).forEach(d=>{s+=`<line x1="${sx(d[0])}" y1="${sy(d[1])}" x2="${sx(d[2])}" y2="${sy(d[3])}" stroke="${d[4]||C.text}" stroke-dasharray="3 3" stroke-width="1" opacity=".7"/>`;});
+  (c.fns||[]).forEach(f=>{
+    const n=f.n||240, a=f.a!==undefined?f.a:x0, b=f.b!==undefined?f.b:x1; let d='',pen=false;
+    for(let i=0;i<=n;i++){const x=a+(b-a)*i/n, y=f.f(x);
+      if(!isFinite(y)||y<y0-(y1-y0)||y>y1+(y1-y0)){pen=false;continue;}
+      d+=(pen?'L':'M')+sx(x).toFixed(1)+' '+sy(y).toFixed(1); pen=true;}
+    s+=`<path d="${d}" fill="none" stroke="${f.col||C.blue}" stroke-width="${f.w||2.2}" stroke-linecap="round" ${f.dash?'stroke-dasharray="5 4"':''}/>`;
+  });
+  (c.smooth||[]).forEach(o=>{const P=o.pts.map(q=>[sx(q[0]),sy(q[1])]); let d=`M${P[0][0]} ${P[0][1]}`;
+    for(let i=0;i<P.length-1;i++){const p0=P[i-1]||P[i],p1=P[i],p2=P[i+1],p3=P[i+2]||p2;
+      d+=` C${p1[0]+(p2[0]-p0[0])/6} ${p1[1]+(p2[1]-p0[1])/6} ${p2[0]-(p3[0]-p1[0])/6} ${p2[1]-(p3[1]-p1[1])/6} ${p2[0]} ${p2[1]}`;}
+    s+=`<path d="${d}" fill="none" stroke="${o.col||C.blue}" stroke-width="2.2"/>`;});
+  (c.poly||[]).forEach(o=>{s+=`<polyline points="${o.pts.map(q=>sx(q[0])+','+sy(q[1])).join(' ')}" fill="${o.fill||'none'}" stroke="${o.col||C.blue}" stroke-width="${o.w||2}" stroke-linejoin="round"/>`;});
+  (c.hl||[]).forEach(h=>{s+=`<line x1="${sx(x0)}" y1="${sy(h[0])}" x2="${sx(x1)}" y2="${sy(h[0])}" stroke="${h[1]||C.gold}" stroke-width="1.6"/>`;});
+  (c.pts||[]).forEach(q=>{const [x,y,open,col]=q; s+=`<circle cx="${sx(x)}" cy="${sy(y)}" r="4" fill="${open?C.bg:(col||C.blue)}" stroke="${col||C.blue}" stroke-width="2"/>`;});
+  (c.text||[]).forEach(t=>{s+=`<text x="${sx(t[0])}" y="${sy(t[1])}" fill="${t[3]||C.text}" font-size="${t[5]||11}" text-anchor="${t[4]||'start'}" font-style="italic">${t[2]}</text>`;});
+  svg.innerHTML=s;
+}
+
+/* ── figures: 미분계수와 도함수 ── */
+// e-car
+plot('fig-car',{x:[-0.4,4.2],y:[-1.2,14],gstep:2,xl:'kWh',yl:'km',fns:[{f:x=>7*x-x*x,a:0,b:3.6},{f:x=>3*x+3,a:-0.3,b:4,col:C.red,w:1.6,dash:true}],pts:[[1,6],[3,12]],dash:[[1,0,1,6],[0,6,1,6],[3,0,3,12],[0,12,3,12]],tx:[1,3],ty:[6,12],text:[[0.75,7.2,'A'],[2.8,13.1,'B']]});
+// secant → tangent
+const F1=x=>x*x-3*x+2;
+function drawSec(){const h=+document.getElementById('sec-h').value, bx=2+h, by=F1(bx);
+  const v=document.getElementById('sec-val');
+  if(Math.abs(h)<1e-9){v.innerHTML='Δx = 0 이면 B = A → 직선이 하나로 정해지지 않는다! (그래서 극한)';}
+  else v.textContent=`Δx = ${h.toFixed(2)},  B(${bx.toFixed(2)}, ${by.toFixed(3)}),  기울기 Δy/Δx = ${(1+h).toFixed(2)}  →  f′(2) = 1`;
+  const sec=Math.abs(h)<1e-9?[]:[{f:x=>(1+h)*(x-2),col:C.red,w:1.8}];
+  plot('fig-sec',{x:[-2,6],y:[-3,6],fns:[{f:F1},{f:x=>x-2,col:C.lime,w:1.6},...sec],pts:[[2,0,false,C.gold],...(Math.abs(h)<1e-9?[]:[[bx,by,false,C.red]])],tx:[2,4],ty:[2,4],text:[[1.6,0.5,'A',C.gold],...(Math.abs(h)<1e-9?[]:[[bx+0.15,by+0.3,'B',C.red]])]});}
+document.getElementById('sec-h').addEventListener('input',drawSec);drawSec();
+// 예제3
+plot('fig-ex3',{x:[-2.5,3],y:[-3.8,3],fns:[{f:x=>x*x-3},{f:x=>2*x-4,col:C.lime,w:1.6}],pts:[[1,-2]],dash:[[1,0,1,-2],[0,-2,1,-2]],tx:[1],ty:[[-2,'−2'],[-3,'−3']],text:[[-2.3,2.6,'y=x²−3']]});
+// 문제7
+const F7=x=>2*Math.log(x+1)+0.6;
+plot('fig-q7',{x:[-0.8,4.5],y:[-0.8,4.2],fns:[{f:F7,a:-0.65,b:4.5}],pts:[[1,F7(1)],[3,F7(3)]],dash:[[1,0,1,F7(1)],[0,F7(1),1,F7(1)],[3,0,3,F7(3)],[0,F7(3),3,F7(3)]],tx:[[1,'a'],[3,'b']],ty:[[F7(1),'f(a)'],[F7(3),'f(b)']],text:[[3.3,3.9,'y=f(x)']]});
+// 확인
+plot('fig-chk',{x:[-2.5,3.5],y:[-4,3],fns:[{f:x=>-x*x+2*x+1},{f:x=>4*x+2,col:C.lime,w:1.6}],pts:[[-1,-2,false,C.gold]],dash:[[-1,0,-1,-2]],tx:[[-1,'−1'],1],ty:[[-2,'−2'],2],text:[[-1.6,-2.6,'A',C.gold]]});
+// |x|, |x²−1|
+plot('fig-abs',{x:[-2.5,2.5],y:[-0.8,2.6],fns:[{f:x=>Math.abs(x)},{f:x=>-x,a:0,b:1.2,dash:true,col:C.gold,w:1.4},{f:x=>x,a:-1.2,b:0,dash:true,col:C.gold,w:1.4}],pts:[[0,0]],text:[[1.4,2.3,'y=|x|'],[1.0,-0.55,'기울기 −1?',C.gold],[-2.3,-0.55,'기울기 1?',C.gold]]});
+plot('fig-q8',{x:[-2.4,2.4],y:[-0.8,3.4],fns:[{f:x=>Math.abs(x*x-1)}],pts:[[1,0,false,C.red],[-1,0]],tx:[[-1,'−1'],1],ty:[1],text:[[1.2,3.1,'y=|x²−1|']]});
+// derivative table
+const shown=new Set();
+function drawDtab(){const pts=[...shown].map(a=>[a,2*a,false,C.gold]);
+  plot('fig-dtab',{x:[-1,5],y:[-1,9],gstep:2,fns:[{f:x=>x*x,a:-1,b:3,col:C.axis,w:1.4,dash:true},...(shown.size===5?[{f:x=>2*x,a:-1,b:4.5,col:C.gold}]:[])],pts,tx:[1,2,3,4],ty:[2,4,6,8],text:[[2.2,8.4,'y=x² (점선)',C.text],...(shown.size===5?[[3.6,6.2,"y=f′(x)=2x",C.gold]]:[])]});}
+document.querySelectorAll('#s5 .btn[data-a]').forEach(b=>b.onclick=()=>{const a=+b.dataset.a;shown.add(a);document.getElementById('fa'+a).textContent=2*a;b.classList.add('sel');
+  document.getElementById('tbl-val').textContent=shown.size===5?'모두 채웠다! f′(a)=2a → a를 x로 바꾸면 f′(x)=2x':`f′(${a}) = 2×${a} = ${2*a}`;drawDtab();});
+drawDtab();
+// product rectangle
+function drawRect(){const h=+document.getElementById('rect-h').value, f=1.6,g=1.1,df=0.9*h,dg=0.7*h;
+  document.getElementById('rect-val').textContent=`Δf·g = ${(df*g).toFixed(3)},  f·Δg = ${(f*dg).toFixed(3)},  Δf·Δg = ${(df*dg).toFixed(3)}`;
+  const R=(x0,y0,x1,y1,c)=>({pts:[[x0,y0],[x1,y0],[x1,y1],[x0,y1],[x0,y0]],fill:c,col:'rgba(255,255,255,0.35)',w:1});
+  plot('fig-rect',{x:[-0.3,2.9],y:[-0.3,2.2],grid:false,O:false,axes:false,poly:[R(0,0,f,g,'rgba(136,146,168,0.25)'),R(f,0,f+df,g,'rgba(74,159,212,0.55)'),R(0,g,f,g+dg,'rgba(212,160,67,0.55)'),R(f,g,f+df,g+dg,'rgba(232,80,108,0.75)')],text:[[f/2,-0.18,'f(x)',C.text,'middle'],[-0.12,g/2,'g(x)',C.text,'end'],[f/2,g/2,'f·g',C.text,'middle',13]]});}
+document.getElementById('rect-h').addEventListener('input',drawRect);drawRect();
+// marginal cost
+const Cc=x=>0.003*x*x+80*x+500000;
+function drawMC(){const x=+document.getElementById('mc-x').value;
+  document.getElementById('mc-val').textContent=`C(x+1)−C(x) = ${(Cc(x+1)-Cc(x)).toFixed(3)}   vs   M(x)=C′(x) = ${(0.006*x+80).toFixed(3)}`;}
+document.getElementById('mc-x').addEventListener('input',drawMC);drawMC();
+// 중단원 11
+plot('fig-r11',{x:[-1.5,2.7],y:[-2.4,2.2],grid:false,smooth:[{pts:[[-1.38,-2.3],[-1.1,0.6],[-0.8,1.65],[-0.6,1.5],[-0.45,0.95],[-0.2,0.2],[0,0],[0.25,0.38],[0.5,0.55],[0.75,0.3],[0.95,-0.5],[1.12,-0.85],[1.27,-0.45],[1.45,0.4],[1.65,1.05],[1.8,1.15],[2.0,0.9],[2.25,-0.2],[2.45,-1.6],[2.55,-2.3]]}],dash:[[-0.45,0,-0.45,0.95],[0.5,0,0.5,0.55],[1.8,0,1.8,1.15]],tx:[[-0.45,'a'],[0.5,'b'],[1.8,'d']],text:[[1.36,0.18,'c',C.text,'middle'],[1.9,1.6,'y=f(x)']]});
+
+</script>
+</body>
+</html>
