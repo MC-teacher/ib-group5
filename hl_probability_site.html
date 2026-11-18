@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IB Math AA HL · Probability (Ch 9)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" defer></script>
+<style>
+:root{
+  --paper:#fbfaf6; --ink:#1f2328; --muted:#5b6470; --line:#e2ded3;
+  --navy:#1f3d63; --blue:#2c5d8f; --blue-bg:#eef4fb; --blue-line:#c9dbef;
+  --gold:#b0862e; --gold-bg:#fbf5e6; --green:#2f7a4f; --green-bg:#eaf5ee;
+  --red:#a8432f; --red-bg:#fbeeea; --purple:#5a4a8f; --purple-bg:#f1eef9;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;font-size:18px;line-height:1.7}
+.ko{font-family:'Noto Sans KR',sans-serif}
+/* layout */
+#app{display:grid;grid-template-columns:290px 1fr;height:100vh}
+#side{border-right:1px solid var(--line);background:#f4f1e8;overflow-y:auto;padding:1rem .8rem 2rem}
+#side h1{font-size:1.05rem;margin:.2rem .3rem .2rem;color:var(--navy);line-height:1.3}
+#side .sub{font-family:'Noto Sans KR';font-size:.75rem;color:var(--muted);margin:0 .3rem 1rem}
+.toc-ch{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin:1rem .3rem .3rem}
+.toc-sec{display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;padding:.35rem .5rem;border-radius:6px;font:inherit;font-size:.9rem;color:var(--ink);line-height:1.35}
+.toc-sec:hover{background:#e9e4d6}
+.toc-sec.on{background:var(--navy);color:#fff}
+.toc-sec small{display:block;font-family:'Noto Sans KR';font-size:.72rem;opacity:.75}
+#main{display:flex;flex-direction:column;height:100vh;min-width:0}
+#bar{display:flex;align-items:center;gap:.5rem;padding:.55rem 1rem;border-bottom:1px solid var(--line);background:#fff;flex-wrap:wrap}
+#crumb{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);flex:1;min-width:150px}
+.btn{font-family:'Noto Sans KR';font-size:.78rem;border:1px solid var(--line);background:#fff;border-radius:6px;padding:.32rem .65rem;cursor:pointer;color:var(--ink)}
+.btn:hover{background:#f3f0e7}
+.btn.pri{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.on{background:var(--gold-bg);border-color:var(--gold)}
+#prog{height:3px;background:var(--line)}
+#prog > div{height:100%;background:var(--gold);transition:width .25s}
+#stage{flex:1;overflow-y:auto;padding:2rem 2.2rem 4rem}
+.slide{max-width:900px;margin:0 auto}
+#nav{display:flex;justify-content:space-between;align-items:center;padding:.55rem 1rem;border-top:1px solid var(--line);background:#fff}
+#count{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted)}
+#menuBtn{display:none}
+@media (max-width:860px){
+  #app{grid-template-columns:1fr}
+  #side{position:fixed;inset:0 25% 0 0;z-index:20;transform:translateX(-105%);transition:transform .2s;box-shadow:4px 0 20px rgba(0,0,0,.15)}
+  #side.open{transform:none}
+  #menuBtn{display:inline-block}
+  #stage{padding:1.2rem 1rem 3rem}
+  body{font-size:17px}
+}
+/* slide pieces */
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.18rem .55rem;border-radius:4px;margin-bottom:.6rem}
+.tag.inq{background:var(--purple-bg);color:var(--purple)}
+.tag.voc{background:var(--gold-bg);color:var(--gold)}
+.tag.kp{background:var(--green-bg);color:var(--green)}
+.tag.ex{background:var(--blue-bg);color:var(--blue)}
+.tag.pr{background:var(--red-bg);color:var(--red)}
+.tag.sec{background:var(--navy);color:#fff}
+h2.st{font-size:1.55rem;margin:.1rem 0 .2rem;color:var(--navy);line-height:1.3}
+.st-ko{font-family:'Noto Sans KR';color:var(--muted);font-size:.9rem;margin-bottom:1.2rem}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.3rem;margin:1rem 0}
+.q-text{font-size:1.04rem}
+.q-text p{margin:.3rem 0 .6rem}
+.kp-box{background:var(--green-bg);border:1px solid #c6e3d1;border-left:5px solid var(--green);border-radius:8px;padding:.9rem 1.2rem;margin:1rem 0}
+.kp-box .kp-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;color:var(--green);letter-spacing:.08em}
+.ko-note{font-family:'Noto Sans KR';font-size:.88rem;color:#4a4335;background:var(--gold-bg);border-left:3px solid #d9bf85;padding:.55rem .8rem;border-radius:4px;margin:.6rem 0;line-height:1.75}
+.ko-note.blue{background:#f0f6fc;border-left-color:#7ea6cf;color:#283a4f}
+.tip{font-family:'Noto Sans KR';font-size:.86rem;background:#fff8e1;border:1px dashed #e0c36b;border-radius:6px;padding:.5rem .8rem;margin:.8rem 0}
+.tip b{color:var(--gold)}
+/* guide box */
+.guide-box{background:var(--blue-bg);border:1px solid var(--blue-line);border-left:4px solid var(--blue);border-radius:6px;padding:.75rem 1rem .85rem;margin:1rem 0}
+.guide-title{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem}
+.gq-item{padding:.45rem 0;border-top:1px dashed var(--blue-line)}
+.gq-item:first-of-type{border-top:0}
+.gq{font-size:.98rem}
+.gq .num{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--blue);font-weight:700;margin-right:.35rem}
+.gq-ko{font-family:'Noto Sans KR';font-size:.84rem;color:#5c4d2c;border-left:3px solid #d9bf85;padding-left:.6rem;margin:.2rem 0 .3rem}
+.ga-wrap{display:none;margin:.35rem 0 .1rem .9rem}
+.ga-wrap.show{display:block}
+.ga{font-size:.95rem;color:#173b5f}
+.ga-ko{font-family:'Noto Sans KR';font-size:.83rem;color:#1f4f7d;border-left:3px solid #7ea6cf;padding-left:.6rem;margin-top:.15rem}
+.rv{font-family:'Noto Sans KR';font-size:.72rem;border:1px solid var(--blue-line);background:#fff;color:var(--blue);border-radius:20px;padding:.08rem .6rem;cursor:pointer;margin-left:.3rem;vertical-align:middle}
+.rv:hover{background:var(--blue)}
+.rv:hover{color:#fff}
+/* solution */
+.sol-head{display:flex;gap:.5rem;align-items:center;margin-top:1.1rem;flex-wrap:wrap}
+.sol{display:none;margin-top:.7rem}
+.sol.show{display:block}
+.step{display:grid;grid-template-columns:minmax(150px,30%) 1fr;gap:1rem;padding:.6rem 0;border-top:1px solid #efece4}
+.step:first-child{border-top:0}
+.step-note{font-family:'Noto Sans KR';font-size:.82rem;color:var(--muted);line-height:1.6}
+.step-content{overflow-x:auto}
+.step.hidden{display:none}
+@media (max-width:640px){.step{grid-template-columns:1fr;gap:.2rem}}
+.answer{margin-top:.8rem;background:var(--green-bg);border:1px solid #c6e3d1;border-radius:6px;padding:.5rem .9rem;font-weight:600}
+.answer::before{content:'Answer  ';font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.06em}
+.ref{font-family:'Noto Sans KR';font-size:.75rem;color:var(--muted);margin-top:.6rem}
+/* vocab */
+table.voc{width:100%;border-collapse:collapse;font-size:.95rem;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+table.voc th{background:#f4f1e8;font-family:'Noto Sans KR';font-size:.78rem;text-align:left;padding:.45rem .7rem;color:var(--muted)}
+table.voc td{padding:.5rem .7rem;border-top:1px solid #efece4;vertical-align:top}
+table.voc td.t{font-weight:700;color:var(--navy);white-space:nowrap}
+table.voc td.k{font-family:'Noto Sans KR';font-size:.88rem;white-space:nowrap}
+table.voc td.n{font-size:.9rem}
+table.voc.ph td.t{white-space:normal;font-weight:600;font-style:italic;color:#2b3a4f}
+table.voc.ph td.k{white-space:normal}
+.voc-quiz td.k span,.voc-quiz td.n span{filter:blur(5px);cursor:pointer;transition:filter .15s}
+.voc-quiz td.k span.see,.voc-quiz td.n span.see{filter:none}
+h3.mini{font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.08em;color:var(--gold);text-transform:uppercase;margin:1.4rem 0 .5rem}
+/* inquiry */
+.inq-intro{background:var(--purple-bg);border:1px solid #d9d2ef;border-radius:8px;padding:.9rem 1.2rem}
+.inq-step{background:#fff;border:1px solid var(--line);border-radius:8px;padding:.7rem 1rem;margin:.7rem 0}
+.inq-step .gq .num{color:var(--purple)}
+.big-idea{display:none;margin-top:1rem;background:var(--navy);color:#fff;border-radius:8px;padding:.9rem 1.2rem}
+.big-idea.show{display:block}
+.big-idea .ko{color:#d8e3f0;font-size:.88rem;margin-top:.3rem}
+.big-idea b.lab{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.08em;color:#f0cf86}
+/* misc */
+table.dt{border-collapse:collapse;margin:.5rem 0;font-size:.95rem;background:#fff}
+table.dt td,table.dt th{border:1px solid #cfc9bb;padding:.25rem .65rem;text-align:center}
+table.dt th{background:#f4f1e8;font-weight:600}
+.fig{display:flex;justify-content:center;margin:.6rem 0}
+.fig svg{max-width:100%;height:auto}
+.cover{text-align:center;padding-top:8vh}
+.cover h1{font-size:2.3rem;color:var(--navy);margin:.2rem 0}
+.cover .ko{color:var(--muted)}
+.cover-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.8rem;margin-top:2rem;text-align:left}
+.cover-grid button{background:#fff;border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;cursor:pointer;font:inherit;text-align:left}
+.cover-grid button:hover{border-color:var(--gold)}
+.cover-grid b{display:block;color:var(--navy)}
+.cover-grid span{font-family:'Noto Sans KR';font-size:.78rem;color:var(--muted)}
+.legend{font-family:'Noto Sans KR';font-size:.85rem;color:var(--muted);margin-top:2rem;line-height:1.9}
+.sec-list{margin:1rem 0;padding-left:1.2rem}
+.sec-list li{margin:.3rem 0}
+/* 수능형 */
+.tag.ks{background:#e3f1ef;color:#1d6f68}
+.ks-unit{font-family:'Noto Sans KR';font-size:.8rem;color:#1d6f68;font-weight:700;margin-bottom:.8rem}
+.ks-box{font-family:'Noto Sans KR';background:#f2f9f8;border:1px solid #bfe0db;border-left:5px solid #1d6f68;border-radius:8px;padding:.9rem 1.2rem;margin:1rem 0;line-height:1.95;font-size:.95rem}
+.ks-box h4{margin:.6rem 0 .2rem;color:#1d6f68;font-size:.95rem}
+.ks-box h4:first-child{margin-top:0}
+.ks-text{font-family:'Noto Sans KR';font-size:.97rem;line-height:2}
+table.map{width:100%;border-collapse:collapse;font-size:.9rem;background:#fff;margin:.6rem 0}
+table.map th{background:#e3f1ef;font-family:'Noto Sans KR';font-size:.78rem;padding:.4rem .6rem;text-align:left;color:#1d6f68}
+table.map td{border-top:1px solid #e3ece9;padding:.4rem .6rem;vertical-align:top}
+table.map td:first-child{font-family:'Noto Sans KR'}
+.choices{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.4rem;margin:.9rem 0 .2rem}
+@media (max-width:700px){.choices{grid-template-columns:repeat(2,1fr)}}
+.choice{font:inherit;font-size:.98rem;background:#fff;border:1px solid var(--line);border-radius:8px;padding:.45rem .5rem;cursor:pointer;text-align:left}
+.choice:hover{border-color:#1d6f68}
+.choice.right{background:var(--green-bg);border-color:var(--green)}
+.choice.wrong{background:var(--red-bg);border-color:var(--red);opacity:.75}
+.pts{font-family:'Noto Sans KR';font-size:.8rem;color:var(--muted);margin-left:.3rem}
+.en-box{display:none;background:#f6f6fb;border:1px dashed #b9b4d6;border-radius:6px;padding:.6rem .9rem;margin-top:.7rem;font-size:.97rem}
+.en-box.show{display:block}
+.en-box b.lab{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--purple);letter-spacing:.06em;display:block;margin-bottom:.2rem}
+.ks-ans{margin-top:.8rem;background:var(--green-bg);border:1px solid #c6e3d1;border-radius:6px;padding:.5rem .9rem;font-weight:600;font-family:'Noto Sans KR'}
+.ks-ans::before{content:'정답  ';font-size:.75rem;color:var(--green)}
+.short-in{display:flex;gap:.4rem;margin-top:.8rem;align-items:center;font-family:'Noto Sans KR';font-size:.88rem}
+.short-in input{font:inherit;width:110px;padding:.3rem .5rem;border:1px solid var(--line);border-radius:6px}
+.short-in span.res{font-weight:700}
+mjx-container[display="true"]{margin:.5em 0 !important;overflow-x:auto;overflow-y:hidden}
+body.nok .gq-ko, body.nok .ga-ko, body.nok .big-idea .ko{display:none}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side"></aside>
+  <div id="main">
+    <div id="bar">
+      <button class="btn" id="menuBtn">☰</button>
+      <div id="crumb"></div>
+      <button class="btn" id="koBtn" title="한글 번역 보이기/숨기기">한글 ON</button>
+      <button class="btn" id="openAll">모든 답 열기</button>
+      <button class="btn" id="closeAll">모두 닫기</button>
+    </div>
+    <div id="prog"><div></div></div>
+    <div id="stage"><div class="slide" id="slide"></div></div>
+    <div id="nav">
+      <button class="btn" id="prev">← Prev</button>
+      <span id="count"></span>
+      <button class="btn pri" id="next">Next →</button>
+    </div>
+  </div>
+</div>
+<script>
+const DATA = {"slides": [{"crumb": "HL Probability", "html": "이 사이트는 Hodder <b>Mathematics: Analysis and Approaches HL<\/b> Chapter 9 (책 p.262–293)의 흐름을 따라 만든 학습 자료입니다.<br>각 단원은 <b>Guided Inquiry<\/b> → <b>Key Vocabulary<\/b> → <b>Key Concept<\/b> → <b>Worked Example<\/b> → <b>Practice<\/b> 순서이고, 마지막에 청록색 <b>수능특강 연계<\/b> 슬라이드(수능 표현 개념 정리, 수능↔IB 표기 대응표, 5지선다·단답형 기초 문제)가 이어집니다.<br>파란 상자의 질문은 <b>답 보기<\/b>로, 풀이는 <b>풀이 보기 → 다음 단계<\/b>로 한 단계씩 열 수 있어요. ← → 키로 이동.", "type": "cover", "sec": "", "code": ""}, {"title": "Which machine made the faulty item?", "ko": "불량품은 어느 기계에서 나왔을까?", "intro": "<p>A factory has two machines. Machine A makes 60% of the items and 3% of its items are faulty. Machine B makes 40% of the items and 5% of its items are faulty. An item is chosen at random and found to be faulty.<\/p>", "intro_ko": "기계 A가 제품의 60%를 만들고 그중 3%가 불량, 기계 B가 40%를 만들고 그중 5%가 불량입니다. 임의로 고른 제품이 불량이었습니다.", "steps": [{"q": "Draw a tree diagram: first branch = machine, second = faulty or not. Which two paths end in “faulty”?", "qk": "수형도를 그려 보세요. “불량”으로 끝나는 경로 두 개는?", "a": "$A\\to F$: $0.6\\times0.03=0.018$; &nbsp; $B\\to F$: $0.4\\times0.05=0.020$", "ak": ""}, {"q": "What is $P(F)$?", "qk": "$P(F)$는?", "a": "$0.018+0.020=0.038$", "ak": ""}, {"q": "Before checking, which machine would you guess? After finding it faulty, find $P(B\\mid F)$.", "qk": "처음에는 어느 기계라고 생각했나요? 불량임을 안 후의 $P(B\\mid F)$는?", "a": "Before: A is more likely (0.6). After: $P(B\\mid F)=\\frac{0.020}{0.038}\\approx0.526$ — now B is more likely!", "ak": "처음엔 A(0.6), 불량 정보를 알고 나면 B가 0.526으로 더 가능성이 큽니다."}, {"q": "We knew $P(F\\mid B)$ and wanted $P(B\\mid F)$. What has happened to the condition?", "qk": "$P(F\\mid B)$를 알고 $P(B\\mid F)$를 구했습니다. 조건이 어떻게 바뀌었나요?", "a": "It has been <b>reversed<\/b>: the given event and the event we want swapped places.", "ak": "조건이 “뒤집혔습니다”."}], "idea": "<b>Bayes' theorem<\/b> reverses a conditional probability: $P(B\\mid A)=\\dfrac{P(B)P(A\\mid B)}{P(B)P(A\\mid B)+P(B')P(A\\mid B')}$. In practice: draw the tree, then (the path you want) ÷ (all paths that end in the given event).", "idea_ko": "베이즈 정리는 조건부확률을 뒤집습니다. 실전에서는 수형도를 그린 뒤 (원하는 경로) ÷ (주어진 사건으로 끝나는 모든 경로)로 계산하면 됩니다.", "fig": {"type": "tree", "first": [["A", "0.6"], ["B", "0.4"]], "second": [[["F", "0.03", "0.018"], ["F'", "0.97", "0.582"]], [["F", "0.05", "0.020"], ["F'", "0.95", "0.380"]]]}, "type": "inquiry", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Words you need", "ko": "이 단원의 핵심 영단어", "rows": [["Bayes' theorem", "베이즈 정리", "reverses a conditional probability"], ["prior probability", "사전확률", "probability before new information, e.g. $P(B)$"], ["posterior probability", "사후확률", "updated probability after information, e.g. $P(B\\mid A)$"], ["reverse conditional probability", "역조건부확률", "find $P(B\\mid A)$ from $P(A\\mid B)$"], ["law of total probability", "전확률 공식", "$P(A)=P(B)P(A\\mid B)+P(B')P(A\\mid B')$"], ["partition / mutually exclusive and exhaustive", "분할 / 서로 배반이고 합하면 전체", "e.g. $B_1,B_2,B_3$ cover all outcomes"], ["false positive / false negative", "위양성 / 위음성", "test says yes but no disease / test says no but disease"], ["sensitivity", "민감도", "$P(+\\mid D)$"]], "phrases": [["Given that the item is faulty, find the probability that it was made by machine B.", "불량품이라는 조건에서 기계 B 제품일 확률 → $P(B\\mid F)$"], ["Find the probability that a randomly chosen person tests positive.", "임의로 고른 사람이 양성일 확률 → 전확률 (경로 합)"], ["Use Bayes' theorem to show that …", "베이즈 정리를 이용하여 …임을 보이시오."], ["Hence, find …", "앞의 결과를 이용하여 …를 구하시오."]], "type": "vocab", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Bayes' theorem for two events", "ko": "두 사건에 대한 베이즈 정리", "kp": "$$P(B\\mid A)=\\frac{P(B)P(A\\mid B)}{P(B)P(A\\mid B)+P(B')P(A\\mid B')}$$", "body": "<p><b>Where it comes from:<\/b> $P(B\\mid A)=\\dfrac{P(A\\cap B)}{P(A)}$. The numerator is $P(B)P(A\\mid B)$ (multiplication rule), and the denominator $P(A)$ is the sum of the two tree paths that end in $A$.<\/p>", "kn": "공식을 외우기보다 수형도를 그리세요. 분자 = 원하는 경로 하나, 분모 = 주어진 사건 $A$로 끝나는 경로 전부의 합.", "tip": "", "guides": [{"q": "$P(B)=0.2$, $P(A\\mid B)=0.9$, $P(A\\mid B')=0.1$. Find $P(B\\mid A)$.", "qk": "$P(B\\mid A)$를 구하세요.", "a": "$\\frac{0.18}{0.18+0.08}=\\frac{9}{13}\\approx0.692$", "ak": ""}], "fig": null, "type": "concept", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Bayes' theorem for three events", "ko": "세 사건에 대한 베이즈 정리", "kp": "If $B_1,B_2,B_3$ are mutually exclusive and cover all outcomes, $$P(B_1\\mid A)=\\frac{P(B_1)P(A\\mid B_1)}{P(B_1)P(A\\mid B_1)+P(B_2)P(A\\mid B_2)+P(B_3)P(A\\mid B_3)}$$", "body": "<p>The tree now has three first branches. The method is exactly the same.<\/p>", "kn": "첫 가지가 3개로 늘어날 뿐 계산 방법은 똑같습니다.", "tip": "", "guides": [], "fig": null, "type": "concept", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Example 9A.1", "ko": "", "q": "<p>30% of students at a school walk to school and the rest take the bus. A student who walks is late with probability 0.1; a student who takes the bus is late with probability 0.2.<\/p><p>Given that a student is late, find the probability that the student walked.<\/p>", "guides": [{"q": "Write down $P(W)$, $P(L\\mid W)$, $P(L\\mid W')$.", "qk": "세 확률을 쓰세요.", "a": "$0.3,\\ 0.1,\\ 0.2$", "ak": ""}], "steps": [["Paths ending in late", "$P(W\\cap L)=0.3(0.1)=0.03$; &nbsp; $P(W'\\cap L)=0.7(0.2)=0.14$"], ["$P(L)$", "$0.03+0.14=0.17$"], ["Bayes", "$P(W\\mid L)=\\dfrac{0.03}{0.17}=\\dfrac{3}{17}\\approx0.176$"]], "ans": "$\\frac{3}{17}\\approx0.176$", "fig": null, "ref": "", "type": "example", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Example 9A.2", "ko": "", "q": "<p>Bag 1 contains 4 red and 6 white balls, bag 2 contains 7 red and 3 white balls, bag 3 contains 5 red and 5 white balls. A bag is chosen at random and a ball is taken from it.<\/p><p>Given that the ball is red, find the probability that it came from bag 2.<\/p>", "guides": [{"q": "What is $P(R\\mid B_i)$ for each bag?", "qk": "각 주머니에서 빨강이 나올 확률은?", "a": "$0.4,\\ 0.7,\\ 0.5$", "ak": ""}], "steps": [["$P(R)$", "$\\frac13(0.4)+\\frac13(0.7)+\\frac13(0.5)=\\frac{1.6}{3}$"], ["Bayes", "$P(B_2\\mid R)=\\dfrac{\\frac13(0.7)}{\\frac13(1.6)}=\\dfrac{0.7}{1.6}=\\dfrac{7}{16}$"]], "ans": "$\\frac{7}{16}$", "fig": null, "ref": "", "type": "example", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Example 9A.3", "ko": "", "q": "<p>For events $A$ and $B$: $P(B\\mid A)=0.3$, $P(B\\mid A')=0.6$ and $P(A\\mid B)=0.4$. Find $P(A)$.<\/p>", "guides": [{"q": "Let $P(A)=x$. Write $P(A\\mid B)$ in terms of $x$.", "qk": "$P(A)=x$로 두고 식을 세우세요.", "a": "$\\dfrac{0.3x}{0.3x+0.6(1-x)}=0.4$", "ak": ""}], "steps": [["Bayes with unknown", "$\\dfrac{0.3x}{0.3x+0.6(1-x)}=0.4$"], ["Multiply out", "$0.3x=0.4(0.6-0.3x)=0.24-0.12x$"], ["Solve", "$0.42x=0.24\\Rightarrow x=\\dfrac{4}{7}\\approx0.571$"]], "ans": "$P(A)=\\frac47$", "fig": null, "ref": "", "type": "example", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Question 1", "ko": "", "q": "<p>A disease affects 1% of a population. A test is positive for 98% of people with the disease and for 5% of people without it.<\/p><p><b>(a)<\/b> Find the probability that a randomly chosen person tests positive.<\/p><p><b>(b)<\/b> Given a positive test, find the probability that the person has the disease.<\/p><p><b>(c)<\/b> Given a negative test, find the probability that the person does not have the disease.<\/p>", "guides": [{"q": "Which paths end in a negative result?", "qk": "음성으로 끝나는 경로는?", "a": "$D\\to-$ and $D'\\to-$", "ak": ""}], "steps": [["(a)", "$0.01(0.98)+0.99(0.05)=0.0098+0.0495=0.0593$"], ["(b)", "$\\dfrac{0.0098}{0.0593}=0.165$"], ["(c)", "$P(-)=1-0.0593=0.9407$; $\\ P(D'\\mid-)=\\dfrac{0.99(0.95)}{0.9407}=\\dfrac{0.9405}{0.9407}=0.9998$"]], "ans": "(a) 0.0593 (b) 0.165 (c) 0.9998", "fig": null, "ref": "", "type": "practice", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Question 2", "ko": "", "q": "<p>On a given day it rains with probability 0.25. If it is going to rain, the forecast predicts rain with probability 0.8; if it is not going to rain, the forecast predicts rain with probability 0.15. Given that the forecast predicts rain, find the probability that it rains.<\/p>", "guides": [{"q": "Numerator?", "qk": "분자는?", "a": "$0.25\\times0.8=0.2$", "ak": ""}], "steps": [["$P(\\text{forecast rain})$", "$0.25(0.8)+0.75(0.15)=0.2+0.1125=0.3125$"], ["Bayes", "$\\dfrac{0.2}{0.3125}=0.64$"]], "ans": "0.64", "fig": null, "ref": "", "type": "practice", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Question 3", "ko": "", "q": "<p>A shop buys 50% of its light bulbs from supplier X, 30% from Y and 20% from Z. The proportions of faulty bulbs are 2%, 3% and 5% respectively. A bulb is faulty. Find the probability that it came from supplier Z.<\/p>", "guides": [{"q": "How many first branches does the tree have?", "qk": "첫 가지는 몇 개?", "a": "Three: X, Y, Z", "ak": ""}], "steps": [["$P(F)$", "$0.5(0.02)+0.3(0.03)+0.2(0.05)=0.01+0.009+0.01=0.029$"], ["Bayes", "$P(Z\\mid F)=\\dfrac{0.01}{0.029}=0.345$"]], "ans": "0.345", "fig": null, "ref": "", "type": "practice", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Question 4", "ko": "", "q": "<p>A bag contains two fair coins and one coin with heads on both sides. A coin is chosen at random and tossed twice. It shows heads both times. Find the probability that the double-headed coin was chosen.<\/p>", "guides": [{"q": "What is $P(HH)$ for a fair coin? For the double-headed coin?", "qk": "HH가 나올 확률은 각각?", "a": "$\\frac14$ and $1$", "ak": ""}], "steps": [["Paths to HH", "double-headed: $\\frac13\\times1=\\frac13$; &nbsp; fair: $\\frac23\\times\\frac14=\\frac16$"], ["Bayes", "$\\dfrac{1/3}{1/3+1/6}=\\dfrac{2}{3}$"]], "ans": "$\\frac23$", "fig": null, "ref": "", "type": "practice", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Question 5", "ko": "", "q": "<p>Starting from $P(B\\mid A)=\\dfrac{P(A\\cap B)}{P(A)}$, prove Bayes' theorem for two events.<\/p>", "guides": [{"q": "How can you rewrite $P(A\\cap B)$ using the multiplication rule with $B$ first?", "qk": "$B$를 먼저 쓰는 곱셈정리로 $P(A\\cap B)$를?", "a": "$P(A\\cap B)=P(B)P(A\\mid B)$", "ak": ""}, {"q": "How can you split $P(A)$?", "qk": "$P(A)$를 어떻게 나누나요?", "a": "$A=(A\\cap B)\\cup(A\\cap B')$, which are mutually exclusive.", "ak": ""}], "steps": [["Numerator", "$P(A\\cap B)=P(B)P(A\\mid B)$"], ["Denominator", "$P(A)=P(A\\cap B)+P(A\\cap B')=P(B)P(A\\mid B)+P(B')P(A\\mid B')$"], ["Combine", "$P(B\\mid A)=\\dfrac{P(B)P(A\\mid B)}{P(B)P(A\\mid B)+P(B')P(A\\mid B')}$ &nbsp;∎"]], "ans": "shown", "fig": null, "ref": "", "type": "practice", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "곱셈정리로 조건부확률 뒤집기 (수능 버전)", "unit": "수능특강 04 조건부확률 · 2 확률의 곱셈정리와 그 활용 (본문 46–47쪽)", "box": "<h4>⑴ 확률의 곱셈정리<\/h4>$P(A\\cap B)=P(A)P(B\\mid A)=P(B)P(A\\mid B)$<h4>⑵ 곱셈정리의 활용<\/h4>사건 $E$가 일어나는 경로가 여러 가지이면 각 경로의 확률을 곱셈정리로 구해 더한다: $P(E)=P(A)P(E\\mid A)+P(A^C)P(E\\mid A^C)$<h4>⑶ 뒤집기<\/h4>“$E$가 일어났을 때, $A$였을 확률” $=\\dfrac{P(A\\cap E)}{P(E)}$. 수능에서는 ‘베이즈 정리’라는 이름을 쓰지 않지만 계산은 IB 9A와 완전히 같다.", "map": [["확률의 곱셈정리", "multiplication rule", ""], ["(곱셈정리의 활용)", "law of total probability", "IB 용어"], ["조건부확률 뒤집기", "Bayes' theorem", "IB HL 9A"], ["$A^C$", "$A'$", "기호가 다름"]], "ex": "", "tip": "수능 문제는 “상자 선택 → 공 꺼내기”, “동전·주사위 결과에 따라 다른 시행”처럼 2단계 상황이 대부분입니다. 수형도를 먼저 그리세요.", "fig": null, "type": "ks", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "수능형 기초 1", "unit": "수능특강 04 조건부확률 · 2 확률의 곱셈정리와 그 활용 (본문 46–47쪽)", "q": "<p>상자 A에는 흰 공 2개와 검은 공 3개, 상자 B에는 흰 공 4개와 검은 공 1개가 들어 있다. 한 개의 주사위를 던져 나온 눈의 수가 2 이하이면 상자 A에서, 3 이상이면 상자 B에서 임의로 1개의 공을 꺼낸다. 꺼낸 공이 흰 공일 때, 이 공이 상자 A에서 꺼낸 공일 확률은?<\/p>", "choices": ["$\\dfrac16$", "$\\dfrac15$", "$\\dfrac14$", "$\\dfrac13$", "$\\dfrac25$"], "ans": "2", "guides": [{"q": "상자 A를 택할 확률과 A에서 흰 공이 나올 확률은?", "qk": "first and second branches", "a": "$\\frac13$, $\\frac25$", "ak": ""}], "steps": [["A에서 흰 공", "$\\frac13\\cdot\\frac25=\\frac2{15}$"], ["B에서 흰 공", "$\\frac23\\cdot\\frac45=\\frac8{15}$"], ["조건부확률", "$\\dfrac{2/15}{2/15+8/15}=\\dfrac{2}{10}=\\dfrac15$"]], "en": "Box A contains 2 white and 3 black balls; box B contains 4 white and 1 black ball. A die is rolled: if the score is at most 2, a ball is taken from box A, otherwise from box B. Given that the ball is white, find the probability that it came from box A.", "pts": "[3점]", "ansText": "② $\\frac15$", "fig": null, "type": "ksq", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "수능형 기초 2", "unit": "수능특강 04 조건부확률 · 2 확률의 곱셈정리와 그 활용 (본문 46–47쪽)", "q": "<p>어느 지역 주민의 20%가 어떤 질병에 걸려 있다. 이 질병에 걸린 사람이 검사를 받으면 90%가 양성 반응을 보이고, 걸리지 않은 사람이 검사를 받으면 10%가 양성 반응을 보인다. 이 지역 주민 중 임의로 선택한 한 명이 검사에서 양성 반응을 보였을 때, 이 사람이 질병에 걸려 있을 확률은 $\\dfrac{q}{p}$이다. $p+q$의 값을 구하시오. (단, $p$와 $q$는 서로소인 자연수이다.)<\/p>", "choices": null, "ans": "22", "guides": [{"q": "양성으로 끝나는 두 경로의 확률은?", "qk": "paths ending in positive", "a": "$0.2\\times0.9=0.18$, $0.8\\times0.1=0.08$", "ak": ""}], "steps": [["양성일 확률", "$0.18+0.08=0.26$"], ["조건부확률", "$\\dfrac{0.18}{0.26}=\\dfrac{9}{13}$"], ["$p+q$", "$13+9=22$"]], "en": "20% of a population have a disease. The test is positive for 90% of people with the disease and 10% of people without it. Given a positive result, find the probability that the person has the disease.", "pts": "[3점]", "ansText": "22", "fig": null, "type": "ksq", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "수능형 기초 3", "unit": "수능특강 04 조건부확률 · 2 확률의 곱셈정리와 그 활용 (본문 46–47쪽)", "q": "<p>한 개의 동전을 던져 앞면이 나오면 한 개의 주사위를 1번 던지고, 뒷면이 나오면 한 개의 주사위를 2번 던진다. 6의 눈이 적어도 한 번 나왔을 때, 동전의 앞면이 나왔을 확률은?<\/p>", "choices": ["$\\dfrac{4}{17}$", "$\\dfrac{5}{17}$", "$\\dfrac{6}{17}$", "$\\dfrac{7}{17}$", "$\\dfrac{8}{17}$"], "ans": "3", "guides": [{"q": "뒷면일 때 6이 적어도 한 번 나올 확률은?", "qk": "at least once in 2 rolls", "a": "$1-\\left(\\frac56\\right)^2=\\frac{11}{36}$", "ak": ""}], "steps": [["앞면 경로", "$\\frac12\\cdot\\frac16=\\frac{6}{72}$"], ["뒷면 경로", "$\\frac12\\cdot\\frac{11}{36}=\\frac{11}{72}$"], ["조건부확률", "$\\dfrac{6}{6+11}=\\dfrac{6}{17}$"]], "en": "A coin is tossed. If it shows heads, a die is rolled once; if tails, the die is rolled twice. Given that at least one six is obtained, find the probability that the coin showed heads.", "pts": "[3점]", "ansText": "③ $\\frac{6}{17}$", "fig": null, "type": "ksq", "sec": "9A", "code": "9A", "crumb": "Ch 9 · HL: Probability › 9A Bayes' theorem"}, {"title": "Same expected prize, different risk", "ko": "기대 상금은 같은데 위험은 다르다", "intro": "<p>Game A: you win \\$0 or \\$10, each with probability 0.5. &nbsp; Game B: you always win \\$5.<\/p>", "intro_ko": "게임 A는 0달러 또는 10달러를 각각 확률 0.5로, 게임 B는 항상 5달러를 받습니다.", "steps": [{"q": "Find the expected winnings for each game.", "qk": "각 게임의 기댓값은?", "a": "Both are \\$5.", "ak": "둘 다 5달러."}, {"q": "For game A, how far is each outcome from the mean? What is the average of the <b>squared<\/b> distances?", "qk": "게임 A에서 각 결과는 평균에서 얼마나 떨어져 있나요? 거리의 “제곱”의 평균은?", "a": "Both are 5 away; $\\frac12(25)+\\frac12(25)=25$.", "ak": "둘 다 5만큼 → 제곱의 평균 25."}, {"q": "What is the same quantity for game B?", "qk": "게임 B는?", "a": "0 — there is no spread.", "ak": "0."}, {"q": "Compute $E(X^2)-[E(X)]^2$ for game A. What do you notice?", "qk": "게임 A에서 $E(X^2)-[E(X)]^2$를 계산하면?", "a": "$E(X^2)=\\frac12(0)+\\frac12(100)=50$; $50-25=25$ — the same!", "ak": "50 − 25 = 25로 같습니다."}], "idea": "The variance $\\text{Var}(X)=E\\big[(X-\\mu)^2\\big]=E(X^2)-[E(X)]^2$ measures the spread (risk) of a random variable. Two variables can have the same mean but very different variances.", "idea_ko": "분산은 확률변수의 퍼짐(위험도)을 나타냅니다. 평균이 같아도 분산은 매우 다를 수 있어요.", "fig": null, "type": "inquiry", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Words you need", "ko": "이 단원의 핵심 영단어", "rows": [["variance, $\\text{Var}(X)$", "분산", "$E(X^2)-[E(X)]^2$"], ["standard deviation", "표준편차", "$\\sqrt{\\text{Var}(X)}$"], ["$E(X^2)$", "$X^2$의 기댓값", "$\\sum x^2P(X=x)$ — not $[E(X)]^2$!"], ["linear transformation", "일차변환", "$aX+b$"], ["spread / dispersion", "퍼짐 / 산포", ""], ["expectation algebra", "기댓값의 성질", "$E(aX+b)=aE(X)+b$"]], "phrases": [["Find $\\text{Var}(X)$.", "$X$의 분산을 구하시오."], ["Find the standard deviation of $Y$, where $Y=3X-2$.", "$Y=3X-2$의 표준편차를 구하시오."], ["Given that $E(X)=\\ldots$ and $\\text{Var}(X)=\\ldots$, find …", "$E(X)$와 $\\text{Var}(X)$가 주어졌을 때 …"], ["Show that $\\text{Var}(X)=E(X^2)-[E(X)]^2$.", "…임을 보이시오 → 정의에서 출발해 전개"]], "type": "vocab", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Variance of a discrete random variable", "ko": "이산확률변수의 분산", "kp": "$$\\text{Var}(X)=\\sum x^2P(X=x)-\\big(E(X)\\big)^2=E(X^2)-[E(X)]^2$$ The standard deviation is $\\sqrt{\\text{Var}(X)}$.", "body": "<p>Method: add a row $x^2$ (or $x^2P$) to the table, find $E(X^2)$, then subtract the square of the mean.<\/p>", "kn": "$E(X^2)$은 “$x^2$에 확률을 곱해서 더한 것”이고 $[E(X)]^2$은 “평균의 제곱”입니다. 둘을 헷갈리지 마세요. 분산은 절대 음수가 될 수 없습니다.", "tip": "", "guides": [], "fig": null, "type": "concept", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Linear transformations", "ko": "일차변환 $aX+b$", "kp": "$$E(aX+b)=aE(X)+b,\\qquad \\text{Var}(aX+b)=a^2\\,\\text{Var}(X)$$", "body": "<p>Adding $b$ shifts every value but does not change the spread. Multiplying by $a$ multiplies the standard deviation by $|a|$ and the variance by $a^2$. For $X\\sim B(n,p)$: $\\text{Var}(X)=np(1-p)$.<\/p>", "kn": "SL 6B의 자료 변환 규칙과 똑같습니다. $\\text{Var}(-2X)=4\\text{Var}(X)$ — 음수를 곱해도 분산은 커집니다.", "tip": "", "guides": [{"q": "$\\text{Var}(X)=3$. Find $\\text{Var}(5-2X)$.", "qk": "$\\text{Var}(5-2X)$는?", "a": "$(-2)^2\\times3=12$", "ak": ""}], "fig": null, "type": "concept", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Example 9B.1", "ko": "", "q": "<p>The random variable $X$ has the distribution below. Find $E(X)$, $\\text{Var}(X)$ and the standard deviation of $X$.<\/p><table class=\"dt\"><tr><th>$x$<\/th><td>0<\/td><td>1<\/td><td>2<\/td><td>3<\/td><\/tr><tr><th>$P(X=x)$<\/th><td>0.1<\/td><td>0.3<\/td><td>0.4<\/td><td>0.2<\/td><\/tr><\/table>", "guides": [{"q": "What is $E(X^2)$?", "qk": "$E(X^2)$는?", "a": "$0+0.3+1.6+1.8=3.7$", "ak": ""}], "steps": [["$E(X)$", "$0+0.3+0.8+0.6=1.7$"], ["$E(X^2)$", "$0^2(0.1)+1^2(0.3)+2^2(0.4)+3^2(0.2)=3.7$"], ["$\\text{Var}(X)$", "$3.7-1.7^2=3.7-2.89=0.81$"], ["SD", "$\\sqrt{0.81}=0.9$"]], "ans": "$E(X)=1.7$, $\\text{Var}(X)=0.81$, SD $=0.9$", "fig": null, "ref": "", "type": "example", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Example 9B.2", "ko": "", "q": "<p>A random variable $X$ has $E(X)=8$ and $\\text{Var}(X)=3$. Find the expected value and variance of $Y=5-2X$.<\/p>", "guides": [{"q": "Which part of $5-2X$ affects the variance?", "qk": "분산에 영향을 주는 부분은?", "a": "Only $-2$, giving a factor of $(-2)^2=4$.", "ak": ""}], "steps": [["$E(Y)$", "$5-2(8)=-11$"], ["$\\text{Var}(Y)$", "$(-2)^2\\times3=12$"]], "ans": "$E(Y)=-11$, $\\text{Var}(Y)=12$", "fig": null, "ref": "", "type": "example", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Example 9B.3", "ko": "", "q": "<p>$X$ takes the values 1, 2, 3 with $P(X=1)=p$, $P(X=2)=q$, $P(X=3)=0.3$, and $E(X)=2.1$. Find $p$, $q$ and $\\text{Var}(X)$.<\/p>", "guides": [{"q": "Which two equations do you have?", "qk": "식 두 개는?", "a": "$p+q+0.3=1$ and $p+2q+0.9=2.1$", "ak": ""}], "steps": [["Equations", "$p+q=0.7$, &nbsp; $p+2q=1.2$"], ["Solve", "$q=0.5,\\ p=0.2$"], ["$E(X^2)$", "$1(0.2)+4(0.5)+9(0.3)=4.9$"], ["$\\text{Var}(X)$", "$4.9-2.1^2=4.9-4.41=0.49$"]], "ans": "$p=0.2$, $q=0.5$, $\\text{Var}(X)=0.49$", "fig": null, "ref": "", "type": "example", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Question 1", "ko": "", "q": "<p>$X$ is the score on a fair six-sided die. Find $E(X)$ and $\\text{Var}(X)$.<\/p>", "guides": [{"q": "What is $\\sum x^2$ for $x=1,\\dots,6$?", "qk": "$1^2+\\cdots+6^2$는?", "a": "91", "ak": ""}], "steps": [["$E(X)$", "$\\frac{21}{6}=3.5$"], ["$E(X^2)$", "$\\frac{91}{6}$"], ["$\\text{Var}(X)$", "$\\frac{91}{6}-\\frac{49}{4}=\\frac{182-147}{12}=\\frac{35}{12}$"]], "ans": "$3.5$, $\\frac{35}{12}$", "fig": null, "ref": "", "type": "practice", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Question 2", "ko": "", "q": "<p>$X$ takes the values $-1,\\ 0,\\ 2$ with probabilities $0.3,\\ 0.5,\\ 0.2$. Find $\\text{Var}(X)$.<\/p>", "guides": [{"q": "Careful with $(-1)^2$.", "qk": "$(-1)^2$ 주의.", "a": "$(-1)^2=1$", "ak": ""}], "steps": [["$E(X)$", "$-0.3+0+0.4=0.1$"], ["$E(X^2)$", "$1(0.3)+0+4(0.2)=1.1$"], ["$\\text{Var}(X)$", "$1.1-0.01=1.09$"]], "ans": "1.09", "fig": null, "ref": "", "type": "practice", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Question 3", "ko": "", "q": "<p>The daily temperature $C$ (°C) in a city has mean 15 and variance 16. Find the mean, variance and standard deviation in °F, where $F=1.8C+32$.<\/p>", "guides": [{"q": "What is $a$ in $aC+b$?", "qk": "$a$는?", "a": "1.8", "ak": ""}], "steps": [["Mean", "$1.8(15)+32=59$"], ["Variance", "$1.8^2\\times16=51.84$"], ["SD", "$\\sqrt{51.84}=7.2$"]], "ans": "59, 51.84, 7.2", "fig": null, "ref": "", "type": "practice", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Question 4", "ko": "", "q": "<p>$X\\sim B(12,\\ 0.25)$ and $Y=4X+1$. Find $E(Y)$ and $\\text{Var}(Y)$.<\/p>", "guides": [{"q": "$E(X)$ and $\\text{Var}(X)$?", "qk": "$E(X)$, $\\text{Var}(X)$는?", "a": "$3$ and $12(0.25)(0.75)=2.25$", "ak": ""}], "steps": [["$E(Y)$", "$4(3)+1=13$"], ["$\\text{Var}(Y)$", "$16\\times2.25=36$"]], "ans": "$E(Y)=13$, $\\text{Var}(Y)=36$", "fig": null, "ref": "", "type": "practice", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Question 5", "ko": "", "q": "<p>A spinner pays \\$0, \\$2 or \\$10 with probabilities 0.5, 0.3 and 0.2. A player pays \\$$k$ to play.<\/p><p><b>(a)<\/b> Find $k$ so that the game is fair.<\/p><p><b>(b)<\/b> Find the standard deviation of the net gain.<\/p>", "guides": [{"q": "Does subtracting $k$ change the standard deviation?", "qk": "$k$를 빼면 표준편차가 바뀌나요?", "a": "No.", "ak": "아니요."}], "steps": [["(a) expected prize", "$E(W)=0+0.6+2=2.6$ ⇒ $k=2.6$"], ["$E(W^2)$", "$0+1.2+20=21.2$"], ["$\\text{Var}(W)$", "$21.2-2.6^2=14.44$"], ["(b)", "SD of $W-k$ $=\\sqrt{14.44}=3.8$"]], "ans": "(a) \\$2.60 (b) \\$3.80", "fig": null, "ref": "", "type": "practice", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Question 6", "ko": "", "q": "<p>Let $\\mu=E(X)$. Starting from $\\text{Var}(X)=E\\big[(X-\\mu)^2\\big]$, show that $\\text{Var}(X)=E(X^2)-\\mu^2$.<\/p>", "guides": [{"q": "Expand $(x-\\mu)^2$.", "qk": "$(x-\\mu)^2$를 전개하세요.", "a": "$x^2-2\\mu x+\\mu^2$", "ak": ""}], "steps": [["Expand", "$\\sum(x-\\mu)^2P(X=x)=\\sum x^2P-2\\mu\\sum xP+\\mu^2\\sum P$"], ["Use $\\sum xP=\\mu$, $\\sum P=1$", "$=E(X^2)-2\\mu^2+\\mu^2=E(X^2)-\\mu^2$ &nbsp;∎"]], "ans": "shown", "fig": null, "ref": "", "type": "practice", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "분산과 표준편차 (수능 버전)", "unit": "수능특강 05 이산확률변수의 확률분포 · 5 분산·표준편차, 6 $aX+b$, 8 이항분포의 분산 (본문 62–66쪽)", "box": "<h4>⑴ 분산·표준편차<\/h4>$E(X)=m$일 때 $V(X)=E\\big((X-m)^2\\big)=E(X^2)-\\{E(X)\\}^2$, &nbsp; $\\sigma(X)=\\sqrt{V(X)}$<h4>⑵ $aX+b$<\/h4>$E(aX+b)=aE(X)+b$, &nbsp; $V(aX+b)=a^2V(X)$, &nbsp; $\\sigma(aX+b)=|a|\\,\\sigma(X)$<h4>⑶ 이항분포<\/h4>$X\\sim B(n,p)$이면 $E(X)=np$, $V(X)=npq$, $\\sigma(X)=\\sqrt{npq}$ $(q=1-p)$", "map": [["$V(X)$", "$\\text{Var}(X)$", "기호가 다름!"], ["$\\sigma(X)$", "standard deviation of $X$", "IB에는 $\\sigma(X)$ 기호를 잘 쓰지 않음"], ["$E(X^2)-\\{E(X)\\}^2$", "$E(X^2)-[E(X)]^2$", "같음"], ["$npq$", "$np(1-p)$", ""]], "ex": "", "tip": "수능 단골: “$\\sigma(aX+b)$”에서 $|a|$를 빼먹는 실수, “$V(aX+b)$”에서 $b$를 더하는 실수. IB도 똑같이 노리는 함정입니다.", "fig": null, "type": "ks", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "수능형 기초 1", "unit": "수능특강 05 이산확률변수의 확률분포 · 5 분산·표준편차, 6 $aX+b$, 8 이항분포의 분산 (본문 62–66쪽)", "q": "<p>이산확률변수 $X$의 확률분포가 다음 표와 같을 때, $V(2X+1)$의 값을 구하시오.<\/p><table class=\"dt\"><tr><th>$X$<\/th><td>1<\/td><td>2<\/td><td>3<\/td><td>합계<\/td><\/tr><tr><th>$P(X=x)$<\/th><td>$\\frac14$<\/td><td>$\\frac12$<\/td><td>$\\frac14$<\/td><td>1<\/td><\/tr><\/table>", "choices": null, "ans": "2", "guides": [{"q": "$E(X)$와 $E(X^2)$은?", "qk": "", "a": "$2$, $\\ \\frac14+2+\\frac94=\\frac92$", "ak": ""}], "steps": [["$V(X)$", "$\\frac92-4=\\frac12$"], ["$V(2X+1)$", "$4\\cdot\\frac12=2$"]], "en": "The table shows the distribution of $X$. Find $\\text{Var}(2X+1)$.", "pts": "[2점]", "ansText": "2", "fig": null, "type": "ksq", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "수능형 기초 2", "unit": "수능특강 05 이산확률변수의 확률분포 · 5 분산·표준편차, 6 $aX+b$, 8 이항분포의 분산 (본문 62–66쪽)", "q": "<p>확률변수 $X$에 대하여 $\\sigma(X)=3$일 때, $\\sigma(-2X+5)$의 값은?<\/p>", "choices": ["$3$", "$6$", "$9$", "$12$", "$18$"], "ans": "2", "guides": [{"q": "$\\sigma(aX+b)$에 붙는 배수는?", "qk": "", "a": "$|a|=2$", "ak": ""}], "steps": [["성질", "$\\sigma(-2X+5)=|-2|\\cdot3=6$"], ["함정", "$-6$은 표준편차가 될 수 없고, $V$로 착각하면 $12$나 $36$"]], "en": "The standard deviation of $X$ is 3. Find the standard deviation of $5-2X$.", "pts": "[2점]", "ansText": "② 6", "fig": null, "type": "ksq", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "수능형 기초 3", "unit": "수능특강 05 이산확률변수의 확률분포 · 5 분산·표준편차, 6 $aX+b$, 8 이항분포의 분산 (본문 62–66쪽)", "q": "<p>확률변수 $X$가 이항분포 $B(n,\\ p)$를 따르고 $E(X)=6,\\ V(X)=4$일 때, $n$의 값은?<\/p>", "choices": ["$12$", "$15$", "$18$", "$21$", "$24$"], "ans": "3", "guides": [{"q": "$\\frac{V(X)}{E(X)}$는 무엇인가요?", "qk": "divide", "a": "$q=1-p$", "ak": ""}], "steps": [["$q$", "$q=\\frac46=\\frac23\\Rightarrow p=\\frac13$"], ["$n$", "$n=\\frac{6}{1/3}=18$"]], "en": "$X\\sim B(n,p)$ with $E(X)=6$ and $\\text{Var}(X)=4$. Find $n$.", "pts": "[3점]", "ansText": "③ 18", "fig": null, "type": "ksq", "sec": "9B", "code": "9B", "crumb": "Ch 9 · HL: Probability › 9B Variance of a discrete random variable"}, {"title": "Waiting for the bus", "ko": "버스를 기다리는 시간", "intro": "<p>A bus arrives every 10 minutes. You arrive at a random time, so your waiting time $X$ (minutes) is equally likely to be anywhere between 0 and 10.<\/p>", "intro_ko": "버스가 10분마다 옵니다. 임의의 시각에 도착하면 기다리는 시간 $X$는 0분에서 10분 사이 어디든 같은 가능성입니다.", "steps": [{"q": "What is $P(X\\lt 5)$? What is $P(2\\lt X\\lt 4)$?", "qk": "$P(X\\lt 5)$와 $P(2\\lt X\\lt 4)$는?", "a": "$\\frac{5}{10}=0.5$; &nbsp; $\\frac{2}{10}=0.2$", "ak": ""}, {"q": "What is the probability that you wait <b>exactly<\/b> 3 minutes (3.000…)?", "qk": "정확히 3분을 기다릴 확률은?", "a": "0 — an interval of length 0.", "ak": "0."}, {"q": "We describe $X$ with a horizontal line $f(x)=c$ for $0\\le x\\le10$, where probabilities are <b>areas<\/b>. What must $c$ be?", "qk": "$f(x)=c$ 그래프 아래 넓이가 확률이라면 $c$는?", "a": "Total area $=10c=1\\Rightarrow c=\\frac1{10}$", "ak": ""}, {"q": "How would you find a probability if $f(x)$ were a curve instead of a horizontal line?", "qk": "$f(x)$가 곡선이면 확률은 어떻게 구할까요?", "a": "Area under the curve ⇒ integrate: $P(a\\lt X\\lt b)=\\int_a^b f(x)\\,dx$.", "ak": "곡선 아래 넓이 → 적분."}], "idea": "A continuous random variable is described by a <b>probability density function<\/b> $f(x)$: probabilities are areas, $P(a\\lt X\\lt b)=\\int_a^b f(x)\\,dx$, and the total area is 1.", "idea_ko": "연속확률변수는 확률밀도함수 $f(x)$로 나타냅니다. 확률 = 넓이 = 적분이고 전체 넓이는 1입니다.", "fig": {"type": "pdf", "pts": [[0, 0.1], [10, 0.1], [10, 0]], "shade": [2, 4], "xr": [-0.5, 11], "ymax": 0.14, "xt": [0, 2, 4, 10], "yt": [{"v": 0.1, "l": "1/10"}]}, "type": "inquiry", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Words you need", "ko": "이 단원의 핵심 영단어", "rows": [["continuous random variable", "연속확률변수", "takes any value in an interval"], ["probability density function (pdf)", "확률밀도함수", "$f(x)$; area = probability"], ["piecewise function", "구간별로 정의된 함수", "different rules on different intervals"], ["otherwise", "그 밖의 경우", "$f(x)=0$ outside the given interval"], ["mode", "최빈값", "$x$ where $f(x)$ is largest"], ["median", "중앙값", "$\\int_{-\\infty}^{m}f(x)\\,dx=\\frac12$"], ["mean / expected value", "평균 / 기댓값", "$\\int xf(x)\\,dx$"], ["variance", "분산", "$\\int x^2f(x)\\,dx-\\mu^2$"], ["exact value", "정확한 값", "leave as fraction, surd, $\\ln$, $\\pi$"]], "phrases": [["$X$ has probability density function $f(x)=\\begin{cases}kx(4-x) & 0\\le x\\le4\\\\0 & \\text{otherwise}\\end{cases}$", "$X$의 확률밀도함수가 다음과 같다 (otherwise = 그 밖에는 0)"], ["Find the value of $k$.", "$k$의 값을 구하시오 → 전체 적분 = 1"], ["Find the exact value of the median of $X$.", "중앙값의 “정확한 값” → 적분 = 1/2을 풀어 근호·로그로 남기기"], ["Sketch the graph of $f$ and hence write down the mode.", "그래프를 그리고 최빈값을 쓰시오."], ["Find $P(X\\gt 1)$.", "$P(X\\gt 1)$을 구하시오."]], "type": "vocab", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Probability density functions", "ko": "확률밀도함수", "kp": "For a continuous random variable with pdf $f(x)$: $$f(x)\\ge0\\ \\text{for all }x,\\qquad\\int_{-\\infty}^{\\infty}f(x)\\,dx=1,\\qquad P(a\\lt X\\lt b)=\\int_a^b f(x)\\,dx$$", "body": "<p>$P(X=a)=0$, so it does not matter whether we use $\\lt $ or $\\le$.<\/p>", "kn": "그림은 $f(x)=\\frac{3}{32}x(4-x)$이고, 색칠된 넓이가 $P(0\\lt X\\lt 1)$입니다. 확률밀도함수 값 자체는 확률이 아니므로 1보다 클 수도 있어요.", "tip": "", "guides": [], "fig": {"type": "pdf", "pts": [[0.0, 0.0], [0.05, 0.01852], [0.1, 0.03656], [0.15, 0.05414], [0.2, 0.07125], [0.25, 0.08789], [0.3, 0.10406], [0.35, 0.11977], [0.4, 0.135], [0.45, 0.14977], [0.5, 0.16406], [0.55, 0.17789], [0.6, 0.19125], [0.65, 0.20414], [0.7, 0.21656], [0.75, 0.22852], [0.8, 0.24], [0.85, 0.25102], [0.9, 0.26156], [0.95, 0.27164], [1.0, 0.28125], [1.05, 0.29039], [1.1, 0.29906], [1.15, 0.30727], [1.2, 0.315], [1.25, 0.32227], [1.3, 0.32906], [1.35, 0.33539], [1.4, 0.34125], [1.45, 0.34664], [1.5, 0.35156], [1.55, 0.35602], [1.6, 0.36], [1.65, 0.36352], [1.7, 0.36656], [1.75, 0.36914], [1.8, 0.37125], [1.85, 0.37289], [1.9, 0.37406], [1.95, 0.37477], [2.0, 0.375], [2.05, 0.37477], [2.1, 0.37406], [2.15, 0.37289], [2.2, 0.37125], [2.25, 0.36914], [2.3, 0.36656], [2.35, 0.36352], [2.4, 0.36], [2.45, 0.35602], [2.5, 0.35156], [2.55, 0.34664], [2.6, 0.34125], [2.65, 0.33539], [2.7, 0.32906], [2.75, 0.32227], [2.8, 0.315], [2.85, 0.30727], [2.9, 0.29906], [2.95, 0.29039], [3.0, 0.28125], [3.05, 0.27164], [3.1, 0.26156], [3.15, 0.25102], [3.2, 0.24], [3.25, 0.22852], [3.3, 0.21656], [3.35, 0.20414], [3.4, 0.19125], [3.45, 0.17789], [3.5, 0.16406], [3.55, 0.14977], [3.6, 0.135], [3.65, 0.11977], [3.7, 0.10406], [3.75, 0.08789], [3.8, 0.07125], [3.85, 0.05414], [3.9, 0.03656], [3.95, 0.01852], [4.0, 0.0]], "shade": [0, 1], "xr": [-0.4, 4.6], "ymax": 0.45, "xt": [0, 1, 2, 4], "yt": [{"v": 0.375, "l": "3/8"}]}, "type": "concept", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Mode, median, mean and variance", "ko": "최빈값, 중앙값, 평균, 분산", "kp": "• <b>Mode<\/b>: the value of $x$ where $f(x)$ is largest (may be at an end point).<br>• <b>Median<\/b> $m$: $\\displaystyle\\int_{-\\infty}^{m}f(x)\\,dx=\\frac12$<br>• <b>Mean<\/b>: $\\displaystyle E(X)=\\int_{-\\infty}^{\\infty}x\\,f(x)\\,dx$<br>• <b>Variance<\/b>: $\\displaystyle \\text{Var}(X)=\\int_{-\\infty}^{\\infty}x^2f(x)\\,dx-[E(X)]^2$", "body": "<p>The rules $E(aX+b)=aE(X)+b$ and $\\text{Var}(aX+b)=a^2\\text{Var}(X)$ still hold. If $f$ is symmetric about $x=c$, then mean = median $=c$.<\/p>", "kn": "이산형의 $\\sum$이 연속형에서는 $\\int$로 바뀝니다. 최빈값은 미분해서 $f'(x)=0$인 점이거나 구간의 끝점일 수 있으니 반드시 그래프를 확인하세요.", "tip": "", "guides": [], "fig": null, "type": "concept", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Example 9C.1", "ko": "", "q": "<p>$X$ has pdf $f(x)=kx(4-x)$ for $0\\le x\\le4$, and $0$ otherwise.<\/p><p><b>(a)<\/b> Find $k$.<\/p><p><b>(b)<\/b> Find $P(X\\lt 1)$.<\/p><p><b>(c)<\/b> Write down the mode, the median and the mean of $X$.<\/p><p><b>(d)<\/b> Find $\\text{Var}(X)$.<\/p>", "guides": [{"q": "Which equation gives $k$?", "qk": "$k$를 구하는 식은?", "a": "$\\int_0^4kx(4-x)\\,dx=1$", "ak": ""}, {"q": "Is the graph symmetric? About which line?", "qk": "그래프가 대칭인가요?", "a": "Yes, a parabola symmetric about $x=2$.", "ak": "$x=2$에 대해 대칭."}], "steps": [["(a)", "$k\\int_0^4(4x-x^2)\\,dx=k\\left[2x^2-\\tfrac{x^3}{3}\\right]_0^4=k\\cdot\\tfrac{32}{3}=1\\Rightarrow k=\\tfrac{3}{32}$"], ["(b)", "$\\tfrac{3}{32}\\left[2x^2-\\tfrac{x^3}{3}\\right]_0^1=\\tfrac{3}{32}\\cdot\\tfrac53=\\tfrac{5}{32}$"], ["(c) symmetry about $x=2$", "mode $=$ median $=$ mean $=2$"], ["(d) $E(X^2)$", "$\\tfrac{3}{32}\\int_0^4(4x^3-x^4)\\,dx=\\tfrac{3}{32}\\left(256-\\tfrac{1024}{5}\\right)=\\tfrac{24}{5}$"], ["$\\text{Var}(X)$", "$\\tfrac{24}{5}-2^2=\\tfrac45$"]], "ans": "(a) $\\frac3{32}$ (b) $\\frac5{32}$ (c) 2, 2, 2 (d) $\\frac45$", "fig": null, "ref": "", "type": "example", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Example 9C.2", "ko": "", "q": "<p>$X$ has pdf $f(x)=\\dfrac{x}{8}$ for $0\\le x\\le4$, and $0$ otherwise.<\/p><p><b>(a)<\/b> Find the exact value of the median.<\/p><p><b>(b)<\/b> Write down the mode.<\/p><p><b>(c)<\/b> Find $E(X)$ and $\\text{Var}(X)$.<\/p>", "guides": [{"q": "Where is $f(x)$ largest on $[0,4]$?", "qk": "$f(x)$가 가장 큰 곳은?", "a": "At the end point $x=4$.", "ak": "끝점 $x=4$."}], "steps": [["(a)", "$\\int_0^m\\tfrac{x}{8}\\,dx=\\tfrac{m^2}{16}=\\tfrac12\\Rightarrow m^2=8\\Rightarrow m=2\\sqrt2$"], ["(b)", "mode $=4$"], ["(c) $E(X)$", "$\\int_0^4\\tfrac{x^2}{8}\\,dx=\\tfrac{64}{24}=\\tfrac83$"], ["$E(X^2)$", "$\\int_0^4\\tfrac{x^3}{8}\\,dx=\\tfrac{256}{32}=8$"], ["$\\text{Var}(X)$", "$8-\\tfrac{64}{9}=\\tfrac89$"]], "ans": "(a) $2\\sqrt2$ (b) 4 (c) $\\frac83$, $\\frac89$", "fig": {"type": "pdf", "pts": [[0, 0], [4, 0.5], [4, 0]], "xr": [-0.4, 4.6], "ymax": 0.6, "xt": [0, {"v": 2.828, "l": "m"}, 4], "yt": [{"v": 0.5, "l": "1/2"}], "shade": [0, 2.828]}, "ref": "", "type": "example", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Example 9C.3", "ko": "", "q": "<p>$X$ has pdf $f(x)=\\begin{cases}kx & 0\\le x\\le2\\\\ k(4-x) & 2\\lt x\\le4\\\\ 0&\\text{otherwise}\\end{cases}$<\/p><p><b>(a)<\/b> Find $k$.<\/p><p><b>(b)<\/b> Find $P(1\\lt X\\lt 3)$.<\/p>", "guides": [{"q": "What shape is the graph? What is its area?", "qk": "그래프 모양과 넓이는?", "a": "A triangle with base 4 and height $2k$: area $4k$.", "ak": "밑변 4, 높이 $2k$인 삼각형."}], "steps": [["(a) area = 1", "$\\frac12\\cdot4\\cdot2k=4k=1\\Rightarrow k=\\frac14$"], ["(b) complement", "Left corner $0\\le x\\le1$: triangle $\\frac12\\cdot1\\cdot\\frac14=\\frac18$; right corner $3\\le x\\le4$: also $\\frac18$"], ["", "$P(1\\lt X\\lt 3)=1-\\frac18-\\frac18=\\frac34$"]], "ans": "(a) $\\frac14$ (b) $\\frac34$", "fig": {"type": "pdf", "pts": [[0, 0], [2, 0.5], [4, 0]], "shade": [1, 3], "xr": [-0.4, 4.6], "ymax": 0.6, "xt": [0, 1, 2, 3, 4], "yt": [{"v": 0.5, "l": "2k"}]}, "ref": "적분 없이 넓이로 풀 수 있는 문제 — 수능 확통에서 확률밀도함수를 다루는 방식과 같습니다.", "type": "example", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Example 9C.4", "ko": "", "q": "<p>$X$ has pdf $f(x)=\\frac12\\sin x$ for $0\\le x\\le\\pi$, and $0$ otherwise. Find $E(X)$ and the exact value of $\\text{Var}(X)$.<\/p>", "guides": [{"q": "Is the graph symmetric?", "qk": "대칭인가요?", "a": "Yes, about $x=\\frac\\pi2$, so $E(X)=\\frac\\pi2$.", "ak": ""}, {"q": "Which technique integrates $x^2\\sin x$?", "qk": "$x^2\\sin x$의 적분 방법은?", "a": "Integration by parts, twice.", "ak": "부분적분 2번."}], "steps": [["Mean", "$E(X)=\\frac\\pi2$ (symmetry)"], ["$\\int_0^\\pi x^2\\sin x\\,dx$", "by parts twice: $\\left[-x^2\\cos x+2x\\sin x+2\\cos x\\right]_0^\\pi=\\pi^2-4$"], ["$E(X^2)$", "$\\frac12(\\pi^2-4)$"], ["$\\text{Var}(X)$", "$\\frac{\\pi^2}{2}-2-\\frac{\\pi^2}{4}=\\frac{\\pi^2}{4}-2\\ (\\approx0.467)$"]], "ans": "$E(X)=\\frac\\pi2$, $\\text{Var}(X)=\\frac{\\pi^2}{4}-2$", "fig": null, "ref": "", "type": "example", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Question 1", "ko": "", "q": "<p>$f(x)=k(x^2+1)$ for $0\\le x\\le3$, and $0$ otherwise.<\/p><p><b>(a)<\/b> Find $k$.<\/p><p><b>(b)<\/b> Find $P(X\\gt 2)$.<\/p>", "guides": [{"q": "$\\int_0^3(x^2+1)\\,dx=$?", "qk": "", "a": "$9+3=12$", "ak": ""}], "steps": [["(a)", "$12k=1\\Rightarrow k=\\frac1{12}$"], ["(b)", "$\\frac1{12}\\left[\\frac{x^3}{3}+x\\right]_2^3=\\frac1{12}\\left(12-\\frac{14}{3}\\right)=\\frac{11}{18}$"]], "ans": "(a) $\\frac1{12}$ (b) $\\frac{11}{18}$", "fig": null, "ref": "", "type": "practice", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Question 2", "ko": "", "q": "<p>$f(x)=\\dfrac{3x^2}{8}$ for $0\\le x\\le2$, and $0$ otherwise.<\/p><p><b>(a)<\/b> Find the exact value of the median.<\/p><p><b>(b)<\/b> Find $E(X)$ and $\\text{Var}(X)$.<\/p><p><b>(c)<\/b> Write down the mode.<\/p>", "guides": [{"q": "Median equation?", "qk": "중앙값 식은?", "a": "$\\frac{m^3}{8}=\\frac12$", "ak": ""}], "steps": [["(a)", "$m^3=4\\Rightarrow m=\\sqrt[3]{4}\\ (\\approx1.59)$"], ["(b)", "$E(X)=\\int_0^2\\frac{3x^3}{8}dx=\\frac32$; $\\ E(X^2)=\\int_0^2\\frac{3x^4}{8}dx=\\frac{12}{5}$; $\\ \\text{Var}=\\frac{12}{5}-\\frac94=\\frac{3}{20}$"], ["(c)", "increasing ⇒ mode $=2$"]], "ans": "(a) $\\sqrt[3]4$ (b) $\\frac32$, $\\frac3{20}$ (c) 2", "fig": null, "ref": "", "type": "practice", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Question 3", "ko": "", "q": "<p>$f(x)=\\frac43e^{-x}$ for $0\\le x\\le\\ln4$, and $0$ otherwise.<\/p><p><b>(a)<\/b> Verify that $f$ is a pdf.<\/p><p><b>(b)<\/b> Find $P(X\\lt \\ln2)$.<\/p><p><b>(c)<\/b> Find the exact value of the median.<\/p>", "guides": [{"q": "$\\int e^{-x}dx=$?", "qk": "", "a": "$-e^{-x}$", "ak": ""}], "steps": [["(a)", "$f\\ge0$ and $\\frac43\\left[-e^{-x}\\right]_0^{\\ln4}=\\frac43\\left(1-\\frac14\\right)=1$ ✓"], ["(b)", "$\\frac43\\left(1-\\frac12\\right)=\\frac23$"], ["(c)", "$\\frac43(1-e^{-m})=\\frac12\\Rightarrow e^{-m}=\\frac58\\Rightarrow m=\\ln\\frac85$"]], "ans": "(b) $\\frac23$ (c) $\\ln\\frac85\\approx0.470$", "fig": null, "ref": "", "type": "practice", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Question 4", "ko": "", "q": "<p>$f(x)=\\frac34x(2-x)$ for $0\\le x\\le2$, and $0$ otherwise.<\/p><p><b>(a)<\/b> Write down the mode and $E(X)$.<\/p><p><b>(b)<\/b> Find $\\text{Var}(X)$.<\/p><p><b>(c)<\/b> Find $E(5X-2)$ and $\\text{Var}(5X-2)$.<\/p>", "guides": [{"q": "Symmetric about which line?", "qk": "대칭축은?", "a": "$x=1$", "ak": ""}], "steps": [["(a)", "mode $=1$, $E(X)=1$"], ["(b)", "$E(X^2)=\\frac34\\int_0^2(2x^3-x^4)dx=\\frac34\\cdot\\frac85=\\frac65$; $\\ \\text{Var}=\\frac65-1=\\frac15$"], ["(c)", "$E=5(1)-2=3$; $\\ \\text{Var}=25\\cdot\\frac15=5$"]], "ans": "(a) 1, 1 (b) $\\frac15$ (c) 3, 5", "fig": null, "ref": "", "type": "practice", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "Question 5", "ko": "", "q": "<p>$f(x)=ax+b$ for $0\\le x\\le1$, and $0$ otherwise. Given $E(X)=\\frac{7}{12}$, find $a$ and $b$.<\/p>", "guides": [{"q": "Two conditions?", "qk": "조건 두 개는?", "a": "$\\int_0^1f=1$ and $\\int_0^1xf=\\frac7{12}$", "ak": ""}], "steps": [["Total area", "$\\frac a2+b=1$"], ["Mean", "$\\frac a3+\\frac b2=\\frac7{12}$"], ["Solve", "$b=1-\\frac a2\\Rightarrow\\frac a3+\\frac12-\\frac a4=\\frac7{12}\\Rightarrow\\frac a{12}=\\frac1{12}\\Rightarrow a=1,\\ b=\\frac12$"]], "ans": "$a=1$, $b=\\frac12$", "fig": null, "ref": "", "type": "practice", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "확률밀도함수 (수능 버전)", "unit": "수능특강 06 연속확률변수의 확률분포 · 1 연속확률변수, 2 확률밀도함수 (본문 74–75쪽)", "box": "<h4>⑴ 연속확률변수<\/h4>어떤 구간에 속하는 모든 실수의 값을 갖는 확률변수 (길이, 무게, 시간, 온도 등).<h4>⑵ 확률밀도함수<\/h4>$\\alpha\\le X\\le\\beta$에서 정의된 함수 $f(x)$가<br>&nbsp;① $f(x)\\ge0$<br>&nbsp;② $y=f(x)$의 그래프와 $x$축 및 두 직선 $x=\\alpha,\\ x=\\beta$로 둘러싸인 부분의 넓이가 1<br>&nbsp;③ $P(a\\le X\\le b)$는 $x=a$부터 $x=b$까지 그래프 아래의 넓이<br>를 만족시킬 때 $f(x)$를 $X$의 확률밀도함수라 한다.<h4>⑶ 수능 확통은 적분을 쓰지 않는다<\/h4>그래프가 직선(삼각형, 사다리꼴, 직사각형)으로 주어지고 넓이로 확률을 계산한다. $P(X=a)=0$.", "map": [["확률밀도함수", "probability density function", ""], ["넓이 = 1", "$\\int f(x)\\,dx=1$", "IB HL은 적분 사용"], ["$P(a\\le X\\le b)$ = 넓이", "$\\int_a^b f(x)\\,dx$", ""], ["연속확률변수의 평균·분산", "$\\int xf\\,dx$, $\\int x^2f\\,dx-\\mu^2$", "수능 확통에는 없음 (IB HL만)"]], "ex": "", "tip": "위 그래프에서 넓이 = 1로 $k$를 구해 보세요. 사다리꼴($0\\le x\\le1$) $\\frac{3k}{4}$ + 직사각형 $2k$ + 삼각형 $\\frac k2$ $=\\frac{13k}{4}=1$ → $k=\\frac4{13}$. 색칠된 $P(1\\le X\\le3)=2k=\\frac{8}{13}$.", "fig": {"type": "pdf", "pts": [[0, 0.25], [1, 0.5], [3, 0.5], [4, 0]], "shade": [1, 3], "xr": [-0.4, 4.6], "ymax": 0.6, "xt": [0, 1, 3, 4], "yt": [{"v": 0.5, "l": "k"}]}, "type": "ks", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "수능형 기초 1", "unit": "수능특강 06 연속확률변수의 확률분포 · 1 연속확률변수, 2 확률밀도함수 (본문 74–75쪽)", "q": "<p>연속확률변수 $X$가 갖는 값의 범위는 $0\\le X\\le4$이고, $X$의 확률밀도함수의 그래프는 그림과 같다. 상수 $k$의 값은?<\/p>", "choices": ["$\\dfrac14$", "$\\dfrac13$", "$\\dfrac12$", "$\\dfrac23$", "$1$"], "ans": "3", "guides": [{"q": "그래프와 $x$축이 만드는 도형은?", "qk": "shape", "a": "밑변 4, 높이 $k$인 삼각형", "ak": ""}], "steps": [["넓이 = 1", "$\\frac12\\cdot4\\cdot k=2k=1\\Rightarrow k=\\frac12$"]], "en": "The graph shows the pdf of $X$, $0\\le X\\le4$. Find $k$.", "pts": "[2점]", "ansText": "③ $\\frac12$", "fig": {"type": "pdf", "pts": [[0, 0], [2, 0.5], [4, 0]], "xr": [-0.4, 4.6], "ymax": 0.6, "xt": [0, 2, 4], "yt": [{"v": 0.5, "l": "k"}]}, "type": "ksq", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "수능형 기초 2", "unit": "수능특강 06 연속확률변수의 확률분포 · 1 연속확률변수, 2 확률밀도함수 (본문 74–75쪽)", "q": "<p>연속확률변수 $X$가 갖는 값의 범위는 $0\\le X\\le2$이고, $X$의 확률밀도함수는 $f(x)=ax$ ($a$는 상수)이다. $P(1\\le X\\le2)$의 값은?<\/p>", "choices": ["$\\dfrac12$", "$\\dfrac58$", "$\\dfrac23$", "$\\dfrac34$", "$\\dfrac78$"], "ans": "4", "guides": [{"q": "$a$를 먼저 구하려면?", "qk": "", "a": "삼각형 넓이 $\\frac12\\cdot2\\cdot2a=2a=1$", "ak": ""}], "steps": [["$a$", "$a=\\frac12$"], ["여사건", "$P(0\\le X\\le1)=\\frac12\\cdot1\\cdot\\frac12=\\frac14$"], ["답", "$1-\\frac14=\\frac34$"]], "en": "$X$ has pdf $f(x)=ax$ for $0\\le x\\le2$. Find $P(1\\le X\\le2)$.", "pts": "[3점]", "ansText": "④ $\\frac34$", "fig": {"type": "pdf", "pts": [[0, 0], [2, 1], [2, 0]], "shade": [1, 2], "xr": [-0.3, 2.5], "ymax": 1.2, "xt": [0, 1, 2], "yt": [{"v": 1, "l": "2a"}]}, "type": "ksq", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}, {"title": "수능형 기초 3", "unit": "수능특강 06 연속확률변수의 확률분포 · 1 연속확률변수, 2 확률밀도함수 (본문 74–75쪽)", "q": "<p>연속확률변수 $X$가 갖는 값의 범위는 $0\\le X\\le3$이고, $X$의 확률밀도함수 $f(x)$는 $$f(x)=\\begin{cases}k & (0\\le x\\le1)\\\\ \\dfrac{k}{2}(3-x) & (1\\lt x\\le3)\\end{cases}$$이다. $P(0\\le X\\le2)=\\dfrac{q}{p}$일 때, $p+q$의 값을 구하시오. (단, $p$와 $q$는 서로소인 자연수이다.)<\/p>", "choices": null, "ans": "15", "guides": [{"q": "그래프는 어떤 도형 두 개로 나뉘나요?", "qk": "split the area", "a": "직사각형(1×$k$) + 삼각형(밑변 2, 높이 $k$)", "ak": ""}], "steps": [["넓이 = 1", "$k+\\frac12\\cdot2\\cdot k=2k=1\\Rightarrow k=\\frac12$"], ["$2\\le x\\le3$의 넓이", "$f(2)=\\frac14$이므로 $\\frac12\\cdot1\\cdot\\frac14=\\frac18$"], ["여사건", "$P(0\\le X\\le2)=1-\\frac18=\\frac78$"], ["$p+q$", "$8+7=15$"]], "en": "The pdf of $X$ is given piecewise. Find $P(0\\le X\\le2)$.", "pts": "[3점]", "ansText": "15", "fig": {"type": "pdf", "pts": [[0, 0.5], [1, 0.5], [3, 0]], "shade": [0, 2], "xr": [-0.3, 3.5], "ymax": 0.65, "xt": [0, 1, 2, 3], "yt": [{"v": 0.5, "l": "k"}]}, "type": "ksq", "sec": "9C", "code": "9C", "crumb": "Ch 9 · HL: Probability › 9C Continuous random variables"}], "sections": [{"code": "9A", "name": "Bayes' theorem", "ko": "베이즈 정리: 조건부확률 뒤집기", "ch": "Ch 9 · HL: Probability", "top": false, "start": 1}, {"code": "9B", "name": "Variance of a discrete random variable", "ko": "이산확률변수의 분산", "ch": "Ch 9 · HL: Probability", "top": false, "start": 17}, {"code": "9C", "name": "Continuous random variables", "ko": "연속확률변수와 확률밀도함수", "ch": "Ch 9 · HL: Probability", "top": false, "start": 34}], "meta": {"title": "IB Math AA HL · Probability (Ch 9)", "tag": "IB Mathematics: Analysis &amp; Approaches HL", "h1": "HL Probability", "sub": "HL 확률 · Bayes · Variance · Continuous random variables · 수능특강 연계", "side": "IB Math AA HL · Chapter 9", "key": "hl_site_pos"}};
+</script>
+<script>
+(function(){
+const S = DATA.slides, SECS = DATA.sections, META = DATA.meta;
+let cur = 0;
+const $ = s => document.querySelector(s);
+const esc = s => s;
+function typeset(el){
+  if (window.MathJax && MathJax.typesetPromise) { MathJax.typesetClear && MathJax.typesetClear([el]); MathJax.typesetPromise([el]).catch(()=>{}); }
+  else setTimeout(()=>typeset(el), 200);
+}
+/* ---------- figures ---------- */
+const FIG = {
+  normal(o){
+    const W=520,H=210,pad=30, mu=o.mu, sd=o.sd, lo=mu-3.6*sd, hi=mu+3.6*sd;
+    const X=x=>pad+(x-lo)/(hi-lo)*(W-2*pad), f=x=>Math.exp(-0.5*((x-mu)/sd)**2), Y=y=>H-35-y*(H-60);
+    let d='', sh='';
+    for(let i=0;i<=200;i++){const x=lo+(hi-lo)*i/200; d+=(i?'L':'M')+X(x).toFixed(1)+' '+Y(f(x)).toFixed(1);}
+    const a=(o.a===undefined||o.a===null)?lo:Math.max(lo,o.a), b=(o.b===undefined||o.b===null)?hi:Math.min(hi,o.b);
+    if(o.a!==undefined||o.b!==undefined){
+      sh='M'+X(a).toFixed(1)+' '+Y(0);
+      for(let i=0;i<=120;i++){const x=a+(b-a)*i/120; sh+='L'+X(x).toFixed(1)+' '+Y(f(x)).toFixed(1);}
+      sh+='L'+X(b).toFixed(1)+' '+Y(0)+'Z';
+    }
+    let ticks='';
+    (o.ticks||[mu]).forEach(t=>{const lab=(typeof t==='object')?t:{v:t,l:String(t)};ticks+=`<line x1="${X(lab.v)}" y1="${Y(0)}" x2="${X(lab.v)}" y2="${Y(0)+5}" stroke="#555"/><text x="${X(lab.v)}" y="${Y(0)+19}" font-size="13" text-anchor="middle" fill="#333" font-family="Source Serif 4">${lab.l}</text>`;});
+    const dash=`<line x1="${X(mu)}" y1="${Y(0)}" x2="${X(mu)}" y2="${Y(1)}" stroke="#999" stroke-dasharray="4 4"/>`;
+    return `<svg viewBox="0 0 ${W} ${H}" width="${W}"><path d="${sh}" fill="#2c5d8f" fill-opacity=".28"/>${dash}<path d="${d}" fill="none" stroke="#1f3d63" stroke-width="2"/><line x1="${pad}" y1="${Y(0)}" x2="${W-pad}" y2="${Y(0)}" stroke="#555"/>${ticks}${o.label?`<text x="${W-pad}" y="22" font-size="13" text-anchor="end" fill="#2c5d8f" font-family="Source Serif 4">${o.label}</text>`:''}</svg>`;
+  },
+  venn(o){
+    const W=360,H=220;
+    const t=(x,y,s,c)=>`<text x="${x}" y="${y}" font-size="16" text-anchor="middle" fill="${c||'#1f2328'}" font-family="Source Serif 4">${s}</text>`;
+    return `<svg viewBox="0 0 ${W} ${H}" width="${W}"><rect x="5" y="5" width="${W-10}" height="${H-10}" fill="#fff" stroke="#555" rx="4"/>${t(22,28,'U','#555')}
+    <circle cx="140" cy="115" r="75" fill="#2c5d8f" fill-opacity=".10" stroke="#1f3d63" stroke-width="1.6"/>
+    <circle cx="220" cy="115" r="75" fill="#b0862e" fill-opacity=".10" stroke="#8a6820" stroke-width="1.6"/>
+    ${t(95,45,o.A||'A','#1f3d63')}${t(265,45,o.B||'B','#8a6820')}
+    ${t(105,120,o.a??'')}${t(180,120,o.ab??'')}${t(255,120,o.b??'')}${t(330,200,o.n??'')}</svg>`;
+  },
+  tree(o){
+    // o: {first:[[label,p],[label,p]], second:[[[label,p],[label,p]],[[label,p],[label,p]]]}
+    const W=540,H=250; let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}">`;
+    const T=(x,y,str,sz,c)=>`<text x="${x}" y="${y}" font-size="${sz||15}" fill="${c||'#1f2328'}" font-family="Source Serif 4" text-anchor="middle">${str}</text>`;
+    const y1=[65,185], x0=20,x1=170,x2=330;
+    o.first.forEach((b,i)=>{
+      s+=`<line x1="${x0}" y1="125" x2="${x1-15}" y2="${y1[i]}" stroke="#1f3d63" stroke-width="1.5"/>`;
+      s+=T((x0+x1)/2-10,(125+y1[i])/2+(i?18:-6),b[1],13,'#2c5d8f')+T(x1,y1[i]+5,b[0],16);
+      const y2=[y1[i]-32,y1[i]+32];
+      o.second[i].forEach((c,j)=>{
+        s+=`<line x1="${x1+15}" y1="${y1[i]}" x2="${x2-15}" y2="${y2[j]}" stroke="#1f3d63" stroke-width="1.5"/>`;
+        s+=T((x1+x2)/2,(y1[i]+y2[j])/2+(j?16:-5),c[1],13,'#2c5d8f')+T(x2,y2[j]+5,c[0],16);
+        if(c[2]) s+=`<text x="${x2+String(c[0]).length*4.5+14}" y="${y2[j]+5}" font-size="13" fill="#5b6470" font-family="Source Serif 4">${c[2]}</text>`;
+      });
+    });
+    return s+'</svg>';
+  },
+  box(o){
+    // o: {min,q1,med,q3,max,lo,hi,step, out:[...]}
+    const W=520,H=110,pad=30, X=x=>pad+(x-o.lo)/(o.hi-o.lo)*(W-2*pad);
+    let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}">`;
+    const y=40;
+    s+=`<line x1="${X(o.min)}" y1="${y}" x2="${X(o.q1)}" y2="${y}" stroke="#1f3d63" stroke-width="1.6"/><line x1="${X(o.q3)}" y1="${y}" x2="${X(o.max)}" y2="${y}" stroke="#1f3d63" stroke-width="1.6"/>`;
+    s+=`<rect x="${X(o.q1)}" y="${y-18}" width="${X(o.q3)-X(o.q1)}" height="36" fill="#eef4fb" stroke="#1f3d63" stroke-width="1.6"/>`;
+    s+=`<line x1="${X(o.med)}" y1="${y-18}" x2="${X(o.med)}" y2="${y+18}" stroke="#1f3d63" stroke-width="2"/>`;
+    [o.min,o.max].forEach(v=>s+=`<line x1="${X(v)}" y1="${y-9}" x2="${X(v)}" y2="${y+9}" stroke="#1f3d63" stroke-width="1.6"/>`);
+    (o.out||[]).forEach(v=>s+=`<text x="${X(v)}" y="${y+5}" font-size="15" text-anchor="middle" fill="#a8432f">×</text>`);
+    s+=`<line x1="${pad}" y1="80" x2="${W-pad}" y2="80" stroke="#555"/>`;
+    for(let v=o.lo; v<=o.hi+1e-9; v+=o.step){ s+=`<line x1="${X(v)}" y1="80" x2="${X(v)}" y2="85" stroke="#555"/><text x="${X(v)}" y="100" font-size="12" text-anchor="middle" font-family="Source Serif 4">${+v.toFixed(2)}</text>`;}
+    return s+'</svg>';
+  },
+  hist(o){
+    // o: {bounds:[...], freqs:[...] (frequency density if fd), ylab}
+    const W=520,H=250,pl=50,pr=20,pt=28,pb=40;
+    const lo=o.bounds[0], hi=o.bounds[o.bounds.length-1], ymax=o.ymax||Math.max(...o.freqs)*1.15;
+    const X=x=>pl+(x-lo)/(hi-lo)*(W-pl-pr), Y=y=>H-pb-y/ymax*(H-pt-pb);
+    let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}">`;
+    for(let g=0; g<=ymax+1e-9; g+=o.ystep){ s+=`<line x1="${pl}" y1="${Y(g)}" x2="${W-pr}" y2="${Y(g)}" stroke="#eee"/><text x="${pl-6}" y="${Y(g)+4}" font-size="11" text-anchor="end">${+g.toFixed(2)}</text>`;}
+    o.freqs.forEach((f,i)=>{s+=`<rect x="${X(o.bounds[i])}" y="${Y(f)}" width="${X(o.bounds[i+1])-X(o.bounds[i])}" height="${Y(0)-Y(f)}" fill="#c9dbef" stroke="#1f3d63"/>`;});
+    o.bounds.forEach(b=>s+=`<text x="${X(b)}" y="${H-pb+16}" font-size="12" text-anchor="middle">${b}</text>`);
+    s+=`<line x1="${pl}" y1="${Y(0)}" x2="${W-pr}" y2="${Y(0)}" stroke="#555"/><line x1="${pl}" y1="${pt}" x2="${pl}" y2="${Y(0)}" stroke="#555"/>`;
+    s+=`<text x="${(pl+W-pr)/2}" y="${H-4}" font-size="12" text-anchor="middle" fill="#5b6470">${o.xlab||''}</text><text x="${pl}" y="14" font-size="12" fill="#5b6470">${o.ylab||''}</text>`;
+    return s+'</svg>';
+  },
+  pdf(o){
+    // o: {pts:[[x,y],...], shade:[a,b], xr:[lo,hi], ymax, xt:[...], yt:[{v,l}], xlab}
+    const W=480,H=230,pl=48,pr=20,pt=18,pb=34, ymax=o.ymax;
+    const X=x=>pl+(x-o.xr[0])/(o.xr[1]-o.xr[0])*(W-pl-pr), Y=y=>H-pb-y/ymax*(H-pt-pb);
+    const f=x=>{const p=o.pts; if(x<p[0][0]||x>p[p.length-1][0]) return 0; for(let i=1;i<p.length;i++){ if(x<=p[i][0]){const t=(x-p[i-1][0])/((p[i][0]-p[i-1][0])||1); return p[i-1][1]+t*(p[i][1]-p[i-1][1]);}} return 0;};
+    let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}">`;
+    if(o.shade){const [a,b]=o.shade; let d='M'+X(a)+' '+Y(0); for(let i=0;i<=120;i++){const x=a+(b-a)*i/120; d+='L'+X(x).toFixed(1)+' '+Y(f(x)).toFixed(1);} d+='L'+X(b)+' '+Y(0)+'Z'; s+=`<path d="${d}" fill="#1d6f68" fill-opacity=".25"/>`;}
+    s+=`<line x1="${pl}" y1="${Y(0)}" x2="${W-pr}" y2="${Y(0)}" stroke="#555"/><line x1="${X(Math.max(0,o.xr[0]))}" y1="${pt-6}" x2="${X(Math.max(0,o.xr[0]))}" y2="${Y(0)}" stroke="#555"/>`;
+    s+=`<path d="${o.pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join('')}" fill="none" stroke="#1f3d63" stroke-width="2"/>`;
+    (o.xt||[]).forEach(v=>{const l=(typeof v==='object')?v:{v:v,l:String(v)}; s+=`<line x1="${X(l.v)}" y1="${Y(0)}" x2="${X(l.v)}" y2="${Y(0)+4}" stroke="#555"/><text x="${X(l.v)}" y="${Y(0)+18}" font-size="13" text-anchor="middle" font-family="Source Serif 4">${l.l}</text>`;});
+    (o.yt||[]).forEach(l=>{s+=`<line x1="${X(Math.max(0,o.xr[0]))}" y1="${Y(l.v)}" x2="${W-pr}" y2="${Y(l.v)}" stroke="#bbb" stroke-dasharray="3 4"/><text x="${X(Math.max(0,o.xr[0]))-6}" y="${Y(l.v)+4}" font-size="13" text-anchor="end" font-family="Source Serif 4">${l.l}</text>`;});
+    s+=`<text x="${W-pr}" y="${Y(0)-6}" font-size="12" text-anchor="end" fill="#5b6470">x</text><text x="${X(Math.max(0,o.xr[0]))+6}" y="${pt}" font-size="12" fill="#5b6470">${o.ylab||'y = f(x)'}</text>`;
+    return s+'</svg>';
+  },
+  scatter(o){
+    const W=460,H=270,pl=45,pr=20,pt=28,pb=40;
+    const X=x=>pl+(x-o.xr[0])/(o.xr[1]-o.xr[0])*(W-pl-pr), Y=y=>H-pb-(y-o.yr[0])/(o.yr[1]-o.yr[0])*(H-pt-pb);
+    let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}">`;
+    s+=`<line x1="${pl}" y1="${Y(o.yr[0])}" x2="${W-pr}" y2="${Y(o.yr[0])}" stroke="#555"/><line x1="${pl}" y1="${pt}" x2="${pl}" y2="${Y(o.yr[0])}" stroke="#555"/>`;
+    for(let v=o.xr[0]; v<=o.xr[1]+1e-9; v+=o.xs) s+=`<text x="${X(v)}" y="${H-pb+16}" font-size="11" text-anchor="middle">${+v.toFixed(2)}</text>`;
+    for(let v=o.yr[0]; v<=o.yr[1]+1e-9; v+=o.ys) s+=`<text x="${pl-6}" y="${Y(v)+4}" font-size="11" text-anchor="end">${+v.toFixed(2)}</text>`;
+    if(o.line){const [m,c]=o.line; s+=`<line x1="${X(o.xr[0])}" y1="${Y(m*o.xr[0]+c)}" x2="${X(o.xr[1])}" y2="${Y(m*o.xr[1]+c)}" stroke="#b0862e" stroke-width="1.6" stroke-dasharray="6 4"/>`;}
+    o.pts.forEach(p=>s+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="4" fill="#1f3d63"/>`);
+    s+=`<text x="${(pl+W-pr)/2}" y="${H-4}" font-size="12" text-anchor="middle" fill="#5b6470">${o.xlab||'x'}</text><text x="${pl}" y="14" font-size="12" fill="#5b6470">${o.ylab||'y'}</text>`;
+    return s+'</svg>';
+  }
+};
+const fig = f => !f ? '' : (Array.isArray(f)?f:[f]).map(g=>`${g.cap?`<div style="text-align:center;font-weight:600;margin-top:.4rem">${g.cap}</div>`:''}<div class="fig">${FIG[g.type](g)}</div>`).join('');
+/* ---------- renderers ---------- */
+function guides(list, title){
+  if(!list||!list.length) return '';
+  return `<div class="guide-box"><div class="guide-title">${title||'Guiding Questions'}</div>`+list.map((g,i)=>`
+   <div class="gq-item"><div class="gq"><span class="num">Q${i+1}</span>${g.q}<button class="rv" data-t="ga">답 보기</button></div>
+   ${g.qk?`<div class="gq-ko">${g.qk}</div>`:''}
+   <div class="ga-wrap"><div class="ga">${g.a}</div>${g.ak?`<div class="ga-ko">${g.ak}</div>`:''}</div></div>`).join('')+`</div>`;
+}
+function steps(st){
+  return st.map((s,i)=>`<div class="step${i?' hidden':''}"><div class="step-note">${s[0]}</div><div class="step-content">${s[1]}</div></div>`).join('');
+}
+function head(s, cls, label){
+  return `<span class="tag ${cls}">${label}</span><h2 class="st">${s.title}</h2>${s.ko?`<div class="st-ko">${s.ko}</div>`:''}`;
+}
+const R = {
+  cover(s){
+    return `<div class="cover"><span class="tag sec">${META.tag}</span>
+    <h1>${META.h1}</h1><div class="ko">${META.sub}</div>
+    <div class="cover-grid">${SECS.map(x=>`<button data-go="${x.start}"><b>${x.code} ${x.name}</b><span>${x.ko}</span></button>`).join('')}</div>
+    <div class="legend">${s.html}</div></div>`;
+  },
+  section(s){
+    return `${head(s,'sec',s.code)}<div class="card q-text">${s.html}</div>`;
+  },
+  inquiry(s){
+    return `${head(s,'inq','Guided Inquiry · '+s.code)}
+    <div class="inq-intro q-text">${s.intro}${s.intro_ko?`<div class="ko-note">${s.intro_ko}</div>`:''}</div>
+    ${fig(s.fig)}
+    ${s.steps.map((g,i)=>`<div class="inq-step"><div class="gq"><span class="num">Step ${i+1}</span>${g.q}<button class="rv" data-t="ga">답 보기</button></div>
+      ${g.qk?`<div class="gq-ko">${g.qk}</div>`:''}<div class="ga-wrap"><div class="ga">${g.a}</div>${g.ak?`<div class="ga-ko">${g.ak}</div>`:''}</div></div>`).join('')}
+    <div class="sol-head"><button class="btn pri" data-t="idea">Big Idea 보기</button></div>
+    <div class="big-idea"><b class="lab">BIG IDEA</b><div>${s.idea}</div>${s.idea_ko?`<div class="ko">${s.idea_ko}</div>`:''}</div>`;
+  },
+  vocab(s){
+    const rows = s.rows.map(r=>`<tr><td class="t">${r[0]}</td><td class="k"><span>${r[1]}</span></td><td class="n"><span>${r[2]||''}</span></td></tr>`).join('');
+    const ph = (s.phrases||[]).map(r=>`<tr><td class="t">${r[0]}</td><td class="k"><span>${r[1]}</span></td></tr>`).join('');
+    return `${head(s,'voc','Key Vocabulary · '+s.code)}
+    <div class="sol-head" style="margin:0 0 .6rem"><button class="btn" data-t="vquiz">단어 퀴즈 모드 (뜻 가리기)</button></div>
+    <table class="voc"><tr><th>English</th><th>한국어</th><th>meaning / example</th></tr>${rows}</table>
+    ${ph?`<h3 class="mini">Exam phrasing · 시험 문장 표현</h3><table class="voc ph"><tr><th>English (exam style)</th><th>뜻 · 무엇을 하라는 말인가</th></tr>${ph}</table>`:''}`;
+  },
+  concept(s){
+    return `${head(s,'kp','Key Concept · '+s.code)}
+    ${s.kp?`<div class="kp-box"><div class="kp-label">KEY POINT</div><div class="q-text">${s.kp}</div></div>`:''}
+    <div class="q-text">${s.body||''}</div>${fig(s.fig)}
+    ${s.kn?`<div class="ko-note">${s.kn}</div>`:''}${s.tip?`<div class="tip"><b>TIP</b> ${s.tip}</div>`:''}
+    ${guides(s.guides,'Check your understanding')}`;
+  },
+  problem(s, isEx){
+    return `${head(s,isEx?'ex':'pr',(isEx?'Worked Example · ':'Practice · ')+s.code)}
+    <div class="card q-text">${s.q}${fig(s.fig)}</div>
+    ${guides(s.guides)}
+    <div class="sol-head"><button class="btn pri" data-t="sol">풀이 보기</button><button class="btn" data-t="step" style="display:none">다음 단계 ▸</button><button class="btn" data-t="allstep" style="display:none">전체 풀이</button></div>
+    <div class="sol card">${steps(s.steps)}${s.ans?`<div class="answer">${s.ans}</div>`:''}</div>
+    ${s.ref?`<div class="ref">📖 ${s.ref}</div>`:''}`;
+  },
+  example(s){return R.problem(s,true)},
+  ks(s){
+    return `<span class="tag ks">수능특강 연계 · 개념</span><h2 class="st">${s.title}</h2><div class="ks-unit">📘 ${s.unit}</div>
+    <div class="ks-box">${s.box}</div>${fig(s.fig)}
+    ${s.map&&s.map.length?`<h3 class="mini" style="color:#1d6f68">수능 표기 ↔ IB 표기</h3><table class="map"><tr><th>수능 (한국)</th><th>IB</th><th>비고</th></tr>${s.map.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="ko" style="font-size:.85rem">${r[2]||''}</td></tr>`).join('')}</table>`:''}
+    ${s.ex?`<div class="card ks-text"><b>예</b> ${s.ex}</div>`:''}${s.tip?`<div class="tip"><b>TIP</b> ${s.tip}</div>`:''}`;
+  },
+  ksq(s){
+    const ch = s.choices ? `<div class="choices">${s.choices.map((c,i)=>`<button class="choice" data-t="ch" data-i="${i+1}" data-a="${s.ans}">${'①②③④⑤'[i]} ${c}</button>`).join('')}</div>`
+      : `<div class="short-in">답 입력 <input type="text" data-a="${s.ans}"><button class="btn" data-t="chk">확인</button><span class="res"></span></div>`;
+    return `<span class="tag ks">수능형 기초 · ${s.code}</span><h2 class="st">${s.title}<span class="pts">${s.pts||''}</span></h2><div class="ks-unit">📘 ${s.unit}</div>
+    <div class="card ks-text">${s.q}${fig(s.fig)}${ch}</div>
+    ${s.en?`<button class="btn" data-t="en">IB 영어 문장으로 보기</button><div class="en-box"><b class="lab">IB-STYLE ENGLISH</b>${s.en}</div>`:''}
+    ${guides(s.guides,'생각의 흐름 · Guiding Questions')}
+    <div class="sol-head"><button class="btn pri" data-t="sol">풀이 보기</button><button class="btn" data-t="step" style="display:none">다음 단계 ▸</button><button class="btn" data-t="allstep" style="display:none">전체 풀이</button></div>
+    <div class="sol card ks-text">${steps(s.steps)}<div class="ks-ans">${s.ansText||s.ans}</div></div>`;
+  },
+  practice(s){return R.problem(s,false)}
+};
+/* ---------- side ---------- */
+function buildSide(){
+  let h=`<h1>${META.h1}</h1><div class="sub">${META.side}</div>`, lastCh='';
+  SECS.forEach(x=>{
+    if(x.ch!==lastCh){h+=`<div class="toc-ch">${x.ch}</div>`; lastCh=x.ch;}
+    h+=`<button class="toc-sec" data-go="${x.start}" data-sec="${x.code}">${x.code} ${x.name}<small>${x.ko}</small></button>`;
+  });
+  $('#side').innerHTML=h;
+}
+function show(i){
+  cur=Math.max(0,Math.min(S.length-1,i));
+  const s=S[cur], el=$('#slide');
+  el.innerHTML = R[s.type](s);
+  el.querySelectorAll('[data-fig]').forEach(d=>{try{const o=JSON.parse(d.dataset.fig); d.innerHTML=FIG[o.type](o);}catch(e){}});
+  $('#stage').scrollTop=0;
+  $('#count').textContent=`${cur+1} / ${S.length}`;
+  $('#prog > div').style.width=((cur+1)/S.length*100)+'%';
+  $('#crumb').textContent = s.crumb||'';
+  document.querySelectorAll('.toc-sec').forEach(b=>b.classList.toggle('on', b.dataset.sec===s.sec));
+  try{ localStorage.setItem(META.key, cur); }catch(e){}
+  try{ if(location.hash!=='#s'+(cur+1)) history.replaceState(null,'','#s'+(cur+1)); }catch(e){}
+  typeset(el);
+}
+document.addEventListener('click', e=>{
+  const go=e.target.closest('[data-go]'); if(go){ show(+go.dataset.go); $('#side').classList.remove('open'); return; }
+  const t=e.target.closest('[data-t]'); if(!t){ const sp=e.target.closest('.voc-quiz td.k span, .voc-quiz td.n span'); if(sp) sp.classList.toggle('see'); return; }
+  const k=t.dataset.t, sl=$('#slide');
+  if(k==='ga'){ const w=t.closest('.gq-item, .inq-step').querySelector('.ga-wrap'); w.classList.toggle('show'); t.textContent=w.classList.contains('show')?'숨기기':'답 보기'; }
+  if(k==='ch'){ const ok=t.dataset.i===t.dataset.a; t.classList.add(ok?'right':'wrong'); if(ok) sl.querySelectorAll('.choice').forEach(c=>{if(c!==t) c.disabled=true;}); }
+  if(k==='chk'){ const inp=t.parentNode.querySelector('input'), r=t.parentNode.querySelector('.res'); const ok=inp.value.replace(/\s/g,'')===inp.dataset.a; r.textContent=ok?'✓ 정답':'✗ 다시'; r.style.color=ok?'var(--green)':'var(--red)'; }
+  if(k==='en'){ sl.querySelector('.en-box').classList.toggle('show'); }
+  if(k==='idea'){ sl.querySelector('.big-idea').classList.toggle('show'); }
+  if(k==='sol'){ const sol=sl.querySelector('.sol'); const on=!sol.classList.contains('show'); sol.classList.toggle('show',on);
+     t.textContent=on?'풀이 닫기':'풀이 보기'; const more=sl.querySelectorAll('.step.hidden').length>0;
+     sl.querySelector('[data-t=step]').style.display=on&&more?'':'none'; sl.querySelector('[data-t=allstep]').style.display=on&&more?'':'none'; }
+  if(k==='step'||k==='allstep'){ const hid=sl.querySelectorAll('.step.hidden'); if(k==='step'&&hid[0]) hid[0].classList.remove('hidden'); else hid.forEach(h=>h.classList.remove('hidden'));
+     if(!sl.querySelectorAll('.step.hidden').length){ sl.querySelector('[data-t=step]').style.display='none'; sl.querySelector('[data-t=allstep]').style.display='none'; } }
+  if(k==='vquiz'){ const tb=sl.querySelector('table.voc'); tb.classList.toggle('voc-quiz'); sl.querySelectorAll('table.voc').forEach(x=>x.classList.toggle('voc-quiz', tb.classList.contains('voc-quiz'))); t.classList.toggle('on'); }
+});
+$('#openAll').onclick=()=>{const sl=$('#slide'); sl.querySelectorAll('.ga-wrap').forEach(w=>w.classList.add('show')); sl.querySelectorAll('.rv').forEach(b=>b.textContent='숨기기');
+  sl.querySelectorAll('.sol,.big-idea,.en-box').forEach(w=>w.classList.add('show')); sl.querySelectorAll('.step').forEach(w=>w.classList.remove('hidden'));
+  const b=sl.querySelector('[data-t=sol]'); if(b) b.textContent='풀이 닫기'; sl.querySelectorAll('[data-t=step],[data-t=allstep]').forEach(x=>x.style.display='none');
+  sl.querySelectorAll('.voc-quiz').forEach(x=>x.classList.remove('voc-quiz'));};
+$('#closeAll').onclick=()=>show(cur);
+$('#koBtn').onclick=e=>{document.body.classList.toggle('nok'); e.target.textContent=document.body.classList.contains('nok')?'한글 OFF':'한글 ON'; e.target.classList.toggle('on');};
+$('#prev').onclick=()=>show(cur-1); $('#next').onclick=()=>show(cur+1);
+$('#menuBtn').onclick=()=>$('#side').classList.toggle('open');
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return; if(e.key==='ArrowRight'||e.key==='PageDown') show(cur+1); if(e.key==='ArrowLeft'||e.key==='PageUp') show(cur-1); });
+window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#s(\d+)$/); if(m&&+m[1]-1!==cur) show(+m[1]-1);});
+buildSide();
+let start=0; const m=location.hash.match(/^#s(\d+)$/); if(m) start=+m[1]-1; else { try{ start=+(localStorage.getItem(META.key)||0);}catch(e){} }
+show(start);
+})();
+</script>
+</body>
+</html>
