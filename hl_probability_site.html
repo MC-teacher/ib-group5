@@ -312,7 +312,7 @@ function guides(list, title){
    <div class="ga-wrap"><div class="ga">${g.a}</div>${g.ak?`<div class="ga-ko">${g.ak}</div>`:''}</div></div>`).join('')+`</div>`;
 }
 function steps(st){
-  return st.map((s,i)=>`<div class="step${i?' hidden':''}"><div class="step-note">${s[0]}</div><div class="step-content">${s[1]}</div></div>`).join('');
+  return st.map((s,i)=>`<div class="step"><div class="step-note">${s[0]}</div><div class="step-content">${s[1]}</div></div>`).join('');
 }
 function head(s, cls, label){
   return `<span class="tag ${cls}">${label}</span><h2 class="st">${s.title}</h2>${s.ko?`<div class="st-ko">${s.ko}</div>`:''}`;
