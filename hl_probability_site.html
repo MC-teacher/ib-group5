@@ -34,6 +34,7 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 .toc-sec{display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;padding:.35rem .5rem;border-radius:6px;font:inherit;font-size:.9rem;color:var(--ink);line-height:1.35}
 .toc-sec:hover{background:#e9e4d6}
 .toc-sec.on{background:var(--navy);color:#fff}
+.toc-tb{padding-left:1.2rem;font-size:.82rem;color:#7a3a2c}
 .toc-sec small{display:block;font-family:'Noto Sans KR';font-size:.72rem;opacity:.75}
 #main{display:flex;flex-direction:column;height:100vh;min-width:0}
 #bar{display:flex;align-items:center;gap:.5rem;padding:.55rem 1rem;border-bottom:1px solid var(--line);background:#fff;flex-wrap:wrap}
@@ -46,6 +47,10 @@ body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georg
 #prog > div{height:100%;background:var(--gold);transition:width .25s}
 #stage{flex:1;overflow-y:auto;padding:2rem 2.2rem 4rem}
 .slide{max-width:900px;margin:0 auto}
+.blk{padding:1.6rem 0 2.2rem;border-bottom:1px solid var(--line)}
+.blk:first-child{padding-top:0}
+.next-sec{text-align:center;padding:2rem 0 3rem}
+.blk .cover{padding-top:3vh}
 #nav{display:flex;justify-content:space-between;align-items:center;padding:.55rem 1rem;border-top:1px solid var(--line);background:#fff}
 #count{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted)}
 #menuBtn{display:none}
@@ -96,6 +101,8 @@ h2.st{font-size:1.55rem;margin:.1rem 0 .2rem;color:var(--navy);line-height:1.3}
 .sol{display:none;margin-top:.7rem}
 .sol.show{display:block}
 .step{display:grid;grid-template-columns:minmax(150px,30%) 1fr;gap:1rem;padding:.6rem 0;border-top:1px solid #efece4}
+.tb-sol .step{grid-template-columns:72px 1fr}
+.tb-sol .step-note{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--red);font-size:.8rem}
 .step:first-child{border-top:0}
 .step-note{font-family:'Noto Sans KR';font-size:.82rem;color:var(--muted);line-height:1.6}
 .step-content{overflow-x:auto}
@@ -141,6 +148,11 @@ table.dt th{background:#f4f1e8;font-weight:600}
 .legend{font-family:'Noto Sans KR';font-size:.85rem;color:var(--muted);margin-top:2rem;line-height:1.9}
 .sec-list{margin:1rem 0;padding-left:1.2rem}
 .sec-list li{margin:.3rem 0}
+/* textbook */
+.tb-note{font-family:'Noto Sans KR';font-size:.88rem;background:#fff;border:1px dashed #cfc9bb;border-radius:8px;padding:.7rem 1rem;color:#4a4335}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:.4rem;margin-top:1rem}
+.qgrid button{font-family:'JetBrains Mono',monospace;font-size:.85rem;background:#fff;border:1px solid var(--line);border-radius:6px;padding:.45rem 0;cursor:pointer}
+.qgrid button:hover{border-color:var(--red);color:var(--red)}
 /* 수능형 */
 .tag.ks{background:#e3f1ef;color:#1d6f68}
 .ks-unit{font-family:'Noto Sans KR';font-size:.8rem;color:#1d6f68;font-weight:700;margin-bottom:.8rem}
@@ -185,9 +197,9 @@ body.nok .gq-ko, body.nok .ga-ko, body.nok .big-idea .ko{display:none}
     <div id="prog"><div></div></div>
     <div id="stage"><div class="slide" id="slide"></div></div>
     <div id="nav">
-      <button class="btn" id="prev">← Prev</button>
+      <button class="btn" id="prev">← 이전 단원</button>
       <span id="count"></span>
-      <button class="btn pri" id="next">Next →</button>
+      <button class="btn pri" id="next">다음 단원 →</button>
     </div>
   </div>
 </div>
@@ -289,6 +301,20 @@ const FIG = {
     s+=`<text x="${W-pr}" y="${Y(0)-6}" font-size="12" text-anchor="end" fill="#5b6470">x</text><text x="${X(Math.max(0,o.xr[0]))+6}" y="${pt}" font-size="12" fill="#5b6470">${o.ylab||'y = f(x)'}</text>`;
     return s+'</svg>';
   },
+  cf(o){
+    // o:{pts, xr, yr, xs, ys, reads:[[y,x,label]], xlab, ylab}
+    const W=480,H=280,pl=48,pr=18,pt=16,pb=38;
+    const X=x=>pl+(x-o.xr[0])/(o.xr[1]-o.xr[0])*(W-pl-pr), Y=y=>H-pb-(y-o.yr[0])/(o.yr[1]-o.yr[0])*(H-pt-pb);
+    let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}">`;
+    for(let v=o.xr[0];v<=o.xr[1]+1e-9;v+=o.xs) s+=`<line x1="${X(v)}" y1="${Y(o.yr[0])}" x2="${X(v)}" y2="${Y(o.yr[1])}" stroke="#eee"/><text x="${X(v)}" y="${H-pb+16}" font-size="11" text-anchor="middle">${+v.toFixed(2)}</text>`;
+    for(let v=o.yr[0];v<=o.yr[1]+1e-9;v+=o.ys) s+=`<line x1="${X(o.xr[0])}" y1="${Y(v)}" x2="${X(o.xr[1])}" y2="${Y(v)}" stroke="#eee"/><text x="${pl-6}" y="${Y(v)+4}" font-size="11" text-anchor="end">${+v.toFixed(2)}</text>`;
+    s+=`<line x1="${pl}" y1="${Y(o.yr[0])}" x2="${W-pr}" y2="${Y(o.yr[0])}" stroke="#555"/><line x1="${pl}" y1="${pt}" x2="${pl}" y2="${Y(o.yr[0])}" stroke="#555"/>`;
+    (o.reads||[]).forEach(r=>{s+=`<polyline points="${pl},${Y(r[0])} ${X(r[1])},${Y(r[0])} ${X(r[1])},${Y(o.yr[0])}" fill="none" stroke="#b0862e" stroke-dasharray="5 4" stroke-width="1.4"/><text x="${X(r[1])+3}" y="${Y(o.yr[0])-5}" font-size="11" fill="#8a6820">${r[2]||''}</text>`;});
+    s+=`<polyline points="${o.pts.map(p=>X(p[0])+','+Y(p[1])).join(' ')}" fill="none" stroke="#1f3d63" stroke-width="2"/>`;
+    o.pts.forEach(p=>s+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="3.5" fill="#1f3d63"/>`);
+    s+=`<text x="${(pl+W-pr)/2}" y="${H-4}" font-size="12" text-anchor="middle" fill="#5b6470">${o.xlab||'x'}</text><text x="${pl}" y="12" font-size="12" fill="#5b6470">${o.ylab||'cf'}</text>`;
+    return s+'</svg>';
+  },
   scatter(o){
     const W=460,H=270,pl=45,pr=20,pt=28,pb=40;
     const X=x=>pl+(x-o.xr[0])/(o.xr[1]-o.xr[0])*(W-pl-pr), Y=y=>H-pb-(y-o.yr[0])/(o.yr[1]-o.yr[0])*(H-pt-pb);
@@ -298,6 +324,8 @@ const FIG = {
     for(let v=o.yr[0]; v<=o.yr[1]+1e-9; v+=o.ys) s+=`<text x="${pl-6}" y="${Y(v)+4}" font-size="11" text-anchor="end">${+v.toFixed(2)}</text>`;
     if(o.line){const [m,c]=o.line; s+=`<line x1="${X(o.xr[0])}" y1="${Y(m*o.xr[0]+c)}" x2="${X(o.xr[1])}" y2="${Y(m*o.xr[1]+c)}" stroke="#b0862e" stroke-width="1.6" stroke-dasharray="6 4"/>`;}
     o.pts.forEach(p=>s+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="4" fill="#1f3d63"/>`);
+    if(o.mean){const [mx,my]=o.mean; s+=`<path d="M${X(mx)-6} ${Y(my)-6} L${X(mx)+6} ${Y(my)+6} M${X(mx)-6} ${Y(my)+6} L${X(mx)+6} ${Y(my)-6}" stroke="#a8432f" stroke-width="2.4"/><text x="${X(mx)+8}" y="${Y(my)-8}" font-size="11" fill="#a8432f">mean point</text>`;}
+    (o.extra||[]).forEach(L=>{const [m,c,x0,x1]=L; s+=`<line x1="${X(x0)}" y1="${Y(m*x0+c)}" x2="${X(x1)}" y2="${Y(m*x1+c)}" stroke="#2f7a4f" stroke-width="1.6" stroke-dasharray="6 4"/>`;});
     s+=`<text x="${(pl+W-pr)/2}" y="${H-4}" font-size="12" text-anchor="middle" fill="#5b6470">${o.xlab||'x'}</text><text x="${pl}" y="14" font-size="12" fill="#5b6470">${o.ylab||'y'}</text>`;
     return s+'</svg>';
   }
@@ -321,7 +349,7 @@ const R = {
   cover(s){
     return `<div class="cover"><span class="tag sec">${META.tag}</span>
     <h1>${META.h1}</h1><div class="ko">${META.sub}</div>
-    <div class="cover-grid">${SECS.map(x=>`<button data-go="${x.start}"><b>${x.code} ${x.name}</b><span>${x.ko}</span></button>`).join('')}</div>
+    <div class="cover-grid">${SECS.filter(x=>!x.tb).map(x=>`<button data-go="${x.start}"><b>${x.code} ${x.name}</b><span>${x.ko}</span></button>`).join('')}</div>
     <div class="legend">${s.html}</div></div>`;
   },
   section(s){
@@ -360,6 +388,19 @@ const R = {
     ${s.ref?`<div class="ref">📖 ${s.ref}</div>`:''}`;
   },
   example(s){return R.problem(s,true)},
+  tbindex(s){
+    return `<span class="tag pr">Textbook ${s.label}</span><h2 class="st">${s.title}</h2><div class="st-ko">${s.ko}</div>
+    <div class="card ks-text">${s.html}</div>
+    <div class="qgrid">${s.items.map(it=>`<button data-go="${it[1]}">Q${it[0]}</button>`).join('')}</div>`;
+  },
+  tb(s){
+    return `<span class="tag pr">Textbook ${s.label}</span><h2 class="st">Question ${s.num}<span class="pts">📖 p.${s.page}</span></h2>
+    <div class="tb-note">교과서 <b>${s.label}</b> ${s.num}번 (p.${s.page}) 문제를 먼저 풀어 본 뒤 풀이를 확인하세요. · Try the question in your textbook first.</div>
+    ${guides(s.guides,'Guiding Question')}
+    <div class="sol-head"><button class="btn pri" data-t="sol">풀이 보기</button></div>
+    <div class="sol card tb-sol">${steps(s.steps)}${s.ans?`<div class="answer">${s.ans}</div>`:''}${s.warn?`<div class="ko-note" style="margin-top:.7rem">⚠ ${s.warn}</div>`:''}</div>
+    <div class="sol-head" style="margin-top:1.4rem"><button class="btn" data-go="${s.idx}">← ${s.label} 문제 목록</button></div>`;
+  },
   ks(s){
     return `<span class="tag ks">수능특강 연계 · 개념</span><h2 class="st">${s.title}</h2><div class="ks-unit">📘 ${s.unit}</div>
     <div class="ks-box">${s.box}</div>${fig(s.fig)}
@@ -383,28 +424,38 @@ function buildSide(){
   let h=`<h1>${META.h1}</h1><div class="sub">${META.side}</div>`, lastCh='';
   SECS.forEach(x=>{
     if(x.ch!==lastCh){h+=`<div class="toc-ch">${x.ch}</div>`; lastCh=x.ch;}
-    h+=`<button class="toc-sec" data-go="${x.start}" data-sec="${x.code}">${x.code} ${x.name}<small>${x.ko}</small></button>`;
+    h+= x.tb ? `<button class="toc-sec toc-tb" data-go="${x.start}" data-sec="${x.code}">📖 ${x.name}</button>` : `<button class="toc-sec" data-go="${x.start}" data-sec="${x.code}">${x.code} ${x.name}<small>${x.ko}</small></button>`;
   });
   $('#side').innerHTML=h;
 }
-function show(i){
+function secOf(i){ let k=-1; SECS.forEach((x,j)=>{ if(x.start<=i) k=j; }); return k; }
+function secRange(k){ if(k<0) return [0, SECS.length?SECS[0].start:S.length]; return [SECS[k].start, k+1<SECS.length?SECS[k+1].start:S.length]; }
+let curSec=null;
+function show(i, keepScroll){
   cur=Math.max(0,Math.min(S.length-1,i));
-  const s=S[cur], el=$('#slide');
-  el.innerHTML = R[s.type](s);
-  el.querySelectorAll('[data-fig]').forEach(d=>{try{const o=JSON.parse(d.dataset.fig); d.innerHTML=FIG[o.type](o);}catch(e){}});
-  $('#stage').scrollTop=0;
-  $('#count').textContent=`${cur+1} / ${S.length}`;
-  $('#prog > div').style.width=((cur+1)/S.length*100)+'%';
-  $('#crumb').textContent = s.crumb||'';
-  document.querySelectorAll('.toc-sec').forEach(b=>b.classList.toggle('on', b.dataset.sec===s.sec));
-  try{ localStorage.setItem(META.key, cur); }catch(e){}
+  const k=secOf(cur), el=$('#slide');
+  if(k!==curSec){
+    curSec=k; const [a,b]=secRange(k);
+    el.innerHTML = S.slice(a,b).map((s,j)=>`<section class="blk" id="b${a+j}" data-i="${a+j}">${R[s.type](s)}</section>`).join('');
+    el.querySelectorAll('[data-fig]').forEach(d=>{try{const o=JSON.parse(d.dataset.fig); d.innerHTML=FIG[o.type](o);}catch(e){}});
+    const nx=k+1<SECS.length?SECS[k+1]:null;
+    if(nx) el.insertAdjacentHTML('beforeend',`<div class="next-sec"><button class="btn pri" data-go="${nx.start}">다음 단원 ▸ ${nx.code.endsWith('-Ex')||nx.code.endsWith('MP')?'📖 ':nx.code+' '}${nx.name}</button></div>`);
+    typeset(el);
+    const s=S[a]; $('#crumb').textContent = s.crumb||'';
+    $('#count').textContent = k<0 ? 'Cover' : `${SECS[k].tb?'📖 ':SECS[k].code+' · '}${SECS[k].name}  (${b-a} cards)`;
+    $('#prog > div').style.width=((k+1)/SECS.length*100)+'%';
+    document.querySelectorAll('.toc-sec').forEach(x=>x.classList.toggle('on', k>=0 && x.dataset.sec===SECS[k].code));
+    try{ localStorage.setItem(META.key, a); }catch(e){}
+  }
+  const tgt=document.getElementById('b'+cur), [a0]=secRange(k);
+  if(!keepScroll){ if(cur===a0||!tgt) $('#stage').scrollTop=0; else tgt.scrollIntoView({block:'start'}); }
   try{ if(location.hash!=='#s'+(cur+1)) history.replaceState(null,'','#s'+(cur+1)); }catch(e){}
-  typeset(el);
 }
+function goSec(d){ const k=secOf(cur)+d; if(k<-1||k>=SECS.length) return; show(k<0?0:SECS[k].start); }
 document.addEventListener('click', e=>{
   const go=e.target.closest('[data-go]'); if(go){ show(+go.dataset.go); $('#side').classList.remove('open'); return; }
   const t=e.target.closest('[data-t]'); if(!t){ const sp=e.target.closest('.voc-quiz td.k span, .voc-quiz td.n span'); if(sp) sp.classList.toggle('see'); return; }
-  const k=t.dataset.t, sl=$('#slide');
+  const k=t.dataset.t, sl=t.closest('.blk')||$('#slide');
   if(k==='ga'){ const w=t.closest('.gq-item, .inq-step').querySelector('.ga-wrap'); w.classList.toggle('show'); t.textContent=w.classList.contains('show')?'숨기기':'답 보기'; }
   if(k==='ch'){ const ok=t.dataset.i===t.dataset.a; t.classList.add(ok?'right':'wrong'); if(ok) sl.querySelectorAll('.choice').forEach(c=>{if(c!==t) c.disabled=true;}); }
   if(k==='chk'){ const inp=t.parentNode.querySelector('input'), r=t.parentNode.querySelector('.res'); const ok=inp.value.replace(/\s/g,'')===inp.dataset.a; r.textContent=ok?'✓ 정답':'✗ 다시'; r.style.color=ok?'var(--green)':'var(--red)'; }
@@ -412,20 +463,20 @@ document.addEventListener('click', e=>{
   if(k==='idea'){ sl.querySelector('.big-idea').classList.toggle('show'); }
   if(k==='sol'){ const sol=sl.querySelector('.sol'); const on=!sol.classList.contains('show'); sol.classList.toggle('show',on);
      t.textContent=on?'풀이 닫기':'풀이 보기'; const more=sl.querySelectorAll('.step.hidden').length>0;
-     sl.querySelector('[data-t=step]').style.display=on&&more?'':'none'; sl.querySelector('[data-t=allstep]').style.display=on&&more?'':'none'; }
+     sl.querySelectorAll('[data-t=step],[data-t=allstep]').forEach(x=>x.style.display=on&&more?'':'none'); }
   if(k==='step'||k==='allstep'){ const hid=sl.querySelectorAll('.step.hidden'); if(k==='step'&&hid[0]) hid[0].classList.remove('hidden'); else hid.forEach(h=>h.classList.remove('hidden'));
      if(!sl.querySelectorAll('.step.hidden').length){ sl.querySelector('[data-t=step]').style.display='none'; sl.querySelector('[data-t=allstep]').style.display='none'; } }
   if(k==='vquiz'){ const tb=sl.querySelector('table.voc'); tb.classList.toggle('voc-quiz'); sl.querySelectorAll('table.voc').forEach(x=>x.classList.toggle('voc-quiz', tb.classList.contains('voc-quiz'))); t.classList.toggle('on'); }
 });
 $('#openAll').onclick=()=>{const sl=$('#slide'); sl.querySelectorAll('.ga-wrap').forEach(w=>w.classList.add('show')); sl.querySelectorAll('.rv').forEach(b=>b.textContent='숨기기');
   sl.querySelectorAll('.sol,.big-idea,.en-box').forEach(w=>w.classList.add('show')); sl.querySelectorAll('.step').forEach(w=>w.classList.remove('hidden'));
-  const b=sl.querySelector('[data-t=sol]'); if(b) b.textContent='풀이 닫기'; sl.querySelectorAll('[data-t=step],[data-t=allstep]').forEach(x=>x.style.display='none');
+  sl.querySelectorAll('[data-t=sol]').forEach(b=>b.textContent='풀이 닫기'); sl.querySelectorAll('[data-t=step],[data-t=allstep]').forEach(x=>x.style.display='none');
   sl.querySelectorAll('.voc-quiz').forEach(x=>x.classList.remove('voc-quiz'));};
-$('#closeAll').onclick=()=>show(cur);
+$('#closeAll').onclick=()=>{const y=$('#stage').scrollTop; curSec=null; show(cur,true); $('#stage').scrollTop=y;};
 $('#koBtn').onclick=e=>{document.body.classList.toggle('nok'); e.target.textContent=document.body.classList.contains('nok')?'한글 OFF':'한글 ON'; e.target.classList.toggle('on');};
-$('#prev').onclick=()=>show(cur-1); $('#next').onclick=()=>show(cur+1);
+$('#prev').onclick=()=>goSec(-1); $('#next').onclick=()=>goSec(1);
 $('#menuBtn').onclick=()=>$('#side').classList.toggle('open');
-document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return; if(e.key==='ArrowRight'||e.key==='PageDown') show(cur+1); if(e.key==='ArrowLeft'||e.key==='PageUp') show(cur-1); });
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return; if(e.key==='ArrowRight') goSec(1); if(e.key==='ArrowLeft') goSec(-1); });
 window.addEventListener('hashchange',()=>{const m=location.hash.match(/^#s(\d+)$/); if(m&&+m[1]-1!==cur) show(+m[1]-1);});
 buildSide();
 let start=0; const m=location.hash.match(/^#s(\d+)$/); if(m) start=+m[1]-1; else { try{ start=+(localStorage.getItem(META.key)||0);}catch(e){} }
