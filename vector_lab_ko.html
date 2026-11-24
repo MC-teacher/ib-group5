@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미니 월드 벡터 랩</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;700&family=Red+Hat+Text:wght@400;500&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a calm lab notebook; precise, encouraging, never giving answers away
+   IDEA: a city planner's site model on a drafting table, checked like a surveyor's field book
+   PICTURE: the 3D site model with the observer's field of view revealing buildings, beside a plan view
+   COLOUR and TYPE: oxford blue band, white panels, magenta for verdicts; Red Hat Display + Text
+   LAYOUT: model and plan first, then design, predict-and-check, missions, error log */
+:root{color-scheme:light dark;--bg:light-dark(#f4f6fb,#070f26);--panel:light-dark(#ffffff,#0f1b3d);--ink:light-dark(#101828,#e8ecf6);--muted:light-dark(#5a6478,#9aa6c2);--line:light-dark(#dde2ee,#22315c);--band:#0b1f4b;--accent:#e0115f;--ok:light-dark(#0f7a4f,#3fd49a);--bad:light-dark(#c0123f,#ff6b93);--amber:#d98a10}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Red Hat Text","Noto Sans KR",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Red Hat Display","Noto Sans KR",system-ui,sans-serif;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(30px,4.4vw,48px);font-weight:700}
+h2{font-size:22px;font-weight:700;margin-bottom:6px}
+h3{font-size:17px;font-weight:500}
+.band{padding:clamp(22px,3vw,40px) max(4vw,16px)}
+.top{background:var(--band);color:#fff}
+.top p{color:#c9d3ee;max-width:70ch;margin:10px 0 0}
+.wrap{max-width:1240px;margin:0 auto}
+.hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.fig{position:relative;height:420px;border-radius:14px;overflow:hidden;background:light-dark(#e9edf6,#0a1430);border:1px solid var(--line)}
+.fig>canvas,.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.fig .tag{position:absolute;left:12px;top:10px;font-size:13px;color:var(--muted);background:var(--panel);padding:3px 8px;border-radius:8px;border:1px solid var(--line)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+button{font:500 15px "Red Hat Text","Noto Sans KR",sans-serif;min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--muted)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #5b8cff;outline-offset:2px}
+textarea{font:13px/1.4 ui-monospace,Menlo,monospace;width:100%;padding:8px;border-radius:8px;border:1px solid var(--line);background:light-dark(#fff,#0b1533);color:var(--ink);word-break:break-all}
+input,select{font:16px "Red Hat Text","Noto Sans KR",sans-serif;min-height:40px;padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:light-dark(#fff,#0b1533);color:var(--ink);width:100%}
+label{font-size:14px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;align-items:end}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-weight:500;color:var(--muted);text-align:left;padding:6px}
+td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:middle}
+.scroll{overflow-x:auto}
+#btab{min-width:660px}#ltab{min-width:620px}#ltab th,#ltab td:nth-child(5){white-space:nowrap}#ltab td:nth-child(2){min-width:70px}#btab td:first-child{min-width:130px}#btab td:nth-child(2){min-width:110px}
+.pred{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.6fr);gap:8px 12px;align-items:center}
+.pred .q{font-size:15px}
+.fb{font-size:14px}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}
+.pill{display:inline-block;font-size:13px;padding:2px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.pill.ok{color:var(--ok);border-color:var(--ok)}
+.mission{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.mission .st{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:14px}
+.mission.done .st{border-color:var(--ok);color:var(--ok)}
+.note{font-size:14px;color:var(--muted)}
+.big{font-family:"Red Hat Display","Noto Sans KR",sans-serif;font-size:28px;font-weight:700;color:var(--accent)}
+@media(max-width:900px){.hero,.grid2{grid-template-columns:minmax(0,1fr)}.fig{height:340px}}
+@media(max-width:600px){.pred{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pred .fb{grid-column:1/-1}table{font-size:13px}}
+body:not(.ext) .extOnly{display:none!important}body.ext .basicOnly{display:none!important}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="band top"><div class="wrap">
+<h1>미니 월드 벡터 랩</h1>
+<p>나만의 미니 세상을 설계하고, 관찰자에게 무엇이 보이는지 내적과 외적으로 예측한 뒤 확인하세요. 이 실험실은 정답을 알려 주지 않습니다. 맞았는지, 어떤 종류의 실수일 수 있는지만 알려 줍니다.</p>
+<div class="controls" style="margin-top:14px"><button class="primary" id="extBtn"></button><span id="modeNote" style="color:#c9d3ee;align-self:center;font-size:15px"></span></div></div></header>
+<section class="band" style="padding-bottom:0"><div class="wrap"><div class="card">
+<h2>내 작업 저장하기</h2>
+<p class="note">작업은 이 브라우저에 자동으로 저장됩니다. 다른 기기에서 이어 하거나 공용 컴퓨터를 쓸 때는 수업이 끝날 때 <b>저장 코드</b>를 복사해 매니지백 과제나 보고서에 붙여 두세요. 다음 시간에 불러오면 그대로 이어집니다.</p>
+<div class="row" style="grid-template-columns:minmax(0,1fr) auto auto;align-items:end">
+<div><label for="sname">내 이름 (공용 기기에서는 꼭 입력)</label><input id="sname" autocomplete="off" placeholder="예: 김하늘"></div>
+<button id="bSaveCode" class="primary">저장 코드 복사</button>
+<button id="bShowLoad">저장 코드 불러오기</button>
+</div>
+<div id="codeBox" style="display:none;margin-top:12px">
+<label for="codeTa">저장 코드</label>
+<textarea id="codeTa" rows="3" spellcheck="false"></textarea>
+<div class="controls"><button id="bLoadCode">불러오기</button><span class="note" id="codeMsg" style="align-self:center"></span></div>
+</div>
+</div></div></section>
+
+<main>
+<section class="band"><div class="wrap hero">
+<div>
+<div class="fig" id="fig3d"><svg id="eyesvg" role="img" aria-label="관찰자에게 보이는 장면" style="display:none"></svg><span class="tag" id="tag3d">3D 모형: 색칠된 부분이 시야각 안에 있는 부분입니다</span></div>
+<div class="controls">
+<button id="bL" title="f를 90° 왼쪽으로 회전">왼쪽으로 돌기 (f → (−b, a))</button>
+<button id="bU" title="P → P + f">앞으로 한 걸음 (P + f)</button>
+<button id="bD" title="P → P − f">뒤로 한 걸음 (P − f)</button>
+<button id="bR" title="f를 90° 오른쪽으로 회전">오른쪽으로 돌기 (f → (b, −a))</button>
+<button id="bEye">관찰자 눈으로 보기</button>
+</div>
+<p class="note">3D 모형을 클릭하면 방향키로도 움직일 수 있습니다. 움직이면 P나 f가 바뀌므로 예측을 다시 확인해야 합니다.</p>
+</div>
+<div>
+<div class="fig" id="fig2d"><svg id="map" role="img" aria-label="미니 세상의 평면도"></svg><span class="tag">평면도</span></div>
+<p class="note" id="mapnote"></p>
+</div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap grid2">
+<div class="card">
+<h2>1. 미니 세상 설계하기</h2>
+<p class="note">좌표는 정수로 입력하세요. 평면도의 좌표는 (x, y)이고 y축이 북쪽입니다.</p>
+<div class="row">
+<div><label for="px">관찰자 P의 x</label><input id="px" type="number" step="1"></div>
+<div><label for="py">관찰자 P의 y</label><input id="py" type="number" step="1"></div>
+<div class="basicOnly"><label for="fdir">바라보는 방향 f</label><select id="fdir"><option value="0,1">북 (0, 1)</option><option value="1,0">동 (1, 0)</option><option value="0,-1">남 (0, −1)</option><option value="-1,0">서 (−1, 0)</option></select></div>
+<div class="extOnly"><label for="fa">f의 a (확장)</label><input id="fa" type="number" step="1"></div>
+<div class="extOnly"><label for="fb">f의 b (확장)</label><input id="fb" type="number" step="1"></div>
+<div class="extOnly"><label for="fc">f의 z성분 c (확장: + 고개 들기, − 숙이기)</label><input id="fc" type="number" step="0.5"></div>
+<div><label for="fov">시야각 (°)</label><input id="fov" type="number" step="10" min="10" max="170"></div>
+</div>
+<div class="scroll" style="margin-top:12px"><table id="btab"><thead><tr><th>이름</th><th>모양</th><th>중심 x</th><th>중심 y</th><th>가로 / 반지름</th><th>세로</th><th>높이</th><th></th></tr></thead><tbody></tbody></table></div>
+<div class="controls"><button id="addBox">직육면체 추가</button><button id="addCyl">원기둥 추가</button><button id="sample">예시 세상 불러오기</button></div>
+<p class="note">예시 세상은 연습용으로 만든 것입니다. 나만의 장면으로 바꿔 보세요.</p>
+</div>
+
+<div class="card">
+<h2>2. 예측하고 확인하기</h2>
+<div class="row" style="grid-template-columns:minmax(0,1fr) auto;align-items:center">
+<div><label for="sel">건물</label><select id="sel"></select></div>
+<span class="pill" id="vstate">미확인</span>
+</div>
+<p class="note" id="given"></p>
+<div class="pred" id="pred"></div>
+<div class="controls"><button class="primary" id="check">내 예측 확인하기</button><span class="note" id="tries" style="align-self:center"></span></div>
+</div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap grid2">
+<div class="card">
+<h2>3. 미션</h2>
+<p class="note">미션이 완료될 때까지 설계를 바꾸고, 해당 건물을 확인하세요. 어떻게 계획했는지 보고서에 설명합니다.</p>
+<div id="missions"></div>
+</div>
+<div class="card">
+<h2>4. 오류 로그</h2>
+<p class="note">모든 확인 기록이 남습니다. 보고서 부록에 복사해 넣고 자신의 실수를 분석하세요.</p>
+<div class="row" style="grid-template-columns:repeat(3,auto);justify-content:start;align-items:center">
+<span class="big" id="nchk">0</span><span class="note">번 확인</span><span class="note" id="nerr"></span>
+</div>
+<div class="scroll" style="max-height:320px;overflow-y:auto;margin-top:8px"><table id="ltab"><thead><tr><th>#</th><th>건물</th><th>항목</th><th>내가 쓴 답</th><th>결과</th><th>힌트</th></tr></thead><tbody></tbody></table></div>
+<div class="controls"><button id="copy">로그 복사</button><button id="clear">로그 지우기</button><span class="note" id="copymsg" style="align-self:center"></span></div>
+</div>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap"><div class="card">
+<h2>5. 관찰자 눈으로 그리기</h2>
+<p class="note">관찰자 시점 화면은 내적, 외적, 나눗셈만으로 그립니다. 직육면체 꼭짓점이 화면 어디에 나타나는지 계산하고 확인하세요. 확인한 꼭짓점은 관찰자 시점 화면에 분홍 점으로 표시됩니다.</p>
+<div class="grid2" style="margin-top:10px">
+<div>
+<h3><span class="basicOnly">A단계. 오른쪽 방향 r 구하기</span><span class="extOnly">A단계. 카메라의 축 r과 u 구하기</span></h3>
+<p class="note basicOnly">관찰자는 P에 서 있고 눈은 1.5 위에 있습니다: E = (P<sub>x</sub>, P<sub>y</sub>, 1.5). 바라보는 방향은 1번에서 고른 f에 z성분 0을 붙인 f = (a, b, 0), 하늘 방향은 k = (0, 0, 1)입니다.</p>
+<p class="note extOnly">확장: f = (a, b, c)입니다. c는 고개를 든(+) 정도 또는 숙인(−) 정도입니다. r = f × k와 u = r × f를 모두 구하세요.</p>
+<div class="pred" id="axpred"></div>
+<div class="controls"><button class="primary" id="checkAx">축 확인하기</button><span class="pill" id="axstate">미확인</span></div>
+<h3 style="margin-top:16px">B단계. 꼭짓점 하나를 화면에 찍기</h3>
+<div class="row" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+<div><label for="eb">직육면체</label><select id="eb"></select></div>
+<div><label for="ec">꼭짓점 Q</label><select id="ec"></select></div>
+</div>
+<div class="pred" id="cpred" style="margin-top:8px"></div>
+<div class="controls"><button class="primary" id="checkC">이 꼭짓점 확인하기</button><span class="pill" id="cstate">미확인</span></div>
+</div>
+<div>
+<div class="basicOnly">
+<h3>공식 (기본 활동)</h3>
+<table><tbody>
+<tr><td>오른쪽</td><td>r = f × k</td></tr>
+<tr><td>위쪽</td><td>k = (0, 0, 1): 수평으로 보면 화면의 위쪽은 하늘입니다</td></tr>
+<tr><td>눈에서 꼭짓점으로</td><td>v = Q − E</td></tr>
+<tr><td>깊이 (앞으로 몇 칸)</td><td>v · f</td></tr>
+<tr><td>가로 (오른쪽으로 몇 칸)</td><td>v · r</td></tr>
+<tr><td>세로 (위로 몇 칸)</td><td>v · k = Q의 높이 − 1.5</td></tr>
+<tr><td>화면 x</td><td>가로 ÷ 깊이</td></tr>
+<tr><td>화면 y</td><td>세로 ÷ 깊이</td></tr>
+<tr><td>화면 안에 들어오는 조건</td><td>깊이 &gt; 0 이고 |화면 x| ≤ tan(시야각 ÷ 2)</td></tr>
+</tbody></table>
+<p class="note">f, r, k는 모두 길이가 1이라서 내적이 바로 “그 방향으로 몇 칸”이 됩니다. 깊이로 나누는 이유는 닮은 삼각형 때문입니다. 눈 앞 1칸 거리에 투명한 유리창이 있다고 생각하면, 앞으로 7칸, 오른쪽으로 1칸인 점은 유리창의 1 ÷ 7 지점에 찍힙니다. 그래서 멀리 있을수록 작게 보입니다.</p>
+</div>
+<div class="extOnly">
+<h3>확장: 고개를 들거나 숙이면?</h3>
+<p class="note">f에 z성분 c를 넣으면 관찰자가 고개를 듭니다(c &gt; 0) 또는 숙입니다(c &lt; 0). 이제 화면의 위쪽은 하늘 k가 아니라 카메라와 함께 기울어진 u = r × f입니다. 또 f, r, u의 길이가 1이 아닐 수 있으므로 단위벡터로 바꿔서 계산합니다.</p>
+<table><tbody>
+<tr><td>단위벡터</td><td>f̂ = f ÷ |f|, r̂ = r ÷ |r|, û = u ÷ |u|</td></tr>
+<tr><td>깊이</td><td>v · f̂</td></tr>
+<tr><td>가로</td><td>v · r̂</td></tr>
+<tr><td>세로</td><td>v · û</td></tr>
+<tr><td>화면 x, 화면 y</td><td>가로 ÷ 깊이, 세로 ÷ 깊이</td></tr>
+</tbody></table>
+<h3 style="margin-top:12px">탐구 질문</h3>
+<ul class="note">
+<li>c &gt; 0이면 u는 k에서 어느 쪽으로 기울까요? 계산하기 전에 예측해 보세요.</li>
+<li>고개를 들면 지평선(땅의 끝)은 화면에서 위로 갈까요, 아래로 갈까요? 관찰자 시점 화면으로 확인해 보세요.</li>
+<li>c = 0이고 |f| = 1이면 이 공식이 왜 기본 활동의 공식과 같아질까요?</li>
+<li>|f| ≠ 1일 때 단위벡터로 바꾸지 않으면 화면 좌표가 어떻게 틀어질까요?</li>
+<li>f = (0, 0, 1)처럼 똑바로 위를 보면 왜 r을 구할 수 없을까요?</li>
+</ul>
+</div>
+</div>
+</div>
+</div></div></section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+const KEY='mwvl-ko-v1';
+const COLORS=['#5b4fd6','#0f8a63','#e0115f','#2f7fd8','#d98a10','#7a5a3a','#3aa6a0'];
+const sampleWorld=()=>({P:[2,1],f:[0,1],fov:90,B:[
+ {n:'학교',t:'box',x:5,y:9,w:4,d:2,h:3},
+ {n:'도서관',t:'box',x:9,y:3,w:3,d:3,h:2},
+ {n:'시계탑',t:'cyl',x:-2,y:6,w:1,d:1,h:5},
+ {n:'물탱크',t:'cyl',x:6,y:-2,w:1.5,d:1.5,h:2.5}]});
+let NAME='';try{NAME=localStorage.getItem(KEY+':last')||''}catch(e){}
+const skey=()=>NAME?KEY+':'+NAME:KEY;
+const fresh=()=>({world:sampleWorld(),preds:{},verified:{},log:[],tries:{},hints:{},sel:0,eye:false});
+const S=fresh();
+function replaceState(n){for(const k of Object.keys(S))delete S[k];Object.assign(S,fresh(),n||{},{eye:false})}
+function loadSlot(){let s=null;try{s=JSON.parse(localStorage.getItem(skey()))}catch(e){}replaceState(s&&s.world&&s.world.B?s:null)}
+loadSlot();
+const save=()=>{try{localStorage.setItem(skey(),JSON.stringify(S));localStorage.setItem(KEY+':last',NAME)}catch(e){}};
+const r=(x,n=2)=>Math.round(x*10**n)/10**n;
+
+function truth(b){const W=S.world,[px,py]=W.P,[a,c]=W.f;const vx=b.x-px,vy=b.y-py;
+ const dot=a*vx+c*vy,cross=a*vy-c*vx,lf=Math.hypot(a,c),lv=Math.hypot(vx,vy);
+ const th=lv&&lf?Math.acos(Math.max(-1,Math.min(1,dot/(lf*lv))))*180/Math.PI:0;
+ return{vx,vy,dot,cross,lf,lv,th,fb:dot>0?'front':dot<0?'behind':'beside',lr:cross>0?'left':cross<0?'right':'straight',vis:lv>0&&th<=W.fov/2+1e-9?'yes':'no'}}
+function footprint(b){return b.t=='box'?[[-1,-1],[1,-1],[1,1],[-1,1]].map(([i,j])=>[b.x+i*b.w/2,b.y+j*b.d/2]):[...Array(16)].map((_,k)=>[b.x+b.w*Math.cos(k*Math.PI/8),b.y+b.w*Math.sin(k*Math.PI/8)])}
+function inView(x,y){const W=S.world,[px,py]=W.P,[a,c]=W.f,vx=x-px,vy=y-py,l=Math.hypot(vx,vy);return l>0&&(a*vx+c*vy)>=l*Math.hypot(a,c)*Math.cos(W.fov/2*Math.PI/180)}
+function partial(b){const n=footprint(b).filter(([x,y])=>inView(x,y)).length;return n>0&&n<footprint(b).length}
+
+const LBL={front:'앞',behind:'뒤',beside:'정확히 옆',left:'왼쪽',right:'오른쪽',straight:'일직선',yes:'예',no:'아니오'};
+const FIELDS=[
+ {k:'vx',q:'v = 건물 − P 의 x성분',type:'num',tol:0.01},
+ {k:'vy',q:'v = 건물 − P 의 y성분',type:'num',tol:0.01},
+ {k:'dot',q:'f · v',type:'num',tol:0.01},
+ {k:'lv',q:'|v| (소수 둘째 자리)',type:'num',tol:0.015},
+ {k:'th',q:'f와 v 사이의 각 θ (°, 소수 첫째 자리)',type:'num',tol:0.15},
+ {k:'fb',q:'P의 앞인가 뒤인가?',type:'sel',opts:['front','behind','beside']},
+ {k:'cross',q:'f × v의 z성분',type:'num',tol:0.01},
+ {k:'lr',q:'P의 왼쪽인가 오른쪽인가?',type:'sel',opts:['left','right','straight']},
+ {k:'vis',q:'건물 중심이 시야각 안에 있는가?',type:'sel',opts:['yes','no']}];
+
+function diagnose(k,val,T,P){const W=S.world,[a,c]=W.f,[px,py]=W.P,b=S.world.B[S.sel];const near=(x,y,t=0.02)=>Math.abs(x-y)<=t;
+ const pv=[+P.vx,+P.vy];
+ if(k=='vx'||k=='vy'){const rev=k=='vx'?px-b.x:py-b.y,sw=k=='vx'?T.vy:T.vx;
+  if(near(val,rev))return'벡터가 건물에서 관찰자 쪽을 향합니다. v = 건물 − P 로 구하세요.';
+  if(near(val,sw))return'x성분과 y성분을 바꿔 쓴 것 같습니다.';
+  return'건물 중심의 좌표에서 P의 좌표를 빼세요.'}
+ if(k=='dot'){if(near(val,-T.dot))return'부호를 확인하세요. 크기는 맞는 것 같습니다.';
+  if(isFinite(pv[0])&&isFinite(pv[1])&&near(val,a*pv[0]+c*pv[1])&&!(near(pv[0],T.vx)&&near(pv[1],T.vy)))return'내적은 내가 구한 v와는 맞습니다. 그러니 v가 틀렸어요. v부터 고치세요.';
+  if(near(val,a*T.vx-c*T.vy)||near(val,a*T.vy+c*T.vx))return'같은 성분끼리(x는 x끼리, y는 y끼리) 곱한 뒤 더하세요.';
+  return'f · v = a·vx + b·vy 를 쓰세요.'}
+ if(k=='lv'){if(near(val,T.vx**2+T.vy**2))return'그건 |v|²입니다. 제곱근을 씌우세요.';
+  if(near(val,Math.abs(T.vx)+Math.abs(T.vy)))return'길이는 성분의 합이 아닙니다. 피타고라스 정리를 쓰세요.';
+  return'|v| = √(vx² + vy²).'}
+ if(k=='th'){const rad=T.th*Math.PI/180;
+  if(near(val,rad,0.02))return'계산기가 라디안 모드인 것 같습니다. 도(°) 모드로 바꾸세요.';
+  if(T.lv&&Math.abs(T.dot/T.lv)<=1&&near(val,Math.acos(T.dot/T.lv)*180/Math.PI,0.2)&&!near(T.lf,1))return'|v|뿐 아니라 |f|로도 나눴나요? 여기서는 |f|가 1이 아닙니다.';
+  if(near(val,180-T.th,0.2))return'cos θ에 넣은 내적의 부호를 확인하세요.';
+  return'cos θ = (f · v) / (|f| |v|) 를 구한 뒤 역코사인을 쓰세요.'}
+ if(k=='fb')return'내적의 부호를 보세요. 양수면 앞입니다.';
+ if(k=='cross'){if(near(val,-T.cross))return'순서가 중요합니다. f × v = a·vy − b·vx 입니다. v × f를 구한 것 같아요.';
+  if(near(val,a*T.vx+c*T.vy))return'그건 내적입니다. 외적은 a·vy − b·vx 를 씁니다.';
+  return'평면 위의 벡터에서 f × v의 z성분은 a·vy − b·vx 입니다.'}
+ if(k=='lr')return'f × v의 부호를 보세요. 양수면 왼쪽, 음수면 오른쪽입니다.';
+ if(k=='vis')return'θ를 시야각의 절반('+W.fov/2+'°)과 비교하세요.';
+ return''}
+function stepHint(k,T){const [a,c]=S.world.f,[px,py]=S.world.P,b=S.world.B[S.sel];
+ return{vx:`vx = ${b.x} − (${px})`,vy:`vy = ${b.y} − (${py})`,dot:`f · v = (${a})(vx) + (${c})(vy)`,lv:`|v| = √(vx² + vy²)`,th:`cos θ = (f · v) / (${r(T.lf,3)} × |v|)`,fb:'f · v > 0 → 앞',cross:`f × v (z) = (${a})(vy) − (${c})(vx)`,lr:'f × v > 0 → 왼쪽',vis:`θ ≤ ${S.world.fov/2}° 이면 시야 안`}[k]}
+
+function renderDesign(){const W=S.world;$('px').value=W.P[0];$('py').value=W.P[1];$('fa').value=W.f[0];$('fb').value=W.f[1];$('fc').value=W.c||0;$('fdir').value=W.f.join(',');$('fov').value=W.fov;
+ $('btab').tBodies[0].innerHTML=W.B.map((b,i)=>`<tr><td><input data-i="${i}" data-k="n" value="${b.n.replace(/"/g,'&quot;')}" aria-label="이름"></td><td><select data-i="${i}" data-k="t" aria-label="모양"><option value="box"${b.t=='box'?' selected':''}>직육면체</option><option value="cyl"${b.t=='cyl'?' selected':''}>원기둥</option></select></td>${['x','y','w','d','h'].map(k=>`<td><input type="number" step="${k=='x'||k=='y'?1:0.5}" data-i="${i}" data-k="${k}" value="${b[k]}" ${k=='d'&&b.t=='cyl'?'disabled':''} aria-label="${k}"></td>`).join('')}<td><button data-del="${i}" aria-label="${b.n} 삭제">×</button></td></tr>`).join('');
+ $('sel').innerHTML=W.B.map((b,i)=>`<option value="${i}"${i==S.sel?' selected':''}>${b.n}</option>`).join('')}
+function resetVer(i){if(i==null){S.verified={}}else delete S.verified[i]}
+function renderPred(){const b=S.world.B[S.sel];if(!b){$('pred').innerHTML='<p class="note">먼저 건물을 추가하세요.</p>';return}
+ const W=S.world,p=S.preds[S.sel]||{};
+ $('given').textContent=`P = (${W.P.join(', ')}),  f = (${W.f.join(', ')}),  ${b.n} 중심 = (${b.x}, ${b.y}),  시야각 = ${W.fov}°`;
+ $('pred').innerHTML=FIELDS.map(F=>`<div class="q"><label for="p_${F.k}" style="color:var(--ink)">${F.q}</label></div><div>${F.type=='num'?`<input id="p_${F.k}" type="number" step="any" value="${p[F.k]??''}">`:`<select id="p_${F.k}"><option value="">선택</option>${F.opts.map(o=>`<option value="${o}"${p[F.k]==o?' selected':''}>${LBL[o]}</option>`).join('')}</select>`}</div><div class="fb" id="fb_${F.k}"></div>`).join('');
+ FIELDS.forEach(F=>{$('p_'+F.k).addEventListener('input',e=>{(S.preds[S.sel]=S.preds[S.sel]||{})[F.k]=e.target.value;save()})});
+ const v=S.verified[S.sel];$('vstate').textContent=v?'확인 완료':'미확인';$('vstate').className='pill'+(v?' ok':'');
+ $('tries').textContent=S.tries[S.sel]?`이 건물 확인 횟수: ${S.tries[S.sel]}`:''}
+
+function check(){const b=S.world.B[S.sel];if(!b)return;const T=truth(b),p=S.preds[S.sel]||{};let all=true;
+ S.tries[S.sel]=(S.tries[S.sel]||0)+1;const key=S.sel;S.hints[key]=S.hints[key]||{};
+ FIELDS.forEach(F=>{const raw=p[F.k];const el=$('fb_'+F.k);
+  if(raw===undefined||raw===''){el.className='fb bad';el.textContent='먼저 예측값을 입력하세요.';all=false;return}
+  let ok;if(F.type=='num'){const val=+raw;const tv=T[F.k];ok=isFinite(val)&&Math.abs(val-tv)<=F.tol+1e-9}else ok=raw==T[F.k];
+  let hint='';if(!ok){all=false;S.hints[key][F.k]=(S.hints[key][F.k]||0)+1;hint=diagnose(F.k,+raw,T,p);if(S.hints[key][F.k]>=3)hint+=' 풀이 단계: '+stepHint(F.k,T)}
+  el.className='fb '+(ok?'ok':'bad');el.textContent=ok?'정답':hint;
+  S.log.push({n:S.log.length+1,b:b.n,item:F.q,you:raw,res:ok?'correct':'wrong',hint:ok?'':hint,world:`P(${S.world.P}) f(${S.world.f}) FOV ${S.world.fov}`})});
+ S.nchecks=(S.nchecks||0)+1;if(all)S.verified[S.sel]=true;save();renderPred();
+ FIELDS.forEach(F=>{const last=[...S.log].reverse().find(l=>l.item==F.q&&l.b==b.n);const el=$('fb_'+F.k);if(last){el.className='fb '+(last.res=='correct'?'ok':'bad');el.textContent=last.res=='correct'?'정답':last.hint}});
+ renderLog();renderMissions();drawMap()}
+
+function renderLog(){const L=S.log;$('nchk').textContent=S.nchecks||0;
+ const wrong=L.filter(l=>l.res=='wrong').length;$('nerr').textContent=`지금까지 틀린 항목 ${wrong}개`;
+ $('ltab').tBodies[0].innerHTML=L.slice(-200).reverse().map(l=>`<tr><td>${l.n}</td><td>${l.b}</td><td>${l.item}</td><td>${(LBL[l.you]||String(l.you)).replace(/</g,'&lt;')}</td><td style="color:var(--${l.res=='correct'?'ok':'bad'})">${l.res=='correct'?'정답':'오답'}</td><td>${l.hint}</td></tr>`).join('')}
+
+const MISSIONS=[
+ {t:'바로 옆에',d:'건물 중심이 관찰자의 정확히 옆에 오게 배치하세요. f · v = 0 이지만 f × v ≠ 0 입니다.',ok:b=>{const T=truth(b);return Math.abs(T.dot)<1e-9&&Math.abs(T.cross)>1e-9}},
+ {t:'왼쪽에 있고 보이는 건물',d:'관찰자의 왼쪽에 있으면서 중심이 시야각 안에 들어오는 건물을 만드세요.',ok:b=>{const T=truth(b);return T.cross>0&&T.vis=='yes'}},
+ {t:'일부만 보이는 건물',d:'건물의 일부만 시야각 안에 들어오도록 배치하세요(3D 모형을 보세요).',ok:b=>partial(b)},
+ {t:'길이가 1이 아닌 방향 벡터',d:'(1, 2)처럼 |f| ≠ 1인 방향 벡터 f를 쓰고, 관찰자 앞에 있는 건물 하나를 확인하세요.',ok:b=>{const T=truth(b);return Math.abs(T.lf-1)>1e-9&&T.dot>0},ext:true},
+ {t:'고개를 들거나 숙이기',d:'확장 활동에서 f의 z성분을 0이 아닌 값으로 바꾸고, 5번 섹션에서 꼭짓점 하나를 확인하세요.',ext:true,done:()=>!!(+S.world.c)&&Object.keys(S.cOK||{}).length>0}];
+function renderMissions(){$('missions').innerHTML=MISSIONS.filter(m=>S.ext||!m.ext).map(m=>{const hit=m.done?(m.done()?-2:-1):S.world.B.findIndex((b,i)=>m.ok(b)&&S.verified[i]);const done=hit!=-1;
+ return`<div class="mission${done?' done':''}"><span class="st">${done?'✓':''}</span><div><h3>${m.t}${m.ext?' (확장)':''}</h3><div class="note">${m.d}${done&&hit>=0?` ${S.world.B[hit].n}(으)로 완료했습니다.`:done?' 완료했습니다.':''}</div></div></div>`}).join('')}
+
+/* plan view */
+function drawMap(){const s=$('map'),Wd=s.clientWidth||600,Hd=s.clientHeight||420,W=S.world;
+ const xs=[W.P[0]],ys=[W.P[1]];W.B.forEach(b=>{xs.push(b.x-b.w,b.x+b.w);ys.push(b.y-(b.t=='box'?b.d:b.w),b.y+(b.t=='box'?b.d:b.w))});
+ let x0=Math.floor(Math.min(...xs))-2,x1=Math.ceil(Math.max(...xs))+2,y0=Math.floor(Math.min(...ys))-2,y1=Math.ceil(Math.max(...ys))+2;
+ const k=Math.min((Wd-30)/(x1-x0),(Hd-40)/(y1-y0)),ox=(Wd-k*(x1-x0))/2,oy=(Hd-k*(y1-y0))/2+12;
+ const X=x=>ox+(x-x0)*k,Y=y=>oy+(y1-y)*k;let h='';
+ for(let x=x0;x<=x1;x++)h+=`<line x1="${X(x)}" y1="${Y(y0)}" x2="${X(x)}" y2="${Y(y1)}" stroke="var(--line)" stroke-width="${x==0?1.6:0.6}"/>`;
+ for(let y=y0;y<=y1;y++)h+=`<line x1="${X(x0)}" y1="${Y(y)}" x2="${X(x1)}" y2="${Y(y)}" stroke="var(--line)" stroke-width="${y==0?1.6:0.6}"/>`;
+ const [a,c]=W.f,lf=Math.hypot(a,c)||1,ang=Math.atan2(c,a),hf=W.fov/2*Math.PI/180,R=60;
+ h+=`<path d="M${X(W.P[0])} ${Y(W.P[1])} L${X(W.P[0]+R*Math.cos(ang+hf))} ${Y(W.P[1]+R*Math.sin(ang+hf))} L${X(W.P[0]+R*Math.cos(ang-hf))} ${Y(W.P[1]+R*Math.sin(ang-hf))} Z" fill="#d98a10" fill-opacity="0.13" stroke="#d98a10" stroke-dasharray="5 5"/>`;
+ W.B.forEach((b,i)=>{const col=COLORS[i%COLORS.length],sel=i==S.sel?2.4:1;
+  h+=b.t=='box'?`<rect x="${X(b.x-b.w/2)}" y="${Y(b.y+b.d/2)}" width="${b.w*k}" height="${b.d*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"/>`:`<circle cx="${X(b.x)}" cy="${Y(b.y)}" r="${b.w*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"/>`;
+  h+=`<circle cx="${X(b.x)}" cy="${Y(b.y)}" r="3" fill="${col}"/>`});
+ const b=W.B[S.sel];let note='2번 섹션에서 건물을 고르면 벡터 v가 그려집니다.';
+ if(b){const T=truth(b);
+  if(S.verified[S.sel]&&T.lv){const t=T.dot/(lf*lf),fx=W.P[0]+t*a,fy=W.P[1]+t*c;
+   h+=`<polygon points="${X(W.P[0])},${Y(W.P[1])} ${X(W.P[0]+a)},${Y(W.P[1]+c)} ${X(W.P[0]+a+T.vx)},${Y(W.P[1]+c+T.vy)} ${X(W.P[0]+T.vx)},${Y(W.P[1]+T.vy)}" fill="#e0115f" fill-opacity="0.12" stroke="#e0115f" stroke-dasharray="3 3"/>`;
+   h+=`<line x1="${X(W.P[0]-60*a/lf)}" y1="${Y(W.P[1]-60*c/lf)}" x2="${X(W.P[0]+60*a/lf)}" y2="${Y(W.P[1]+60*c/lf)}" stroke="#d98a10" stroke-width="0.8" stroke-dasharray="2 4"/>`;
+   h+=`<line x1="${X(b.x)}" y1="${Y(b.y)}" x2="${X(fx)}" y2="${Y(fy)}" stroke="var(--muted)" stroke-dasharray="4 3"/><circle cx="${X(fx)}" cy="${Y(fy)}" r="4" fill="var(--muted)"/>`;
+   note=`${b.n} 잠금 해제: 회색 점은 v를 f 위에 내린 투영의 발입니다(부호 있는 길이 f·v/|f| = ${r(T.dot/lf)}). f와 v가 만드는 분홍 평행사변형의 넓이는 |f × v| = ${r(Math.abs(T.cross))}입니다.`}
+  else note=`${b.n}을(를) 확인하면 투영과 평행사변형 그림이 열립니다.`;
+  h+=`<line x1="${X(W.P[0])}" y1="${Y(W.P[1])}" x2="${X(b.x)}" y2="${Y(b.y)}" stroke="#0f8a63" stroke-width="2.4" marker-end="url(#ah)"/>`}
+ h+=`<line x1="${X(W.P[0])}" y1="${Y(W.P[1])}" x2="${X(W.P[0]+a)}" y2="${Y(W.P[1]+c)}" stroke="#d98a10" stroke-width="3.2" marker-end="url(#ah)"/>`;
+ h+=`<circle cx="${X(W.P[0])}" cy="${Y(W.P[1])}" r="7" fill="#0b1f4b" stroke="#fff" stroke-width="2"/>`;
+ s.setAttribute('viewBox',`0 0 ${Wd} ${Hd}`);
+ s.innerHTML=`<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6"/></marker></defs>`+h+
+ W.B.map((b,i)=>`<text x="${X(b.x)+6}" y="${Y(b.y)-6}" font-size="13" fill="var(--ink)">${b.n}</text>`).join('')+`<text x="${X(W.P[0])+9}" y="${Y(W.P[1])+18}" font-size="13" fill="var(--ink)">P</text><text x="${X(W.P[0]+a)+6}" y="${Y(W.P[1]+c)-4}" font-size="13" fill="#d98a10">f</text>`;
+ $('mapnote').textContent=note}
+
+/* 3D model */
+let three=null;
+function init3d(){if(!window.THREE)return;const el=$('fig3d');const R=new THREE.WebGLRenderer({antialias:true,alpha:true});R.setPixelRatio(Math.min(2,window.devicePixelRatio));R.localClippingEnabled=true;el.prepend(R.domElement);
+ const sc=new THREE.Scene();sc.add(new THREE.AmbientLight(0xffffff,0.65));const dl=new THREE.DirectionalLight(0xffffff,0.6);dl.position.set(6,20,10);sc.add(dl);
+ const cam=new THREE.PerspectiveCamera(42,1,0.1,400),eye=new THREE.PerspectiveCamera(60,1,0.1,400);
+ const planes=[new THREE.Plane(),new THREE.Plane()];const group=new THREE.Group();sc.add(group);
+ const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(9),3));
+ const wedge=new THREE.Mesh(wg,new THREE.MeshBasicMaterial({color:0xd98a10,transparent:true,opacity:0.2,side:THREE.DoubleSide,depthWrite:false}));sc.add(wedge);
+ const obs=new THREE.Group();const bd=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,1.2,20),new THREE.MeshLambertMaterial({color:0x0b1f4b}));bd.position.y=0.6;obs.add(bd);
+ const ar=new THREE.Mesh(new THREE.ConeGeometry(0.28,0.9,16),new THREE.MeshLambertMaterial({color:0xd98a10}));ar.rotation.z=-Math.PI/2;ar.position.set(0.9,0.6,0);obs.add(ar);sc.add(obs);
+ three={R,sc,cam,eye,planes,group,wg,wedge,obs,el};new ResizeObserver(draw3d).observe(el)}
+function draw3d(){if(!three)return;const{R,sc,cam,eye,planes,group,wg,wedge,obs,el}=three,W=S.world;
+ const w=el.clientWidth,h=el.clientHeight;R.setSize(w,h);[cam,eye].forEach(c=>{c.aspect=w/h;c.updateProjectionMatrix()});
+ while(group.children.length){const o=group.children.pop();o.geometry&&o.geometry.dispose()}
+ const xs=[W.P[0],...W.B.map(b=>b.x)],ys=[W.P[1],...W.B.map(b=>b.y)];const cx=(Math.min(...xs)+Math.max(...xs))/2,cy=(Math.min(...ys)+Math.max(...ys))/2,span=Math.max(10,Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys))+6;
+ const g=new THREE.Mesh(new THREE.PlaneGeometry(span*1.6,span*1.6),new THREE.MeshLambertMaterial({color:0xdfe4ee}));g.rotation.x=-Math.PI/2;g.position.set(cx,0,-cy);group.add(g);
+ const gh=new THREE.GridHelper(Math.ceil(span*1.6),Math.ceil(span*1.6),0xb9c2d6,0xc9d0df);gh.position.set(Math.round(cx),0.01,-Math.round(cy));group.add(gh);
+ const [a,c]=W.f,ang=Math.atan2(c,a),hf=W.fov/2*Math.PI/180,f3=new THREE.Vector3(Math.cos(ang),0,-Math.sin(ang)),up=new THREE.Vector3(0,1,0),P3=new THREE.Vector3(W.P[0],0,-W.P[1]);
+ [ang+hf,ang-hf].forEach((t,i)=>{const d=new THREE.Vector3(Math.cos(t),0,-Math.sin(t)),n=new THREE.Vector3().crossVectors(d,up);if(n.dot(f3)<0)n.negate();planes[i].setFromNormalAndCoplanarPoint(n.normalize(),P3)});
+ W.B.forEach((b,i)=>{const geo=b.t=='box'?new THREE.BoxGeometry(b.w,b.h,b.d):new THREE.CylinderGeometry(b.w,b.w,b.h,40);
+  const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:new THREE.Color(COLORS[i%COLORS.length]),clippingPlanes:planes,side:THREE.DoubleSide}));m.position.set(b.x,b.h/2,-b.y);group.add(m);
+  const e=new THREE.LineSegments(new THREE.EdgesGeometry(geo,30),new THREE.LineBasicMaterial({color:0x7d869c}));e.position.copy(m.position);group.add(e)});
+ const L=span*2,p=wg.attributes.position.array;p.set([P3.x,0.03,P3.z,P3.x+L*Math.cos(ang+hf),0.03,P3.z-L*Math.sin(ang+hf),P3.x+L*Math.cos(ang-hf),0.03,P3.z-L*Math.sin(ang-hf)]);wg.attributes.position.needsUpdate=true;wg.computeBoundingSphere();
+ obs.position.copy(P3);obs.rotation.y=ang;obs.visible=wedge.visible=!S.eye;
+ cam.position.set(cx,span*0.95,-cy+span*1.05);cam.lookAt(cx,0,-cy);
+ eye.fov=Math.min(100,Math.max(30,W.fov*h/w+15));eye.updateProjectionMatrix();eye.position.set(P3.x,1.5,P3.z);eye.lookAt(P3.x+10*f3.x,1.5,P3.z+10*f3.z);
+ R.domElement.style.visibility=S.eye?'hidden':'visible';R.render(sc,cam)}
+
+
+/* eye view: only dot, cross and division */
+const EYEH=1.5;
+const dot3=(p,q)=>p[0]*q[0]+p[1]*q[1]+p[2]*q[2],cross3=(p,q)=>[p[1]*q[2]-p[2]*q[1],p[2]*q[0]-p[0]*q[2],p[0]*q[1]-p[1]*q[0]],sub3=(p,q)=>[p[0]-q[0],p[1]-q[1],p[2]-q[2]],len3=p=>Math.hypot(p[0],p[1],p[2]),unit3=p=>{const l=len3(p)||1;return p.map(x=>x/l)};
+function cam(){const W=S.world,c=S.ext?(+W.c||0):0,f=[W.f[0],W.f[1],c],r=cross3(f,[0,0,1]),u=cross3(r,f);return{E:[W.P[0],W.P[1],EYEH],f,r,u,fh:unit3(f),rh:unit3(r),uh:unit3(u),tilt:c!=0,lf:len3(f),lr:len3(r),lu:len3(u)}}
+function projQ(Q,C){const v=sub3(Q,C.E),d=dot3(v,C.fh),X=dot3(v,C.rh),Y=dot3(v,C.uh);return{v,d,X,Y,sx:X/d,sy:Y/d,raw:{d:dot3(v,C.f),X:dot3(v,C.r),Y:dot3(v,C.u)}}}
+function bFaces(b){const base=b.t=='box'?[[-1,-1],[1,-1],[1,1],[-1,1]].map(([i,j])=>[b.x+i*b.w/2,b.y+j*b.d/2]):[...Array(16)].map((_,k)=>[b.x+b.w*Math.cos(k*Math.PI/8),b.y+b.w*Math.sin(k*Math.PI/8)]);
+ const F=[];for(let i=0;i<base.length;i++){const a=base[i],c=base[(i+1)%base.length];F.push([[a[0],a[1],0],[c[0],c[1],0],[c[0],c[1],b.h],[a[0],a[1],b.h]])}F.push(base.map(q=>[q[0],q[1],b.h]));return F}
+function corners(b){const out=[];[b.x-b.w/2,b.x+b.w/2].forEach(x=>[b.y-b.d/2,b.y+b.d/2].forEach(y=>[0,b.h].forEach(z=>out.push([x,y,z]))));return out}
+function drawEye(){const s=$('eyesvg');if(!S.eye){s.style.display='none';return}s.style.display='block';
+ const el=$('fig3d'),Wd=el.clientWidth,Hd=el.clientHeight,C=cam(),T=Math.tan(S.world.fov/2*Math.PI/180),k=(Wd/2)/T,cx=Wd/2,cy=Hd/2;
+ const X=x=>cx+k*x,Y=y=>cy-k*y;
+ const hd=unit3([C.f[0],C.f[1],0]),hy=Math.max(-50,Math.min(50,dot3(hd,C.uh)/dot3(hd,C.fh))),yh=Math.max(0,Math.min(Hd,Y(hy)));
+ let h=`<rect width="${Wd}" height="${yh}" fill="#dfe9f5"/><rect y="${yh}" width="${Wd}" height="${Hd-yh}" fill="#d3d8c6"/>`;
+ [-1,-0.5,0.5,1].forEach(g=>{if(Math.abs(g)<=T)h+=`<line x1="${X(g)}" y1="0" x2="${X(g)}" y2="${Hd}" stroke="#8a93a8" stroke-width="0.5" stroke-dasharray="3 4"/><text x="${X(g)+3}" y="${Hd-6}" font-size="12" fill="#3a4256">${g}</text>`;
+  if(Math.abs(k*g)<cy)h+=`<line x1="0" y1="${Y(g)}" x2="${Wd}" y2="${Y(g)}" stroke="#8a93a8" stroke-width="0.5" stroke-dasharray="3 4"/><text x="4" y="${Y(g)-3}" font-size="12" fill="#3a4256">${g}</text>`});
+ h+=`<line x1="${cx}" y1="0" x2="${cx}" y2="${Hd}" stroke="#5a6478" stroke-width="0.8"/><line x1="0" y1="${cy}" x2="${Wd}" y2="${cy}" stroke="#5a6478" stroke-width="0.8"/>`;
+ const polys=[];S.world.B.forEach((b,i)=>bFaces(b).forEach(fc=>{const pp=fc.map(q=>projQ(q,C));if(pp.some(p=>p.d<0.2))return;polys.push({pp,dep:pp.reduce((a,p)=>a+p.d,0)/pp.length,c:COLORS[i%COLORS.length],top:fc.length!=4||fc.every(q=>q[2]>0)})}));
+ polys.sort((a,b)=>b.dep-a.dep);
+ h+=polys.map(p=>`<polygon points="${p.pp.map(q=>X(q.sx)+','+Y(q.sy)).join(' ')}" fill="${p.c}" fill-opacity="${p.top?0.65:0.92}" stroke="#1d2433" stroke-width="0.7"/>`).join('');
+ Object.keys(S.cOK||{}).forEach(key=>{const[bi,ci]=key.split('|').map(Number),b=S.world.B[bi];if(!b||b.t!='box')return;const q=corners(b)[ci];if(!q)return;const p=projQ(q,C);if(p.d<=0)return;
+  h+=`<circle cx="${X(p.sx)}" cy="${Y(p.sy)}" r="6" fill="#e0115f" stroke="#fff" stroke-width="2"/><text x="${X(p.sx)+9}" y="${Y(p.sy)-8}" font-size="12" fill="#1d2433">(${r(p.sx)}, ${r(p.sy)})</text>`});
+ s.setAttribute('viewBox',`0 0 ${Wd} ${Hd}`);s.innerHTML=h}
+
+const AXB=[{k:'r0',q:'r = f × k 의 x성분'},{k:'r1',q:'r = f × k 의 y성분'},{k:'r2',q:'r = f × k 의 z성분'}];
+const AXE=AXB.concat([{k:'u0',q:'u = r × f 의 x성분'},{k:'u1',q:'u = r × f 의 y성분'},{k:'u2',q:'u = r × f 의 z성분'}]);
+const CV=[{k:'v0',q:'v = Q − E 의 x성분'},{k:'v1',q:'v = Q − E 의 y성분'},{k:'v2',q:'v = Q − E 의 z성분'}],CS=[{k:'sx',q:'화면 x = 가로 ÷ 깊이 (소수 둘째 자리)',tol:0.006},{k:'sy',q:'화면 y = 세로 ÷ 깊이 (소수 둘째 자리)',tol:0.006},{k:'on',q:'화면 안에 있는가?',opts:['yes','no']}];
+const CFB=CV.concat([{k:'d',q:'깊이 v · f'},{k:'X',q:'가로 v · r'},{k:'Y',q:'세로 v · k'}],CS);
+const CFE=CV.concat([{k:'d',q:'깊이 v · f̂ (소수 둘째 자리)',tol:0.006},{k:'X',q:'가로 v · r̂ (소수 둘째 자리)',tol:0.006},{k:'Y',q:'세로 v · û (소수 둘째 자리)',tol:0.006}],CS);
+const AXF=()=>S.ext?AXE:AXB,CFF=()=>S.ext?CFE:CFB;
+function cTruth(b,ci){const C=cam(),q=corners(b)[ci],p=projQ(q,C),T=Math.tan(S.world.fov/2*Math.PI/180);
+ return{C,q,p,t:{v0:p.v[0],v1:p.v[1],v2:p.v[2],d:p.d,X:p.X,Y:p.Y,sx:p.sx,sy:p.sy,on:p.d>0&&Math.abs(p.sx)<=T+1e-9?'yes':'no'},T}}
+function axHint(key,val,C){const vec=key[0]=='r'?C.r:C.u,i=+key[1];
+ if(Math.abs(val+vec[i])<0.01&&vec[i]!=0)return key[0]=='r'?'순서가 중요합니다. k × f가 아니라 r = f × k 입니다.':'순서가 중요합니다. f × r이 아니라 u = r × f 입니다.';
+ return key[0]=='r'?'r = f × k 를 외적 공식으로 구하세요. k = (0, 0, 1)입니다.':'u = r × f 입니다. 구한 r과 f를 외적 공식에 넣으세요.'}
+function cHint(key,val,R){const t=R.t,C=R.C,q=R.q,p=R.p,near=(a,b,e=0.012)=>Math.abs(a-b)<=e;
+ if(key[0]=='v'){const i=+key[1];if(i==2&&near(val,q[2]))return'눈은 땅에서 1.5 위에 있습니다. E = (Px, Py, 1.5)';if(near(val,-t[key]))return'벡터가 꼭짓점에서 눈 쪽을 향합니다. v = Q − E 로 구하세요.';return'꼭짓점 Q에서 눈 E를 빼세요.'}
+ if(key=='d'){if(S.ext&&!near(C.lf,1)&&near(val,p.raw.d))return'f의 길이가 1이 아닙니다. f̂ = f ÷ |f| 로 단위벡터를 만든 뒤 내적하세요.';if(near(val,-t.d))return'부호를 확인하세요.';if(near(val,t.X))return'그건 가로 값입니다. 깊이는 f 방향을 씁니다.';return S.ext?'깊이 = v · f̂ 입니다. f를 단위벡터로 바꾼 뒤 내적하세요.':'깊이 = v · f 입니다. f는 길이가 1이라 그대로 내적하면 됩니다.'}
+ if(key=='X'){if(S.ext&&!near(C.lr,1)&&near(val,p.raw.X))return'r의 길이가 1이 아닙니다. r̂ = r ÷ |r| 로 바꾼 뒤 내적하세요.';if(near(val,-t.X))return'부호를 확인하세요.R';return S.ext?'가로 = v · r̂ 입니다.':'가로 = v · r 입니다.'}
+ if(key=='Y'){if(S.ext&&C.tilt&&near(val,p.v[2]))return'고개를 든(숙인) 상태라 화면의 위쪽은 k가 아니라 u입니다. v · û 를 쓰세요.';if(S.ext&&!near(C.lu,1)&&near(val,p.raw.Y))return'u의 길이가 1이 아닙니다. û = u ÷ |u| 로 바꾼 뒤 내적하세요.';if(near(val,-t.Y))return'부호를 확인하세요.';return S.ext?'세로 = v · û 입니다.':'세로 = v · k = Q의 높이 − 1.5 입니다.'}
+ if(key=='sx'){if(near(val,t.d/t.X))return'가로를 깊이로 나누세요. 거꾸로 나누면 안 됩니다.';return'화면 x = 가로 ÷ 깊이'}
+ if(key=='sy'){if(near(val,t.sx))return'그건 화면 x입니다. 화면 y는 세로를 씁니다.';if(near(val,t.d/t.Y))return'세로를 깊이로 나누세요. 거꾸로 나누면 안 됩니다.';return'화면 y = 세로 ÷ 깊이'}
+ if(key=='on')return`화면 안에 있으려면 깊이 > 0 이고 |화면 x| ≤ tan(${S.world.fov/2}°) ≈ ${r(R.T)} 이어야 합니다.`;return''}
+function predHTML(list,store,pre){return list.map(F=>`<div class="q"><label for="${pre}${F.k}" style="color:var(--ink)">${F.q}</label></div><div>${F.opts?`<select id="${pre}${F.k}"><option value="">선택</option>${F.opts.map(o=>`<option value="${o}"${store[F.k]==o?' selected':''}>${LBL[o]}</option>`).join('')}</select>`:`<input id="${pre}${F.k}" type="number" step="any" value="${store[F.k]??''}">`}</div><div class="fb" id="${pre}fb_${F.k}"></div>`).join('')}
+function pill(id,ok){$(id).textContent=ok?'확인 완료':'미확인';$(id).className='pill'+(ok?' ok':'')}
+function renderEyeUI(){S.ax=S.ax||{};S.cP=S.cP||{};S.cOK=S.cOK||{};const AX=AXF(),CF=CFF();
+ $('axpred').innerHTML=predHTML(AX,S.ax,'ax_');AX.forEach(F=>$('ax_'+F.k).addEventListener('input',e=>{S.ax[F.k]=e.target.value;save()}));
+ pill('axstate',S.axOK);
+ const boxes=S.world.B.map((b,i)=>[b,i]).filter(([b])=>b.t=='box');
+ if(!boxes.length){$('eb').innerHTML='';$('ec').innerHTML='';$('cpred').innerHTML='<p class="note">먼저 직육면체를 하나 추가하세요.</p>';return}
+ if(S.eb==null||!S.world.B[S.eb]||S.world.B[S.eb].t!='box')S.eb=boxes[0][1];
+ $('eb').innerHTML=boxes.map(([b,i])=>`<option value="${i}"${i==S.eb?' selected':''}>${b.n}</option>`).join('');
+ const cs=corners(S.world.B[S.eb]);S.ec=Math.min(S.ec||0,cs.length-1);
+ $('ec').innerHTML=cs.map((q,i)=>`<option value="${i}"${i==S.ec?' selected':''}>(${q.join(', ')})</option>`).join('');
+ const key=S.eb+'|'+S.ec,st=S.cP[key]=S.cP[key]||{};
+ $('cpred').innerHTML=predHTML(CF,st,'c_');CF.forEach(F=>$('c_'+F.k).addEventListener('input',e=>{st[F.k]=e.target.value;save()}));
+ pill('cstate',S.cOK[key])}
+const wtxt=()=>`P(${S.world.P}) f(${S.world.f}${S.ext&&S.world.c?','+S.world.c:''}) FOV ${S.world.fov}`;
+function checkAx(){const C=cam();let all=true;S.nchecks=(S.nchecks||0)+1;
+ AXF().forEach(F=>{const raw=S.ax[F.k],el=$('ax_fb_'+F.k),tv=(F.k[0]=='r'?C.r:C.u)[+F.k[1]];
+  if(raw===undefined||raw===''){el.className='fb bad';el.textContent='먼저 값을 입력하세요.';all=false;return}
+  const ok=Math.abs(+raw-tv)<=0.01,hint=ok?'':axHint(F.k,+raw,C);if(!ok)all=false;el.className='fb '+(ok?'ok':'bad');el.textContent=ok?'정답':hint;
+  S.log.push({n:S.log.length+1,b:'카메라 축',item:F.q,you:raw,res:ok?'correct':'wrong',hint,world:wtxt()})});
+ S.axOK=all;pill('axstate',all);save();renderLog()}
+function checkC(){const b=S.world.B[S.eb];if(!b)return;const key=S.eb+'|'+S.ec,st=S.cP[key]||{},R=cTruth(b,S.ec);let all=true;S.nchecks=(S.nchecks||0)+1;
+ CFF().forEach(F=>{const raw=st[F.k],el=$('c_fb_'+F.k);
+  if(raw===undefined||raw===''){el.className='fb bad';el.textContent='먼저 값을 입력하세요.';all=false;return}
+  const tv=R.t[F.k],ok=F.opts?raw==tv:(isFinite(tv)&&Math.abs(+raw-tv)<=(F.tol||0.01));const hint=ok?'':cHint(F.k,+raw,R);if(!ok)all=false;
+  el.className='fb '+(ok?'ok':'bad');el.textContent=ok?'정답':hint;
+  S.log.push({n:S.log.length+1,b:`${b.n} 꼭짓점 (${R.q.join(', ')})`,item:F.q,you:raw,res:ok?'correct':'wrong',hint,world:wtxt()})});
+ if(all)S.cOK[key]=true;else delete S.cOK[key];pill('cstate',all);save();renderLog();renderMissions();drawEye()}
+
+function all(){renderDesign();renderPred();renderLog();renderMissions();drawMap();draw3d();renderEyeUI();drawEye();save()}
+function setWorld(fn,keepVer){fn(S.world);if(!keepVer){resetVer();S.axOK=false;S.cOK={}}save();renderPred();renderMissions();drawMap();draw3d();renderEyeUI();drawEye()}
+
+['px','py','fa','fb','fc','fov'].forEach(id=>$(id).addEventListener('change',e=>{const v=+e.target.value;if(!isFinite(v))return;
+ setWorld(W=>{if(id=='px')W.P[0]=v;if(id=='py')W.P[1]=v;if(id=='fa')W.f[0]=v;if(id=='fb')W.f[1]=v;if(id=='fc')W.c=v;if(id=='fov')W.fov=Math.max(10,Math.min(170,v))});
+ if(id=='fa'||id=='fb'){if(S.world.f[0]==0&&S.world.f[1]==0){S.world.f=[0,1];renderDesign()}}}));
+$('fdir').addEventListener('change',e=>{const[a,b]=e.target.value.split(',').map(Number);setWorld(W=>{W.f=[a,b]});renderDesign()});
+function snapBasic(){const W=S.world;const[a,b]=W.f;if(!((a==0)!=(b==0)&&Math.abs(a+b)==1))W.f=Math.abs(a)>=Math.abs(b)?[Math.sign(a)||1,0]:[0,Math.sign(b)];W.c=0}
+function applyMode(){document.body.classList.toggle('ext',!!S.ext);$('extBtn').textContent=S.ext?'기본 활동으로 돌아가기':'확장 활동 켜기';$('modeNote').textContent=S.ext?'확장 활동: f의 길이와 z성분(고개 들기·숙이기)을 바꿀 수 있습니다.':'기본 활동: f는 동서남북 네 방향(길이 1, z = 0)만 씁니다.'}
+$('extBtn').onclick=()=>{S.ext=!S.ext;if(!S.ext)snapBasic();resetVer();S.axOK=false;S.cOK={};applyMode();all()};
+$('btab').addEventListener('change',e=>{const i=+e.target.dataset.i,k=e.target.dataset.k;if(isNaN(i))return;const b=S.world.B[i];
+ if(k=='n'||k=='t')b[k]=e.target.value;else{const v=+e.target.value;if(!isFinite(v))return;b[k]=(k=='x'||k=='y')?v:Math.max(0.5,v)}
+ if(b.t=='cyl')b.d=b.w;delete S.verified[i];Object.keys(S.cOK||{}).forEach(k=>{if(+k.split('|')[0]==i)delete S.cOK[k]});renderDesign();save();renderPred();renderMissions();drawMap();draw3d();renderEyeUI();drawEye()});
+$('btab').addEventListener('click',e=>{const d=e.target.dataset.del;if(d==null)return;S.world.B.splice(+d,1);S.preds={};S.verified={};S.tries={};S.sel=0;all()});
+const add=t=>{const n=S.world.B.length+1;S.world.B.push({n:'건물 '+n,t,x:S.world.P[0]+3,y:S.world.P[1]+3,w:t=='box'?2:1,d:t=='box'?2:1,h:2});S.sel=S.world.B.length-1;all()};
+$('addBox').onclick=()=>add('box');$('addCyl').onclick=()=>add('cyl');
+$('sample').onclick=()=>{S.world=sampleWorld();S.preds={};S.verified={};S.tries={};S.hints={};S.sel=0;all()};
+$('sel').onchange=e=>{S.sel=+e.target.value;save();renderPred();drawMap()};
+$('check').onclick=check;$('checkAx').onclick=checkAx;$('checkC').onclick=checkC;
+$('eb').onchange=e=>{S.eb=+e.target.value;S.ec=0;save();renderEyeUI()};$('ec').onchange=e=>{S.ec=+e.target.value;save();renderEyeUI()};
+const move=k=>setWorld(W=>{const[a,c]=W.f;if(k=='U')W.P=[W.P[0]+a,W.P[1]+c];if(k=='D')W.P=[W.P[0]-a,W.P[1]-c];if(k=='L')W.f=[-c,a];if(k=='R')W.f=[c,-a]});
+$('bU').onclick=()=>{move('U');renderDesign()};$('bD').onclick=()=>{move('D');renderDesign()};$('bL').onclick=()=>{move('L');renderDesign()};$('bR').onclick=()=>{move('R');renderDesign()};
+$('bEye').onclick=()=>{S.eye=!S.eye;$('bEye').textContent=S.eye?'3D 모형으로 돌아가기':'관찰자 눈으로 보기';$('tag3d').textContent=S.eye?'관찰자 시점: 내적과 나눗셈만으로 그린 화면':'3D 모형: 색칠된 부분이 시야각 안에 있는 부분입니다';draw3d();drawEye()};
+$('fig3d').tabIndex=0;$('fig3d').addEventListener('keydown',e=>{const k={ArrowUp:'U',ArrowDown:'D',ArrowLeft:'L',ArrowRight:'R'}[e.key];if(k){e.preventDefault();move(k);renderDesign()}});
+$('fig3d').addEventListener('click',()=>$('fig3d').focus());
+$('copy').onclick=async()=>{const txt=['#\t세상\t건물\t항목\t내가 쓴 답\t결과\t힌트'].concat(S.log.map(l=>[l.n,l.world,l.b,l.item,LBL[l.you]||l.you,l.res=='correct'?'정답':'오답',l.hint].join('\t'))).join('\n');
+ try{await navigator.clipboard.writeText(txt);$('copymsg').textContent='복사했습니다. 보고서 부록에 붙여 넣으세요.'}catch(e){$('copymsg').textContent='복사가 막혔습니다. 표를 직접 선택해서 복사하세요.'}};
+$('clear').onclick=()=>{if($('clear').dataset.sure){S.log=[];S.nchecks=0;S.tries={};S.hints={};$('clear').dataset.sure='';$('clear').textContent='로그 지우기';renderLog();renderPred();save()}else{$('clear').dataset.sure='1';$('clear').textContent='한 번 더 누르면 지워집니다'}};
+new ResizeObserver(()=>drawMap()).observe($('fig2d'));new ResizeObserver(()=>drawEye()).observe($('fig3d'));
+/* save code and name slots */
+async function encodeState(){const json=JSON.stringify(Object.assign({},S,{eye:false,name:NAME}));
+ if(window.CompressionStream){const st=new Blob([json]).stream().pipeThrough(new CompressionStream('deflate'));const buf=new Uint8Array(await new Response(st).arrayBuffer());let bin='';for(let i=0;i<buf.length;i++)bin+=String.fromCharCode(buf[i]);return'MWVL2:'+btoa(bin)}
+ return'MWVL1:'+btoa(unescape(encodeURIComponent(json)))}
+async function decodeState(code){code=(code||'').replace(/\s+/g,'');
+ if(code.startsWith('MWVL2:')){const bin=atob(code.slice(6)),buf=Uint8Array.from(bin,c=>c.charCodeAt(0));const st=new Blob([buf]).stream().pipeThrough(new DecompressionStream('deflate'));return JSON.parse(await new Response(st).text())}
+ if(code.startsWith('MWVL1:'))return JSON.parse(decodeURIComponent(escape(atob(code.slice(6)))));throw new Error('bad')}
+function afterLoad(){if(!S.ext)snapBasic();applyMode();$('sname').value=NAME;all()}
+$('sname').value=NAME;
+$('sname').addEventListener('change',e=>{const n=e.target.value.trim();if(n==NAME)return;save();NAME=n;try{localStorage.setItem(KEY+':last',NAME)}catch(x){}loadSlot();afterLoad();$('codeMsg').textContent=NAME?'{n} 학생의 작업으로 바꿨습니다.'.replace('{n}',NAME):''});
+$('bSaveCode').onclick=async()=>{const box=$('codeBox'),ta=$('codeTa');box.style.display='block';try{const code=await encodeState();ta.value=code;
+ try{await navigator.clipboard.writeText(code);$('codeMsg').textContent='복사했습니다. 매니지백 과제나 보고서에 붙여 두세요.'}catch(e){ta.focus();ta.select();$('codeMsg').textContent='자동 복사가 막혔습니다. 위 코드를 모두 선택해 직접 복사하세요.'}}catch(e){$('codeMsg').textContent='저장 코드를 만들지 못했습니다. 다시 눌러 보세요.'}};
+$('bShowLoad').onclick=()=>{$('codeBox').style.display='block';$('codeTa').value='';$('codeTa').focus();$('codeMsg').textContent='저장해 둔 코드를 붙여 넣고 불러오기를 두 번 누르세요.'};
+$('bLoadCode').onclick=async()=>{const b=$('bLoadCode');if(!b.dataset.sure){b.dataset.sure='1';b.textContent='한 번 더 누르면 지금 작업을 덮어씁니다';return}b.dataset.sure='';b.textContent='불러오기';
+ try{const o=await decodeState($('codeTa').value);if(!o||!o.world||!Array.isArray(o.world.B))throw 0;if(o.name&&!NAME){NAME=o.name}delete o.name;replaceState(o);save();afterLoad();$('codeMsg').textContent='불러왔습니다. 이어서 하세요.'}catch(e){$('codeMsg').textContent='코드를 읽을 수 없습니다. 코드 전체를 빠짐없이 붙여 넣었는지 확인하세요.'}};
+if(!S.ext)snapBasic();applyMode();init3d();all();
+window.__lab={S,truth,partial,check,FIELDS,cam,cTruth,corners};
+}
+</script>
+</body>
+</html>
