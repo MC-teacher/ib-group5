@@ -43,7 +43,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th{font-weight:500;color:var(--muted);text-align:left;padding:6px}
 td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:middle}
 .scroll{overflow-x:auto}
-#btab{min-width:660px}#btab td:first-child{min-width:130px}#btab td:nth-child(2){min-width:110px}
+#btab{min-width:900px}#btab td:first-child{min-width:130px}#btab td:nth-child(2){min-width:110px}
 .pred{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.6fr);gap:8px 12px;align-items:center}
 .pred .q{font-size:15px}
 .fb{font-size:14px}
@@ -103,7 +103,7 @@ body:not(.ext) .extOnly{display:none!important}body.ext .basicOnly{display:none!
 <section class="band" style="padding-top:0"><div class="wrap grid2">
 <div class="card">
 <h2>1. Design your world</h2>
-<p class="note">Use whole numbers. Coordinates are (x, y) on the plan; y points north.</p>
+<p class="note">Use whole numbers. Coordinates are (x, y) on the plan; y points north. A base height z above 0 makes a building float (dashed on the plan). Section 2 uses the centre (x, y) seen from above; z and height are used in the 3D model and section 5. Pyramids and prisms can have 3 to 8 base vertices.</p>
 <div class="row">
 <div><label for="px">Observer P x</label><input id="px" type="number" step="1"></div>
 <div><label for="py">Observer P y</label><input id="py" type="number" step="1"></div>
@@ -113,8 +113,8 @@ body:not(.ext) .extOnly{display:none!important}body.ext .basicOnly{display:none!
 <div class="extOnly"><label for="fc">f: z-component c (extension: + look up, − look down)</label><input id="fc" type="number" step="0.5"></div>
 <div><label for="fov">Field of view (°)</label><input id="fov" type="number" step="10" min="10" max="170"></div>
 </div>
-<div class="scroll" style="margin-top:12px"><table id="btab"><thead><tr><th>Name</th><th>Shape</th><th>Centre x</th><th>Centre y</th><th>Width / radius</th><th>Depth</th><th>Height</th><th></th></tr></thead><tbody></tbody></table></div>
-<div class="controls"><button id="addBox">Add cuboid</button><button id="addCyl">Add cylinder</button><button id="sample">Load sample world</button></div>
+<div class="scroll" style="margin-top:12px"><table id="btab"><thead><tr><th>Name</th><th>Shape</th><th>Centre x</th><th>Centre y</th><th>Base height z</th><th>Width / radius</th><th>Depth</th><th>Height</th><th>Base vertices</th><th></th></tr></thead><tbody></tbody></table></div>
+<div class="controls"><button id="addBox">Add cuboid</button><button id="addCyl">Add cylinder</button><button id="addCone">Add cone</button><button id="addPyr">Add pyramid</button><button id="addPrism">Add prism</button><button id="sample">Load sample world</button></div>
 <p class="note">The sample world is invented for practice. Replace it with your own scene.</p>
 </div>
 
@@ -159,7 +159,7 @@ body:not(.ext) .extOnly{display:none!important}body.ext .basicOnly{display:none!
 <div class="controls"><button class="primary" id="checkAx">Check axes</button><span class="pill" id="axstate">Not verified</span></div>
 <h3 style="margin-top:16px">Step B. One corner on the screen</h3>
 <div class="row" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
-<div><label for="eb">Cuboid</label><select id="eb"></select></div>
+<div><label for="eb">Solid (cuboid, pyramid or prism)</label><select id="eb"></select></div>
 <div><label for="ec">Corner Q</label><select id="ec"></select></div>
 </div>
 <div class="pred" id="cpred" style="margin-top:8px"></div>
@@ -215,7 +215,9 @@ const sampleWorld=()=>({P:[2,1],f:[0,1],fov:90,B:[
  {n:'School',t:'box',x:5,y:9,w:4,d:2,h:3},
  {n:'Library',t:'box',x:9,y:3,w:3,d:3,h:2},
  {n:'Clock tower',t:'cyl',x:-2,y:6,w:1,d:1,h:5},
- {n:'Water tank',t:'cyl',x:6,y:-2,w:1.5,d:1.5,h:2.5}]});
+ {n:'Water tank',t:'cyl',x:6,y:-2,w:1.5,d:1.5,h:2.5},
+ {n:'Pyramid',t:'pyr',k:4,x:12,y:8,w:1.5,d:1.5,h:2.5},
+ {n:'Drone',t:'box',x:3,y:5,z:3,w:1,d:1,h:0.5}]});
 let NAME='';try{NAME=localStorage.getItem(KEY+':last')||''}catch(e){}
 const skey=()=>NAME?KEY+':'+NAME:KEY;
 const fresh=()=>({world:sampleWorld(),preds:{},verified:{},log:[],tries:{},hints:{},sel:0,eye:false});
@@ -230,7 +232,9 @@ function truth(b){const W=S.world,[px,py]=W.P,[a,c]=W.f;const vx=b.x-px,vy=b.y-p
  const dot=a*vx+c*vy,cross=a*vy-c*vx,lf=Math.hypot(a,c),lv=Math.hypot(vx,vy);
  const th=lv&&lf?Math.acos(Math.max(-1,Math.min(1,dot/(lf*lv))))*180/Math.PI:0;
  return{vx,vy,dot,cross,lf,lv,th,fb:dot>0?'front':dot<0?'behind':'beside',lr:cross>0?'left':cross<0?'right':'straight',vis:lv>0&&th<=W.fov/2+1e-9?'yes':'no'}}
-function footprint(b){return b.t=='box'?[[-1,-1],[1,-1],[1,1],[-1,1]].map(([i,j])=>[b.x+i*b.w/2,b.y+j*b.d/2]):[...Array(16)].map((_,k)=>[b.x+b.w*Math.cos(k*Math.PI/8),b.y+b.w*Math.sin(k*Math.PI/8)])}
+const POLY=t=>t=='pyr'||t=='prism',APEX=t=>t=='cone'||t=='pyr',NSIDE=b=>Math.max(3,Math.min(8,Math.round(b.k||4)));
+function baseRing(b){if(b.t=='box')return[[-1,-1],[1,-1],[1,1],[-1,1]].map(([i,j])=>[b.x+i*b.w/2,b.y+j*b.d/2]);const n=POLY(b.t)?NSIDE(b):24;return[...Array(n)].map((_,i)=>{const a=2*Math.PI*i/n-Math.PI/2;return[b.x+b.w*Math.cos(a),b.y+b.w*Math.sin(a)]})}
+function footprint(b){return baseRing(b)}
 function inView(x,y){const W=S.world,[px,py]=W.P,[a,c]=W.f,vx=x-px,vy=y-py,l=Math.hypot(vx,vy);return l>0&&(a*vx+c*vy)>=l*Math.hypot(a,c)*Math.cos(W.fov/2*Math.PI/180)}
 function partial(b){const n=footprint(b).filter(([x,y])=>inView(x,y)).length;return n>0&&n<footprint(b).length}
 
@@ -274,8 +278,9 @@ function diagnose(k,val,T,P){const W=S.world,[a,c]=W.f,[px,py]=W.P,b=S.world.B[S
 function stepHint(k,T){const [a,c]=S.world.f,[px,py]=S.world.P,b=S.world.B[S.sel];
  return{vx:`vx = ${b.x} − (${px})`,vy:`vy = ${b.y} − (${py})`,dot:`f · v = (${a})(vx) + (${c})(vy)`,lv:`|v| = √(vx² + vy²)`,th:`cos θ = (f · v) / (${r(T.lf,3)} × |v|)`,fb:'f · v > 0 → front',cross:`f × v (z) = (${a})(vy) − (${c})(vx)`,lr:'f × v > 0 → left',vis:`in view when θ ≤ ${S.world.fov/2}°`}[k]}
 
+const SHN={box:'Cuboid',cyl:'Cylinder',cone:'Cone',pyr:'Pyramid',prism:'Prism'};
 function renderDesign(){const W=S.world;$('px').value=W.P[0];$('py').value=W.P[1];$('fa').value=W.f[0];$('fb').value=W.f[1];$('fc').value=W.c||0;$('fdir').value=W.f.join(',');$('fov').value=W.fov;
- $('btab').tBodies[0].innerHTML=W.B.map((b,i)=>`<tr><td><input data-i="${i}" data-k="n" value="${b.n.replace(/"/g,'&quot;')}" aria-label="Name"></td><td><select data-i="${i}" data-k="t" aria-label="Shape"><option value="box"${b.t=='box'?' selected':''}>Cuboid</option><option value="cyl"${b.t=='cyl'?' selected':''}>Cylinder</option></select></td>${['x','y','w','d','h'].map(k=>`<td><input type="number" step="${k=='x'||k=='y'?1:0.5}" data-i="${i}" data-k="${k}" value="${b[k]}" ${k=='d'&&b.t=='cyl'?'disabled':''} aria-label="${k}"></td>`).join('')}<td><button data-del="${i}" aria-label="Remove ${b.n}">×</button></td></tr>`).join('');
+ $('btab').tBodies[0].innerHTML=W.B.map((b,i)=>`<tr><td><input data-i="${i}" data-k="n" value="${b.n.replace(/"/g,'&quot;')}" aria-label="Name"></td><td><select data-i="${i}" data-k="t" aria-label="Shape">${Object.keys(SHN).map(t=>`<option value="${t}"${b.t==t?' selected':''}>${SHN[t]}</option>`).join('')}</select></td>${['x','y','z','w','d','h','k'].map(k=>{const dis=(k=='d'&&b.t!='box')||(k=='k'&&!POLY(b.t));const val=k=='z'?(b.z||0):k=='k'?NSIDE(b):b[k];const step=(k=='x'||k=='y'||k=='k')?1:0.5;return`<td><input type="number" step="${step}"${k=='k'?' min="3" max="8"':''}${k=='z'?' min="0"':''} data-i="${i}" data-k="${k}" value="${val}" ${dis?'disabled':''} aria-label="${k}"></td>`}).join('')}<td><button data-del="${i}" aria-label="Remove ${b.n}">×</button></td></tr>`).join('');
  $('sel').innerHTML=W.B.map((b,i)=>`<option value="${i}"${i==S.sel?' selected':''}>${b.n}</option>`).join('')}
 function resetVer(i){if(i==null){S.verified={}}else delete S.verified[i]}
 function renderPred(){const b=S.world.B[S.sel];if(!b){$('pred').innerHTML='<p class="note">Add a building first.</p>';return}
@@ -322,7 +327,7 @@ function drawMap(){const s=$('map'),Wd=s.clientWidth||600,Hd=s.clientHeight||420
  const [a,c]=W.f,lf=Math.hypot(a,c)||1,ang=Math.atan2(c,a),hf=W.fov/2*Math.PI/180,R=60;
  h+=`<path d="M${X(W.P[0])} ${Y(W.P[1])} L${X(W.P[0]+R*Math.cos(ang+hf))} ${Y(W.P[1]+R*Math.sin(ang+hf))} L${X(W.P[0]+R*Math.cos(ang-hf))} ${Y(W.P[1]+R*Math.sin(ang-hf))} Z" fill="#d98a10" fill-opacity="0.13" stroke="#d98a10" stroke-dasharray="5 5"/>`;
  W.B.forEach((b,i)=>{const col=COLORS[i%COLORS.length],sel=i==S.sel?2.4:1;
-  h+=b.t=='box'?`<rect x="${X(b.x-b.w/2)}" y="${Y(b.y+b.d/2)}" width="${b.w*k}" height="${b.d*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"/>`:`<circle cx="${X(b.x)}" cy="${Y(b.y)}" r="${b.w*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"/>`;
+  h+=b.t=='box'?`<rect x="${X(b.x-b.w/2)}" y="${Y(b.y+b.d/2)}" width="${b.w*k}" height="${b.d*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`:POLY(b.t)?`<polygon points="${baseRing(b).map(q=>X(q[0])+','+Y(q[1])).join(' ')}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`:`<circle cx="${X(b.x)}" cy="${Y(b.y)}" r="${b.w*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`;
   h+=`<circle cx="${X(b.x)}" cy="${Y(b.y)}" r="3" fill="${col}"/>`});
  const b=W.B[S.sel];let note='Select a building in section 2 to draw its vector v.';
  if(b){const T=truth(b);
@@ -337,7 +342,7 @@ function drawMap(){const s=$('map'),Wd=s.clientWidth||600,Hd=s.clientHeight||420
  h+=`<circle cx="${X(W.P[0])}" cy="${Y(W.P[1])}" r="7" fill="#0b1f4b" stroke="#fff" stroke-width="2"/>`;
  s.setAttribute('viewBox',`0 0 ${Wd} ${Hd}`);
  s.innerHTML=`<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6"/></marker></defs>`+h+
- W.B.map((b,i)=>`<text x="${X(b.x)+6}" y="${Y(b.y)-6}" font-size="13" fill="var(--ink)">${b.n}</text>`).join('')+`<text x="${X(W.P[0])+9}" y="${Y(W.P[1])+18}" font-size="13" fill="var(--ink)">P</text><text x="${X(W.P[0]+a)+6}" y="${Y(W.P[1]+c)-4}" font-size="13" fill="#d98a10">f</text>`;
+ W.B.map((b,i)=>`<text x="${X(b.x)+6}" y="${Y(b.y)-6}" font-size="13" fill="var(--ink)">${b.n}${b.z?` (z = ${b.z})`:''}</text>`).join('')+`<text x="${X(W.P[0])+9}" y="${Y(W.P[1])+18}" font-size="13" fill="var(--ink)">P</text><text x="${X(W.P[0]+a)+6}" y="${Y(W.P[1]+c)-4}" font-size="13" fill="#d98a10">f</text>`;
  $('mapnote').textContent=note}
 
 /* 3D model */
@@ -359,8 +364,8 @@ function draw3d(){if(!three)return;const{R,sc,cam,eye,planes,group,wg,wedge,obs,
  const gh=new THREE.GridHelper(Math.ceil(span*1.6),Math.ceil(span*1.6),0xb9c2d6,0xc9d0df);gh.position.set(Math.round(cx),0.01,-Math.round(cy));group.add(gh);
  const [a,c]=W.f,ang=Math.atan2(c,a),hf=W.fov/2*Math.PI/180,f3=new THREE.Vector3(Math.cos(ang),0,-Math.sin(ang)),up=new THREE.Vector3(0,1,0),P3=new THREE.Vector3(W.P[0],0,-W.P[1]);
  [ang+hf,ang-hf].forEach((t,i)=>{const d=new THREE.Vector3(Math.cos(t),0,-Math.sin(t)),n=new THREE.Vector3().crossVectors(d,up);if(n.dot(f3)<0)n.negate();planes[i].setFromNormalAndCoplanarPoint(n.normalize(),P3)});
- W.B.forEach((b,i)=>{const geo=b.t=='box'?new THREE.BoxGeometry(b.w,b.h,b.d):new THREE.CylinderGeometry(b.w,b.w,b.h,40);
-  const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:new THREE.Color(COLORS[i%COLORS.length]),clippingPlanes:planes,side:THREE.DoubleSide}));m.position.set(b.x,b.h/2,-b.y);group.add(m);
+ W.B.forEach((b,i)=>{const nn=POLY(b.t)?NSIDE(b):40;const geo=b.t=='box'?new THREE.BoxGeometry(b.w,b.h,b.d):APEX(b.t)?new THREE.ConeGeometry(b.w,b.h,nn):new THREE.CylinderGeometry(b.w,b.w,b.h,nn);
+  const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:new THREE.Color(COLORS[i%COLORS.length]),clippingPlanes:planes,side:THREE.DoubleSide}));m.position.set(b.x,(b.z||0)+b.h/2,-b.y);group.add(m);
   const e=new THREE.LineSegments(new THREE.EdgesGeometry(geo,30),new THREE.LineBasicMaterial({color:0x7d869c}));e.position.copy(m.position);group.add(e)});
  const L=span*2,p=wg.attributes.position.array;p.set([P3.x,0.03,P3.z,P3.x+L*Math.cos(ang+hf),0.03,P3.z-L*Math.sin(ang+hf),P3.x+L*Math.cos(ang-hf),0.03,P3.z-L*Math.sin(ang-hf)]);wg.attributes.position.needsUpdate=true;wg.computeBoundingSphere();
  obs.position.copy(P3);obs.rotation.y=ang;obs.visible=wedge.visible=!S.eye;
@@ -374,9 +379,11 @@ const EYEH=1.5;
 const dot3=(p,q)=>p[0]*q[0]+p[1]*q[1]+p[2]*q[2],cross3=(p,q)=>[p[1]*q[2]-p[2]*q[1],p[2]*q[0]-p[0]*q[2],p[0]*q[1]-p[1]*q[0]],sub3=(p,q)=>[p[0]-q[0],p[1]-q[1],p[2]-q[2]],len3=p=>Math.hypot(p[0],p[1],p[2]),unit3=p=>{const l=len3(p)||1;return p.map(x=>x/l)};
 function cam(){const W=S.world,c=S.ext?(+W.c||0):0,f=[W.f[0],W.f[1],c],r=cross3(f,[0,0,1]),u=cross3(r,f);return{E:[W.P[0],W.P[1],EYEH],f,r,u,fh:unit3(f),rh:unit3(r),uh:unit3(u),tilt:c!=0,lf:len3(f),lr:len3(r),lu:len3(u)}}
 function projQ(Q,C){const v=sub3(Q,C.E),d=dot3(v,C.fh),X=dot3(v,C.rh),Y=dot3(v,C.uh);return{v,d,X,Y,sx:X/d,sy:Y/d,raw:{d:dot3(v,C.f),X:dot3(v,C.r),Y:dot3(v,C.u)}}}
-function bFaces(b){const base=b.t=='box'?[[-1,-1],[1,-1],[1,1],[-1,1]].map(([i,j])=>[b.x+i*b.w/2,b.y+j*b.d/2]):[...Array(16)].map((_,k)=>[b.x+b.w*Math.cos(k*Math.PI/8),b.y+b.w*Math.sin(k*Math.PI/8)]);
- const F=[];for(let i=0;i<base.length;i++){const a=base[i],c=base[(i+1)%base.length];F.push([[a[0],a[1],0],[c[0],c[1],0],[c[0],c[1],b.h],[a[0],a[1],b.h]])}F.push(base.map(q=>[q[0],q[1],b.h]));return F}
-function corners(b){const out=[];[b.x-b.w/2,b.x+b.w/2].forEach(x=>[b.y-b.d/2,b.y+b.d/2].forEach(y=>[0,b.h].forEach(z=>out.push([x,y,z]))));return out}
+function bFaces(b){const z0=b.z||0,z1=z0+b.h,base=baseRing(b),n=base.length,F=[];
+ for(let i=0;i<n;i++){const a=base[i],c=base[(i+1)%n];if(APEX(b.t))F.push([[a[0],a[1],z0],[c[0],c[1],z0],[b.x,b.y,z1]]);else F.push([[a[0],a[1],z0],[c[0],c[1],z0],[c[0],c[1],z1],[a[0],a[1],z1]])}
+ if(!APEX(b.t))F.push(base.map(q=>[q[0],q[1],z1]));F.push(base.map(q=>[q[0],q[1],z0]));return F}
+function corners(b){const z0=b.z||0,z1=z0+b.h,cl=v=>Math.round(v*1e6)/1e6;if(b.t=='box'){const out=[];[b.x-b.w/2,b.x+b.w/2].forEach(x=>[b.y-b.d/2,b.y+b.d/2].forEach(y=>[z0,z1].forEach(z=>out.push([x,y,z]))));return out}
+ if(!POLY(b.t))return[];const ring=baseRing(b).map(q=>[cl(q[0]),cl(q[1])]);return b.t=='pyr'?ring.map(q=>[q[0],q[1],z0]).concat([[b.x,b.y,z1]]):ring.map(q=>[q[0],q[1],z0]).concat(ring.map(q=>[q[0],q[1],z1]))}
 function drawEye(){const s=$('eyesvg');if(!S.eye){s.style.display='none';return}s.style.display='block';
  const el=$('fig3d'),Wd=el.clientWidth,Hd=el.clientHeight,C=cam(),T=Math.tan(S.world.fov/2*Math.PI/180),k=(Wd/2)/T,cx=Wd/2,cy=Hd/2;
  const X=x=>cx+k*x,Y=y=>cy-k*y;
@@ -388,7 +395,7 @@ function drawEye(){const s=$('eyesvg');if(!S.eye){s.style.display='none';return}
  const polys=[];S.world.B.forEach((b,i)=>bFaces(b).forEach(fc=>{const pp=fc.map(q=>projQ(q,C));if(pp.some(p=>p.d<0.2))return;polys.push({pp,dep:pp.reduce((a,p)=>a+p.d,0)/pp.length,c:COLORS[i%COLORS.length],top:fc.length!=4||fc.every(q=>q[2]>0)})}));
  polys.sort((a,b)=>b.dep-a.dep);
  h+=polys.map(p=>`<polygon points="${p.pp.map(q=>X(q.sx)+','+Y(q.sy)).join(' ')}" fill="${p.c}" fill-opacity="${p.top?0.65:0.92}" stroke="#1d2433" stroke-width="0.7"/>`).join('');
- Object.keys(S.cOK||{}).forEach(key=>{const[bi,ci]=key.split('|').map(Number),b=S.world.B[bi];if(!b||b.t!='box')return;const q=corners(b)[ci];if(!q)return;const p=projQ(q,C);if(p.d<=0)return;
+ Object.keys(S.cOK||{}).forEach(key=>{const[bi,ci]=key.split('|').map(Number),b=S.world.B[bi];if(!b||!corners(b).length)return;const q=corners(b)[ci];if(!q)return;const p=projQ(q,C);if(p.d<=0)return;
   h+=`<circle cx="${X(p.sx)}" cy="${Y(p.sy)}" r="6" fill="#e0115f" stroke="#fff" stroke-width="2"/><text x="${X(p.sx)+9}" y="${Y(p.sy)-8}" font-size="12" fill="#1d2433">(${r(p.sx)}, ${r(p.sy)})</text>`});
  s.setAttribute('viewBox',`0 0 ${Wd} ${Hd}`);s.innerHTML=h}
 
@@ -416,12 +423,12 @@ function pill(id,ok){$(id).textContent=ok?'Verified':'Not verified';$(id).classN
 function renderEyeUI(){S.ax=S.ax||{};S.cP=S.cP||{};S.cOK=S.cOK||{};const AX=AXF(),CF=CFF();
  $('axpred').innerHTML=predHTML(AX,S.ax,'ax_');AX.forEach(F=>$('ax_'+F.k).addEventListener('input',e=>{S.ax[F.k]=e.target.value;save()}));
  pill('axstate',S.axOK);
- const boxes=S.world.B.map((b,i)=>[b,i]).filter(([b])=>b.t=='box');
- if(!boxes.length){$('eb').innerHTML='';$('ec').innerHTML='';$('cpred').innerHTML='<p class="note">Add a cuboid to your world first.</p>';return}
- if(S.eb==null||!S.world.B[S.eb]||S.world.B[S.eb].t!='box')S.eb=boxes[0][1];
+ const boxes=S.world.B.map((b,i)=>[b,i]).filter(([b])=>corners(b).length);
+ if(!boxes.length){$('eb').innerHTML='';$('ec').innerHTML='';$('cpred').innerHTML='<p class="note">Add a cuboid, pyramid or prism to your world first.</p>';return}
+ if(S.eb==null||!S.world.B[S.eb]||!corners(S.world.B[S.eb]).length)S.eb=boxes[0][1];
  $('eb').innerHTML=boxes.map(([b,i])=>`<option value="${i}"${i==S.eb?' selected':''}>${b.n}</option>`).join('');
  const cs=corners(S.world.B[S.eb]);S.ec=Math.min(S.ec||0,cs.length-1);
- $('ec').innerHTML=cs.map((q,i)=>`<option value="${i}"${i==S.ec?' selected':''}>(${q.join(', ')})</option>`).join('');
+ $('ec').innerHTML=cs.map((q,i)=>`<option value="${i}"${i==S.ec?' selected':''}>(${q.map(v=>r(v)).join(', ')})</option>`).join('');
  const key=S.eb+'|'+S.ec,st=S.cP[key]=S.cP[key]||{};
  $('cpred').innerHTML=predHTML(CF,st,'c_');CF.forEach(F=>$('c_'+F.k).addEventListener('input',e=>{st[F.k]=e.target.value;save()}));
  pill('cstate',S.cOK[key])}
@@ -437,7 +444,7 @@ function checkC(){const b=S.world.B[S.eb];if(!b)return;const key=S.eb+'|'+S.ec,s
   if(raw===undefined||raw===''){el.className='fb bad';el.textContent='Enter a value first.';all=false;return}
   const tv=R.t[F.k],ok=F.opts?raw==tv:(isFinite(tv)&&Math.abs(+raw-tv)<=(F.tol||0.01));const hint=ok?'':cHint(F.k,+raw,R);if(!ok)all=false;
   el.className='fb '+(ok?'ok':'bad');el.textContent=ok?'Correct':hint;
-  S.log.push({n:S.log.length+1,b:`${b.n} corner (${R.q.join(', ')})`,item:F.q,you:raw,res:ok?'correct':'wrong',hint,world:wtxt()})});
+  S.log.push({n:S.log.length+1,b:`${b.n} corner (${R.q.map(v=>r(v)).join(', ')})`,item:F.q,you:raw,res:ok?'correct':'wrong',hint,world:wtxt()})});
  if(all)S.cOK[key]=true;else delete S.cOK[key];pill('cstate',all);save();renderLog();renderMissions();drawEye()}
 
 function all(){renderDesign();renderPred();renderLog();renderMissions();drawMap();draw3d();renderEyeUI();drawEye();save()}
@@ -451,11 +458,11 @@ function snapBasic(){const W=S.world;const[a,b]=W.f;if(!((a==0)!=(b==0)&&Math.ab
 function applyMode(){document.body.classList.toggle('ext',!!S.ext);$('extBtn').textContent=S.ext?'Back to the basic activity':'Turn on the extension';$('modeNote').textContent=S.ext?'Extension: you can change the length of f and its z-component (looking up or down).':'Basic activity: f is one of the four compass directions (length 1, z = 0).'}
 $('extBtn').onclick=()=>{S.ext=!S.ext;if(!S.ext)snapBasic();resetVer();S.axOK=false;S.cOK={};applyMode();all()};
 $('btab').addEventListener('change',e=>{const i=+e.target.dataset.i,k=e.target.dataset.k;if(isNaN(i))return;const b=S.world.B[i];
- if(k=='n'||k=='t')b[k]=e.target.value;else{const v=+e.target.value;if(!isFinite(v))return;b[k]=(k=='x'||k=='y')?v:Math.max(0.5,v)}
- if(b.t=='cyl')b.d=b.w;delete S.verified[i];Object.keys(S.cOK||{}).forEach(k=>{if(+k.split('|')[0]==i)delete S.cOK[k]});renderDesign();save();renderPred();renderMissions();drawMap();draw3d();renderEyeUI();drawEye()});
+ if(k=='n'||k=='t')b[k]=e.target.value;else{const v=+e.target.value;if(!isFinite(v))return;b[k]=(k=='x'||k=='y')?v:k=='z'?Math.max(0,v):k=='k'?Math.max(3,Math.min(8,Math.round(v))):Math.max(0.5,v)}
+ if(b.t!='box')b.d=b.w;if(POLY(b.t)&&!b.k)b.k=4;delete S.verified[i];Object.keys(S.cOK||{}).forEach(k=>{if(+k.split('|')[0]==i)delete S.cOK[k]});renderDesign();save();renderPred();renderMissions();drawMap();draw3d();renderEyeUI();drawEye()});
 $('btab').addEventListener('click',e=>{const d=e.target.dataset.del;if(d==null)return;S.world.B.splice(+d,1);S.preds={};S.verified={};S.tries={};S.sel=0;all()});
-const add=t=>{const n=S.world.B.length+1;S.world.B.push({n:'Building '+n,t,x:S.world.P[0]+3,y:S.world.P[1]+3,w:t=='box'?2:1,d:t=='box'?2:1,h:2});S.sel=S.world.B.length-1;all()};
-$('addBox').onclick=()=>add('box');$('addCyl').onclick=()=>add('cyl');
+const add=t=>{const n=S.world.B.length+1;S.world.B.push({n:'Building '+n,t,x:S.world.P[0]+3,y:S.world.P[1]+3,z:0,w:t=='box'?2:1,d:t=='box'?2:1,h:2,k:4});S.sel=S.world.B.length-1;all()};
+$('addBox').onclick=()=>add('box');$('addCyl').onclick=()=>add('cyl');$('addCone').onclick=()=>add('cone');$('addPyr').onclick=()=>add('pyr');$('addPrism').onclick=()=>add('prism');
 $('sample').onclick=()=>{S.world=sampleWorld();S.preds={};S.verified={};S.tries={};S.hints={};S.sel=0;all()};
 $('sel').onchange=e=>{S.sel=+e.target.value;save();renderPred();drawMap()};
 $('check').onclick=check;$('checkAx').onclick=checkAx;$('checkC').onclick=checkC;
