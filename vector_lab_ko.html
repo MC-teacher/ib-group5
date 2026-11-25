@@ -96,7 +96,7 @@ body:not(.ext) .extOnly{display:none!important}body.ext .basicOnly{display:none!
 </div>
 <div>
 <div class="fig" id="fig2d"><svg id="map" role="img" aria-label="미니 세상의 평면도"></svg><span class="tag">평면도</span></div>
-<p class="note" id="mapnote"></p>
+<p class="note">평면도에서 건물이나 관찰자 P를 끌어서 옮길 수 있습니다. 놓으면 가장 가까운 정수 좌표에 맞춰집니다.</p><p class="note" id="mapnote"></p>
 </div>
 </div></section>
 
@@ -113,7 +113,7 @@ body:not(.ext) .extOnly{display:none!important}body.ext .basicOnly{display:none!
 <div class="extOnly"><label for="fc">f의 z성분 c (확장: + 고개 들기, − 숙이기)</label><input id="fc" type="number" step="0.5"></div>
 <div><label for="fov">시야각 (°)</label><input id="fov" type="number" step="10" min="10" max="170"></div>
 </div>
-<div class="scroll" style="margin-top:12px"><table id="btab"><thead><tr><th>이름</th><th>모양</th><th>중심 x</th><th>중심 y</th><th>바닥 높이 z</th><th>가로 / 반지름</th><th>세로</th><th>높이</th><th>밑면 꼭짓점 수</th><th></th></tr></thead><tbody></tbody></table></div>
+<div class="scroll" style="margin-top:12px"><table id="btab"><thead><tr><th>이름</th><th>색</th><th>모양</th><th>중심 x</th><th>중심 y</th><th>바닥 높이 z</th><th>가로 / 반지름</th><th>세로</th><th>높이</th><th>밑면 꼭짓점 수</th><th></th></tr></thead><tbody></tbody></table></div>
 <div class="controls"><button id="addBox">직육면체 추가</button><button id="addCyl">원기둥 추가</button><button id="addCone">원뿔 추가</button><button id="addPyr">각뿔 추가</button><button id="addPrism">각기둥 추가</button><button id="sample">예시 세상 불러오기</button></div>
 <p class="note">예시 세상은 연습용으로 만든 것입니다. 나만의 장면으로 바꿔 보세요.</p>
 </div>
@@ -280,7 +280,7 @@ function stepHint(k,T){const [a,c]=S.world.f,[px,py]=S.world.P,b=S.world.B[S.sel
 
 const SHN={box:'직육면체',cyl:'원기둥',cone:'원뿔',pyr:'각뿔',prism:'각기둥'};
 function renderDesign(){const W=S.world;$('px').value=W.P[0];$('py').value=W.P[1];$('fa').value=W.f[0];$('fb').value=W.f[1];$('fc').value=W.c||0;$('fdir').value=W.f.join(',');$('fov').value=W.fov;
- $('btab').tBodies[0].innerHTML=W.B.map((b,i)=>`<tr><td><input data-i="${i}" data-k="n" value="${b.n.replace(/"/g,'&quot;')}" aria-label="이름"></td><td><select data-i="${i}" data-k="t" aria-label="모양">${Object.keys(SHN).map(t=>`<option value="${t}"${b.t==t?' selected':''}>${SHN[t]}</option>`).join('')}</select></td>${['x','y','z','w','d','h','k'].map(k=>{const dis=(k=='d'&&b.t!='box')||(k=='k'&&!POLY(b.t));const val=k=='z'?(b.z||0):k=='k'?NSIDE(b):b[k];const step=(k=='x'||k=='y'||k=='k')?1:0.5;return`<td><input type="number" step="${step}"${k=='k'?' min="3" max="8"':''}${k=='z'?' min="0"':''} data-i="${i}" data-k="${k}" value="${val}" ${dis?'disabled':''} aria-label="${k}"></td>`}).join('')}<td><button data-del="${i}" aria-label="${b.n} 삭제">×</button></td></tr>`).join('');
+ $('btab').tBodies[0].innerHTML=W.B.map((b,i)=>`<tr><td><input data-i="${i}" data-k="n" value="${b.n.replace(/"/g,'&quot;')}" aria-label="이름"></td><td><input type="color" data-i="${i}" data-k="col" value="${b.col||COLORS[i%COLORS.length]}" aria-label="색" style="width:48px;min-height:40px;padding:2px"></td><td><select data-i="${i}" data-k="t" aria-label="모양">${Object.keys(SHN).map(t=>`<option value="${t}"${b.t==t?' selected':''}>${SHN[t]}</option>`).join('')}</select></td>${['x','y','z','w','d','h','k'].map(k=>{const dis=(k=='d'&&b.t!='box')||(k=='k'&&!POLY(b.t));const val=k=='z'?(b.z||0):k=='k'?NSIDE(b):b[k];const step=(k=='x'||k=='y'||k=='k')?1:0.5;return`<td><input type="number" step="${step}"${k=='k'?' min="3" max="8"':''}${k=='z'?' min="0"':''} data-i="${i}" data-k="${k}" value="${val}" ${dis?'disabled':''} aria-label="${k}"></td>`}).join('')}<td><button data-del="${i}" aria-label="${b.n} 삭제">×</button></td></tr>`).join('');
  $('sel').innerHTML=W.B.map((b,i)=>`<option value="${i}"${i==S.sel?' selected':''}>${b.n}</option>`).join('')}
 function resetVer(i){if(i==null){S.verified={}}else delete S.verified[i]}
 function renderPred(){const b=S.world.B[S.sel];if(!b){$('pred').innerHTML='<p class="note">먼저 건물을 추가하세요.</p>';return}
@@ -317,16 +317,18 @@ function renderMissions(){$('missions').innerHTML=MISSIONS.filter(m=>S.ext||!m.e
  return`<div class="mission${done?' done':''}"><span class="st">${done?'✓':''}</span><div><h3>${m.t}${m.ext?' (확장)':''}</h3><div class="note">${m.d}${done&&hit>=0?` ${S.world.B[hit].n}(으)로 완료했습니다.`:done?' 완료했습니다.':''}</div></div></div>`}).join('')}
 
 /* plan view */
+let DRAG=null,MAPV=null,rafD=0;
 function drawMap(){const s=$('map'),Wd=s.clientWidth||600,Hd=s.clientHeight||420,W=S.world;
- const xs=[W.P[0]],ys=[W.P[1]];W.B.forEach(b=>{xs.push(b.x-b.w,b.x+b.w);ys.push(b.y-(b.t=='box'?b.d:b.w),b.y+(b.t=='box'?b.d:b.w))});
- let x0=Math.floor(Math.min(...xs))-2,x1=Math.ceil(Math.max(...xs))+2,y0=Math.floor(Math.min(...ys))-2,y1=Math.ceil(Math.max(...ys))+2;
- const k=Math.min((Wd-30)/(x1-x0),(Hd-40)/(y1-y0)),ox=(Wd-k*(x1-x0))/2,oy=(Hd-k*(y1-y0))/2+12;
+ let x0,x1,y0,y1;if(DRAG&&MAPV){({x0,x1,y0,y1}=MAPV)}else{const xs=[W.P[0]],ys=[W.P[1]];W.B.forEach(b=>{xs.push(b.x-b.w,b.x+b.w);ys.push(b.y-(b.t=='box'?b.d:b.w),b.y+(b.t=='box'?b.d:b.w))});x0=Math.floor(Math.min(...xs))-2;x1=Math.ceil(Math.max(...xs))+2;y0=Math.floor(Math.min(...ys))-2;y1=Math.ceil(Math.max(...ys))+2}
+ const k=Math.min((Wd-56)/(x1-x0),(Hd-64)/(y1-y0)),ox=(Wd-k*(x1-x0))/2+12,oy=(Hd-k*(y1-y0))/2+4;MAPV={x0,x1,y0,y1,k,ox,oy};
  const X=x=>ox+(x-x0)*k,Y=y=>oy+(y1-y)*k;let h='';
  for(let x=x0;x<=x1;x++)h+=`<line x1="${X(x)}" y1="${Y(y0)}" x2="${X(x)}" y2="${Y(y1)}" stroke="var(--line)" stroke-width="${x==0?1.6:0.6}"/>`;
  for(let y=y0;y<=y1;y++)h+=`<line x1="${X(x0)}" y1="${Y(y)}" x2="${X(x1)}" y2="${Y(y)}" stroke="var(--line)" stroke-width="${y==0?1.6:0.6}"/>`;
+ const st=k<14?5:k<26?2:1;for(let x=Math.ceil(x0/st)*st;x<=x1;x+=st)h+=`<text x="${X(x)}" y="${Y(y0)+15}" font-size="11" text-anchor="middle" fill="var(--muted)">${x}</text>`;for(let y=Math.ceil(y0/st)*st;y<=y1;y+=st)h+=`<text x="${X(x0)-5}" y="${Y(y)+4}" font-size="11" text-anchor="end" fill="var(--muted)">${y}</text>`;
+ h+=`<text x="${X(x1)+14}" y="${Y(y0)+15}" font-size="12" fill="var(--muted)">x</text><text x="${X(x0)-5}" y="${Y(y1)-6}" font-size="12" text-anchor="end" fill="var(--muted)">y</text>`;
  const [a,c]=W.f,lf=Math.hypot(a,c)||1,ang=Math.atan2(c,a),hf=W.fov/2*Math.PI/180,R=60;
  h+=`<path d="M${X(W.P[0])} ${Y(W.P[1])} L${X(W.P[0]+R*Math.cos(ang+hf))} ${Y(W.P[1]+R*Math.sin(ang+hf))} L${X(W.P[0]+R*Math.cos(ang-hf))} ${Y(W.P[1]+R*Math.sin(ang-hf))} Z" fill="#d98a10" fill-opacity="0.13" stroke="#d98a10" stroke-dasharray="5 5"/>`;
- W.B.forEach((b,i)=>{const col=COLORS[i%COLORS.length],sel=i==S.sel?2.4:1;
+ W.B.forEach((b,i)=>{const col=b.col||COLORS[i%COLORS.length],sel=i==S.sel?2.4:1;
   h+=b.t=='box'?`<rect x="${X(b.x-b.w/2)}" y="${Y(b.y+b.d/2)}" width="${b.w*k}" height="${b.d*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`:POLY(b.t)?`<polygon points="${baseRing(b).map(q=>X(q[0])+','+Y(q[1])).join(' ')}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`:`<circle cx="${X(b.x)}" cy="${Y(b.y)}" r="${b.w*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`;
   h+=`<circle cx="${X(b.x)}" cy="${Y(b.y)}" r="3" fill="${col}"/>`});
  const b=W.B[S.sel];let note='2번 섹션에서 건물을 고르면 벡터 v가 그려집니다.';
@@ -342,7 +344,7 @@ function drawMap(){const s=$('map'),Wd=s.clientWidth||600,Hd=s.clientHeight||420
  h+=`<circle cx="${X(W.P[0])}" cy="${Y(W.P[1])}" r="7" fill="#0b1f4b" stroke="#fff" stroke-width="2"/>`;
  s.setAttribute('viewBox',`0 0 ${Wd} ${Hd}`);
  s.innerHTML=`<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6"/></marker></defs>`+h+
- W.B.map((b,i)=>`<text x="${X(b.x)+6}" y="${Y(b.y)-6}" font-size="13" fill="var(--ink)">${b.n}${b.z?` (z = ${b.z})`:''}</text>`).join('')+`<text x="${X(W.P[0])+9}" y="${Y(W.P[1])+18}" font-size="13" fill="var(--ink)">P</text><text x="${X(W.P[0]+a)+6}" y="${Y(W.P[1]+c)-4}" font-size="13" fill="#d98a10">f</text>`;
+ W.B.map((b,i)=>`<text x="${X(b.x)+6}" y="${Y(b.y)-6}" font-size="13" fill="var(--ink)">${b.n} (${b.x}, ${b.y}${b.z?`, z ${b.z}`:''})</text>`).join('')+`<text x="${X(W.P[0])+9}" y="${Y(W.P[1])+18}" font-size="13" fill="var(--ink)">P (${W.P[0]}, ${W.P[1]})</text><text x="${X(W.P[0]+a)+6}" y="${Y(W.P[1]+c)-4}" font-size="13" fill="#d98a10">f</text>`;
  $('mapnote').textContent=note}
 
 /* 3D model */
@@ -365,7 +367,7 @@ function draw3d(){if(!three)return;const{R,sc,cam,eye,planes,group,wg,wedge,obs,
  const [a,c]=W.f,ang=Math.atan2(c,a),hf=W.fov/2*Math.PI/180,f3=new THREE.Vector3(Math.cos(ang),0,-Math.sin(ang)),up=new THREE.Vector3(0,1,0),P3=new THREE.Vector3(W.P[0],0,-W.P[1]);
  [ang+hf,ang-hf].forEach((t,i)=>{const d=new THREE.Vector3(Math.cos(t),0,-Math.sin(t)),n=new THREE.Vector3().crossVectors(d,up);if(n.dot(f3)<0)n.negate();planes[i].setFromNormalAndCoplanarPoint(n.normalize(),P3)});
  W.B.forEach((b,i)=>{const nn=POLY(b.t)?NSIDE(b):40;const geo=b.t=='box'?new THREE.BoxGeometry(b.w,b.h,b.d):APEX(b.t)?new THREE.ConeGeometry(b.w,b.h,nn):new THREE.CylinderGeometry(b.w,b.w,b.h,nn);
-  const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:new THREE.Color(COLORS[i%COLORS.length]),clippingPlanes:planes,side:THREE.DoubleSide}));m.position.set(b.x,(b.z||0)+b.h/2,-b.y);group.add(m);
+  const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:new THREE.Color(b.col||COLORS[i%COLORS.length]),clippingPlanes:planes,side:THREE.DoubleSide}));m.position.set(b.x,(b.z||0)+b.h/2,-b.y);group.add(m);
   const e=new THREE.LineSegments(new THREE.EdgesGeometry(geo,30),new THREE.LineBasicMaterial({color:0x7d869c}));e.position.copy(m.position);group.add(e)});
  const L=span*2,p=wg.attributes.position.array;p.set([P3.x,0.03,P3.z,P3.x+L*Math.cos(ang+hf),0.03,P3.z-L*Math.sin(ang+hf),P3.x+L*Math.cos(ang-hf),0.03,P3.z-L*Math.sin(ang-hf)]);wg.attributes.position.needsUpdate=true;wg.computeBoundingSphere();
  obs.position.copy(P3);obs.rotation.y=ang;obs.visible=wedge.visible=!S.eye;
@@ -392,7 +394,7 @@ function drawEye(){const s=$('eyesvg');if(!S.eye){s.style.display='none';return}
  [-1,-0.5,0.5,1].forEach(g=>{if(Math.abs(g)<=T)h+=`<line x1="${X(g)}" y1="0" x2="${X(g)}" y2="${Hd}" stroke="#8a93a8" stroke-width="0.5" stroke-dasharray="3 4"/><text x="${X(g)+3}" y="${Hd-6}" font-size="12" fill="#3a4256">${g}</text>`;
   if(Math.abs(k*g)<cy)h+=`<line x1="0" y1="${Y(g)}" x2="${Wd}" y2="${Y(g)}" stroke="#8a93a8" stroke-width="0.5" stroke-dasharray="3 4"/><text x="4" y="${Y(g)-3}" font-size="12" fill="#3a4256">${g}</text>`});
  h+=`<line x1="${cx}" y1="0" x2="${cx}" y2="${Hd}" stroke="#5a6478" stroke-width="0.8"/><line x1="0" y1="${cy}" x2="${Wd}" y2="${cy}" stroke="#5a6478" stroke-width="0.8"/>`;
- const polys=[];S.world.B.forEach((b,i)=>bFaces(b).forEach(fc=>{const pp=fc.map(q=>projQ(q,C));if(pp.some(p=>p.d<0.2))return;polys.push({pp,dep:pp.reduce((a,p)=>a+p.d,0)/pp.length,c:COLORS[i%COLORS.length],top:fc.length!=4||fc.every(q=>q[2]>0)})}));
+ const polys=[];S.world.B.forEach((b,i)=>bFaces(b).forEach(fc=>{const pp=fc.map(q=>projQ(q,C));if(pp.some(p=>p.d<0.2))return;polys.push({pp,dep:pp.reduce((a,p)=>a+p.d,0)/pp.length,c:b.col||COLORS[i%COLORS.length],top:fc.length!=4||fc.every(q=>q[2]>0)})}));
  polys.sort((a,b)=>b.dep-a.dep);
  h+=polys.map(p=>`<polygon points="${p.pp.map(q=>X(q.sx)+','+Y(q.sy)).join(' ')}" fill="${p.c}" fill-opacity="${p.top?0.65:0.92}" stroke="#1d2433" stroke-width="0.7"/>`).join('');
  Object.keys(S.cOK||{}).forEach(key=>{const[bi,ci]=key.split('|').map(Number),b=S.world.B[bi];if(!b||!corners(b).length)return;const q=corners(b)[ci];if(!q)return;const p=projQ(q,C);if(p.d<=0)return;
@@ -458,6 +460,7 @@ function snapBasic(){const W=S.world;const[a,b]=W.f;if(!((a==0)!=(b==0)&&Math.ab
 function applyMode(){document.body.classList.toggle('ext',!!S.ext);$('extBtn').textContent=S.ext?'기본 활동으로 돌아가기':'확장 활동 켜기';$('modeNote').textContent=S.ext?'확장 활동: f의 길이와 z성분(고개 들기·숙이기)을 바꿀 수 있습니다.':'기본 활동: f는 동서남북 네 방향(길이 1, z = 0)만 씁니다.'}
 $('extBtn').onclick=()=>{S.ext=!S.ext;if(!S.ext)snapBasic();resetVer();S.axOK=false;S.cOK={};applyMode();all()};
 $('btab').addEventListener('change',e=>{const i=+e.target.dataset.i,k=e.target.dataset.k;if(isNaN(i))return;const b=S.world.B[i];
+ if(k=='col'){b.col=e.target.value;save();drawMap();draw3d();drawEye();return}
  if(k=='n'||k=='t')b[k]=e.target.value;else{const v=+e.target.value;if(!isFinite(v))return;b[k]=(k=='x'||k=='y')?v:k=='z'?Math.max(0,v):k=='k'?Math.max(3,Math.min(8,Math.round(v))):Math.max(0.5,v)}
  if(b.t!='box')b.d=b.w;if(POLY(b.t)&&!b.k)b.k=4;delete S.verified[i];Object.keys(S.cOK||{}).forEach(k=>{if(+k.split('|')[0]==i)delete S.cOK[k]});renderDesign();save();renderPred();renderMissions();drawMap();draw3d();renderEyeUI();drawEye()});
 $('btab').addEventListener('click',e=>{const d=e.target.dataset.del;if(d==null)return;S.world.B.splice(+d,1);S.preds={};S.verified={};S.tries={};S.sel=0;all()});
@@ -475,6 +478,21 @@ $('fig3d').addEventListener('click',()=>$('fig3d').focus());
 $('copy').onclick=async()=>{const txt=['#\t세상\t건물\t항목\t내가 쓴 답\t결과\t힌트'].concat(S.log.map(l=>[l.n,l.world,l.b,l.item,LBL[l.you]||l.you,l.res=='correct'?'정답':'오답',l.hint].join('\t'))).join('\n');
  try{await navigator.clipboard.writeText(txt);$('copymsg').textContent='복사했습니다. 보고서 부록에 붙여 넣으세요.'}catch(e){$('copymsg').textContent='복사가 막혔습니다. 표를 직접 선택해서 복사하세요.'}};
 $('clear').onclick=()=>{if($('clear').dataset.sure){S.log=[];S.nchecks=0;S.tries={};S.hints={};$('clear').dataset.sure='';$('clear').textContent='로그 지우기';renderLog();renderPred();save()}else{$('clear').dataset.sure='1';$('clear').textContent='한 번 더 누르면 지워집니다'}};
+/* drag on the plan */
+const mapEl=$('map');mapEl.style.touchAction='none';
+function mapPt(ev){const bb=mapEl.getBoundingClientRect(),V=MAPV;return{x:V.x0+(ev.clientX-bb.left-V.ox)/V.k,y:V.y1-(ev.clientY-bb.top-V.oy)/V.k}}
+function inPoly(p,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[xi,yi]=poly[i],[xj,yj]=poly[j];if((yi>p.y)!=(yj>p.y)&&p.x<(xj-xi)*(p.y-yi)/(yj-yi)+xi)c=!c}return c}
+function hitAt(p){const W=S.world;if(Math.hypot(p.x-W.P[0],p.y-W.P[1])<0.6)return{t:'P'};for(let i=W.B.length-1;i>=0;i--){const b=W.B[i];if(inPoly(p,footprint(b))||Math.hypot(p.x-b.x,p.y-b.y)<0.6)return{t:'B',i}}return null}
+mapEl.addEventListener('pointerdown',e=>{if(!MAPV)return;const p=mapPt(e),h=hitAt(p);if(!h)return;e.preventDefault();const W=S.world,o=h.t=='P'?W.P:[W.B[h.i].x,W.B[h.i].y];
+ DRAG=Object.assign(h,{dx:o[0]-p.x,dy:o[1]-p.y,moved:false});if(h.t=='B'){S.sel=h.i;$('sel').value=String(h.i)}try{mapEl.setPointerCapture(e.pointerId)}catch(x){}mapEl.style.cursor='grabbing'});
+mapEl.addEventListener('pointermove',e=>{if(!MAPV)return;const p=mapPt(e);if(!DRAG){mapEl.style.cursor=hitAt(p)?'grab':'default';return}
+ const nx=Math.round(p.x+DRAG.dx),ny=Math.round(p.y+DRAG.dy),W=S.world;
+ if(DRAG.t=='P'){if(W.P[0]==nx&&W.P[1]==ny)return;W.P=[nx,ny]}else{const b=W.B[DRAG.i];if(b.x==nx&&b.y==ny)return;b.x=nx;b.y=ny}
+ DRAG.moved=true;if(!rafD)rafD=requestAnimationFrame(()=>{rafD=0;drawMap();draw3d();drawEye()})});
+function endDrag(){if(!DRAG)return;const d=DRAG;DRAG=null;mapEl.style.cursor='default';
+ if(d.moved){if(d.t=='P'){resetVer();S.axOK=false;S.cOK={}}else{delete S.verified[d.i];Object.keys(S.cOK||{}).forEach(k=>{if(+k.split('|')[0]==d.i)delete S.cOK[k]})}renderDesign();renderMissions();renderEyeUI()}
+ save();renderPred();drawMap();draw3d();drawEye()}
+mapEl.addEventListener('pointerup',endDrag);mapEl.addEventListener('pointercancel',endDrag);
 new ResizeObserver(()=>drawMap()).observe($('fig2d'));new ResizeObserver(()=>drawEye()).observe($('fig3d'));
 /* save code and name slots */
 async function encodeState(){const json=JSON.stringify(Object.assign({},S,{eye:false,name:NAME}));
