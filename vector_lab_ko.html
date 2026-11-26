@@ -113,10 +113,10 @@ body:not(.ext) .extOnly{display:none!important}body.ext .basicOnly{display:none!
 <div class="extOnly"><label for="fc">f의 z성분 c (확장: + 고개 들기, − 숙이기)</label><input id="fc" type="number" step="0.5"></div>
 <div><label for="fov">시야각 (°)</label><input id="fov" type="number" step="10" min="10" max="170"></div>
 </div>
-<div class="scroll" style="margin-top:12px"><table id="btab"><thead><tr><th>이름</th><th>색</th><th>모양</th><th>중심 x</th><th>중심 y</th><th>바닥 높이 z</th><th>가로 / 반지름</th><th>세로</th><th>높이</th><th>밑면 꼭짓점 수</th><th>회전 (°)</th><th>기울기 (°)</th><th></th></tr></thead><tbody></tbody></table></div>
-<div class="controls"><button id="addBox">직육면체 추가</button><button id="addCyl">원기둥 추가</button><button id="addCone">원뿔 추가</button><button id="addPyr">각뿔 추가</button><button id="addPrism">각기둥 추가</button><button id="addHemi">반구 추가</button><button id="sample">예시 세상 불러오기</button></div>
+<div class="scroll" style="margin-top:12px"><table id="btab"><thead><tr><th>이름</th><th>색</th><th>모양</th><th>중심 x</th><th>중심 y</th><th>바닥 높이 z</th><th>가로 / 반지름</th><th>세로 / 윗면 반지름</th><th>높이</th><th>밑면 꼭짓점 수</th><th>회전 (°)</th><th>기울기 (°)</th><th></th></tr></thead><tbody></tbody></table></div>
+<div class="controls"><button id="addBox">직육면체 추가</button><button id="addCyl">원기둥 추가</button><button id="addCone">원뿔 추가</button><button id="addPyr">각뿔 추가</button><button id="addPrism">각기둥 추가</button><button id="addHemi">반구 추가</button><button id="addFrus">원뿔대 추가</button><button id="sample">예시 세상 불러오기</button></div>
 <p class="note">예시 세상은 연습용으로 만든 것입니다. 나만의 장면으로 바꿔 보세요.</p>
-<p class="note"><b>반구</b>는 반지름만 정하면 높이도 반지름과 같아집니다. <b>회전</b>은 도형을 바닥에서 시계 반대 방향으로 돌립니다(위에서 보았을 때). <b>기울기</b>는 도형을 옆으로 눕힙니다(0°–75°). 눕는 방향은 회전으로 정하고, 가장 낮은 점이 바닥 높이 z에 놓입니다. 평면도에서 기울어진 도형은 점선으로, 위에서 내려다본 그림자 모양으로 보입니다. 판정에 쓰는 중심 (x, y)는 밑면의 중심입니다.</p>
+<p class="note"><b>원뿔대</b>는 가로 칸에 아랫면 반지름, 세로 칸에 윗면 반지름을 넣습니다. <b>반구</b>는 반지름만 정하면 높이도 반지름과 같아집니다. <b>회전</b>은 도형을 바닥에서 시계 반대 방향으로 돌립니다(위에서 보았을 때). <b>기울기</b>는 도형을 옆으로 눕힙니다(0°–75°). 눕는 방향은 회전으로 정하고, 가장 낮은 점이 바닥 높이 z에 놓입니다. 평면도에서 기울어진 도형은 점선으로, 위에서 내려다본 그림자 모양으로 보입니다. 판정에 쓰는 중심 (x, y)는 밑면의 중심입니다.</p>
 </div>
 
 <div class="card">
@@ -237,18 +237,19 @@ const POLY=t=>t=='pyr'||t=='prism',APEX=t=>t=='cone'||t=='pyr',NSIDE=b=>Math.max
 const RAD=Math.PI/180;
 function localRing(b){if(b.t=='box')return[[-1,-1],[1,-1],[1,1],[-1,1]].map(([i,j])=>[i*b.w/2,j*b.d/2]);const n=POLY(b.t)?NSIDE(b):24;return[...Array(n)].map((_,i)=>{const a=2*Math.PI*i/n-Math.PI/2;return[b.w*Math.cos(a),b.w*Math.sin(a)]})}
 // rotate (about the vertical axis, b.r degrees) and tilt (lean, b.tl degrees) about the centre of the base; the lowest point rests at height z
-const HEMI=t=>t=='hemi',ROUND=t=>t=='cyl'||t=='cone'||t=='hemi',DOME=[15,30,45,60,75];
+const HEMI=t=>t=='hemi',FRUS=t=>t=='frus',ROUND=t=>t=='cyl'||t=='cone'||t=='hemi'||t=='frus',DOME=[15,30,45,60,75];
 function domeRing(b,deg){const r=b.w*Math.cos(deg*RAD),z=b.w*Math.sin(deg*RAD);return localRing(b).map(q=>[q[0]/b.w*r,q[1]/b.w*r,z])}
+function topRing(b){const r=localRing(b);return FRUS(b.t)?r.map(q=>[q[0]*b.d/b.w,q[1]*b.d/b.w]):r}
 function xf(b){const r=(+b.r||0)*RAD,t=(+b.tl||0)*RAD,cr=Math.cos(r),sr=Math.sin(r),ct=Math.cos(t),st=Math.sin(t);
  const T=([x,y,z])=>{const y1=y*ct-z*st,z1=y*st+z*ct;return[x*cr-y1*sr,x*sr+y1*cr,z1]};
- const ring=localRing(b),pts=ring.map(q=>T([q[0],q[1],0])).concat(HEMI(b.t)?DOME.flatMap(d=>domeRing(b,d)).concat([[0,0,b.w]]).map(T):APEX(b.t)?[T([0,0,b.h])]:ring.map(q=>T([q[0],q[1],b.h])));
+ const ring=localRing(b),pts=ring.map(q=>T([q[0],q[1],0])).concat(HEMI(b.t)?DOME.flatMap(d=>domeRing(b,d)).concat([[0,0,b.w]]).map(T):APEX(b.t)?[T([0,0,b.h])]:topRing(b).map(q=>T([q[0],q[1],b.h])));
  const lift=(b.z||0)-Math.min(...pts.map(p=>p[2]));const F=p=>{const q=T(p);return[b.x+q[0],b.y+q[1],q[2]+lift]};F.lift=lift;return F}
-function ring3(b,top){const F=xf(b);return localRing(b).map(q=>F([q[0],q[1],top?b.h:0]))}
+function ring3(b,top){const F=xf(b);return (top?topRing(b):localRing(b)).map(q=>F([q[0],q[1],top?b.h:0]))}
 function apex3(b){return xf(b)([0,0,b.h])}
 function baseRing(b){return ring3(b,0).map(p=>[p[0],p[1]])}
 function hull(P){P=P.map(p=>[Math.round(p[0]*1e9)/1e9,Math.round(p[1]*1e9)/1e9]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);if(P.length<3)return P;const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],up=[];
  for(const p of P){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(const p of P.slice().reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}return lo.slice(0,-1).concat(up.slice(0,-1))}
-function footprint(b){if(!(+b.r)&&!(+b.tl))return baseRing(b);const X=xf(b),pts=HEMI(b.t)?ring3(b,0).concat(DOME.flatMap(d=>domeRing(b,d).map(X)),[X([0,0,b.w])]):ring3(b,0).concat(APEX(b.t)?[apex3(b)]:ring3(b,1));return hull(pts)}
+function footprint(b){if(!(+b.r)&&!(+b.tl)&&!(FRUS(b.t)&&b.d>b.w))return baseRing(b);const X=xf(b),pts=HEMI(b.t)?ring3(b,0).concat(DOME.flatMap(d=>domeRing(b,d).map(X)),[X([0,0,b.w])]):ring3(b,0).concat(APEX(b.t)?[apex3(b)]:ring3(b,1));return hull(pts)}
 function turned(b){return !!(+b.r)||!!(+b.tl)}
 function inView(x,y){const W=S.world,[px,py]=W.P,[a,c]=W.f,vx=x-px,vy=y-py,l=Math.hypot(vx,vy);return l>0&&(a*vx+c*vy)>=l*Math.hypot(a,c)*Math.cos(W.fov/2*Math.PI/180)}
 function partial(b){const n=footprint(b).filter(([x,y])=>inView(x,y)).length;return n>0&&n<footprint(b).length}
@@ -293,9 +294,9 @@ function diagnose(k,val,T,P){const W=S.world,[a,c]=W.f,[px,py]=W.P,b=S.world.B[S
 function stepHint(k,T){const [a,c]=S.world.f,[px,py]=S.world.P,b=S.world.B[S.sel];
  return{vx:`vx = ${b.x} − (${px})`,vy:`vy = ${b.y} − (${py})`,dot:`f · v = (${a})(vx) + (${c})(vy)`,lv:`|v| = √(vx² + vy²)`,th:`cos θ = (f · v) / (${r(T.lf,3)} × |v|)`,fb:'f · v > 0 → 앞',cross:`f × v (z) = (${a})(vy) − (${c})(vx)`,lr:'f × v > 0 → 왼쪽',vis:`θ ≤ ${S.world.fov/2}° 이면 시야 안`}[k]}
 
-const SHN={box:'직육면체',cyl:'원기둥',cone:'원뿔',pyr:'각뿔',prism:'각기둥',hemi:'반구'};
+const SHN={box:'직육면체',cyl:'원기둥',cone:'원뿔',pyr:'각뿔',prism:'각기둥',hemi:'반구',frus:'원뿔대'};
 function renderDesign(){const W=S.world;$('px').value=W.P[0];$('py').value=W.P[1];$('fa').value=W.f[0];$('fb').value=W.f[1];$('fc').value=W.c||0;$('fdir').value=W.f.join(',');$('fov').value=W.fov;
- $('btab').tBodies[0].innerHTML=W.B.map((b,i)=>`<tr><td><input data-i="${i}" data-k="n" value="${b.n.replace(/"/g,'&quot;')}" aria-label="이름"></td><td><input type="color" data-i="${i}" data-k="col" value="${b.col||COLORS[i%COLORS.length]}" aria-label="색" style="width:48px;min-height:40px;padding:2px"></td><td><select data-i="${i}" data-k="t" aria-label="모양">${Object.keys(SHN).map(t=>`<option value="${t}"${b.t==t?' selected':''}>${SHN[t]}</option>`).join('')}</select></td>${['x','y','z','w','d','h','k','r','tl'].map(k=>{const dis=(k=='d'&&b.t!='box')||(k=='k'&&!POLY(b.t))||(k=='h'&&HEMI(b.t));const val=k=='z'?(b.z||0):k=='k'?NSIDE(b):(k=='r'||k=='tl')?(+b[k]||0):b[k];const step=(k=='x'||k=='y'||k=='k')?1:k=='r'?15:k=='tl'?5:0.5;return`<td><input type="number" step="${step}"${k=='k'?' min="3" max="8"':''}${k=='z'?' min="0"':''}${k=='tl'?' min="0" max="75"':''} data-i="${i}" data-k="${k}" value="${val}" ${dis?'disabled':''} aria-label="${k}"></td>`}).join('')}<td><button data-del="${i}" aria-label="${b.n} 삭제">×</button></td></tr>`).join('');
+ $('btab').tBodies[0].innerHTML=W.B.map((b,i)=>`<tr><td><input data-i="${i}" data-k="n" value="${b.n.replace(/"/g,'&quot;')}" aria-label="이름"></td><td><input type="color" data-i="${i}" data-k="col" value="${b.col||COLORS[i%COLORS.length]}" aria-label="색" style="width:48px;min-height:40px;padding:2px"></td><td><select data-i="${i}" data-k="t" aria-label="모양">${Object.keys(SHN).map(t=>`<option value="${t}"${b.t==t?' selected':''}>${SHN[t]}</option>`).join('')}</select></td>${['x','y','z','w','d','h','k','r','tl'].map(k=>{const dis=(k=='d'&&b.t!='box'&&!FRUS(b.t))||(k=='k'&&!POLY(b.t))||(k=='h'&&HEMI(b.t));const val=k=='z'?(b.z||0):k=='k'?NSIDE(b):(k=='r'||k=='tl')?(+b[k]||0):b[k];const step=(k=='x'||k=='y'||k=='k')?1:k=='r'?15:k=='tl'?5:0.5;return`<td><input type="number" step="${step}"${k=='k'?' min="3" max="8"':''}${k=='z'?' min="0"':''}${k=='tl'?' min="0" max="75"':''} data-i="${i}" data-k="${k}" value="${val}" ${dis?'disabled':''} aria-label="${k}"></td>`}).join('')}<td><button data-del="${i}" aria-label="${b.n} 삭제">×</button></td></tr>`).join('');
  $('sel').innerHTML=W.B.map((b,i)=>`<option value="${i}"${i==S.sel?' selected':''}>${b.n}</option>`).join('')}
 function resetVer(i){if(i==null){S.verified={}}else delete S.verified[i]}
 function renderPred(){const b=S.world.B[S.sel];if(!b){$('pred').innerHTML='<p class="note">먼저 건물을 추가하세요.</p>';return}
@@ -344,7 +345,7 @@ function drawMap(){const s=$('map'),Wd=s.clientWidth||600,Hd=s.clientHeight||420
  const [a,c]=W.f,lf=Math.hypot(a,c)||1,ang=Math.atan2(c,a),hf=W.fov/2*Math.PI/180,R=60;
  h+=`<path d="M${X(W.P[0])} ${Y(W.P[1])} L${X(W.P[0]+R*Math.cos(ang+hf))} ${Y(W.P[1]+R*Math.sin(ang+hf))} L${X(W.P[0]+R*Math.cos(ang-hf))} ${Y(W.P[1]+R*Math.sin(ang-hf))} Z" fill="#d98a10" fill-opacity="0.13" stroke="#d98a10" stroke-dasharray="5 5"/>`;
  W.B.forEach((b,i)=>{const col=b.col||COLORS[i%COLORS.length],sel=i==S.sel?2.4:1;
-  h+=turned(b)&&!(ROUND(b.t)&&!(+b.tl))?`<polygon points="${footprint(b).map(q=>X(q[0])+','+Y(q[1])).join(' ')}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}" stroke-dasharray="${+b.tl?'2 3':b.z?'5 3':'none'}"/>`:b.t=='box'?`<rect x="${X(b.x-b.w/2)}" y="${Y(b.y+b.d/2)}" width="${b.w*k}" height="${b.d*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`:POLY(b.t)?`<polygon points="${baseRing(b).map(q=>X(q[0])+','+Y(q[1])).join(' ')}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`:`<circle cx="${X(b.x)}" cy="${Y(b.y)}" r="${b.w*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`;
+  h+=turned(b)&&!(ROUND(b.t)&&!(+b.tl))?`<polygon points="${footprint(b).map(q=>X(q[0])+','+Y(q[1])).join(' ')}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}" stroke-dasharray="${+b.tl?'2 3':b.z?'5 3':'none'}"/>`:b.t=='box'?`<rect x="${X(b.x-b.w/2)}" y="${Y(b.y+b.d/2)}" width="${b.w*k}" height="${b.d*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`:POLY(b.t)?`<polygon points="${baseRing(b).map(q=>X(q[0])+','+Y(q[1])).join(' ')}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`:`<circle cx="${X(b.x)}" cy="${Y(b.y)}" r="${(FRUS(b.t)?Math.max(b.w,b.d):b.w)*k}" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="${sel}"${b.z?' stroke-dasharray="5 3"':''}/>`;
   h+=`<circle cx="${X(b.x)}" cy="${Y(b.y)}" r="3" fill="${col}"/>`});
  const b=W.B[S.sel];let note='2번 섹션에서 건물을 고르면 벡터 v가 그려집니다.';
  if(b){const T=truth(b);
@@ -381,7 +382,7 @@ function draw3d(){if(!three)return;const{R,sc,cam,eye,planes,group,wg,wedge,obs,
  const gh=new THREE.GridHelper(Math.ceil(span*1.6),Math.ceil(span*1.6),0xb9c2d6,0xc9d0df);gh.position.set(Math.round(cx),0.01,-Math.round(cy));group.add(gh);
  const [a,c]=W.f,ang=Math.atan2(c,a),hf=W.fov/2*Math.PI/180,f3=new THREE.Vector3(Math.cos(ang),0,-Math.sin(ang)),up=new THREE.Vector3(0,1,0),P3=new THREE.Vector3(W.P[0],0,-W.P[1]);
  [ang+hf,ang-hf].forEach((t,i)=>{const d=new THREE.Vector3(Math.cos(t),0,-Math.sin(t)),n=new THREE.Vector3().crossVectors(d,up);if(n.dot(f3)<0)n.negate();planes[i].setFromNormalAndCoplanarPoint(n.normalize(),P3)});
- W.B.forEach((b,i)=>{const nn=POLY(b.t)?NSIDE(b):40;const geo=b.t=='box'?new THREE.BoxGeometry(b.w,b.h,b.d):HEMI(b.t)?new THREE.SphereGeometry(b.w,40,16,0,2*Math.PI,0,Math.PI/2):APEX(b.t)?new THREE.ConeGeometry(b.w,b.h,nn):new THREE.CylinderGeometry(b.w,b.w,b.h,nn);
+ W.B.forEach((b,i)=>{const nn=POLY(b.t)?NSIDE(b):40;const geo=b.t=='box'?new THREE.BoxGeometry(b.w,b.h,b.d):HEMI(b.t)?new THREE.SphereGeometry(b.w,40,16,0,2*Math.PI,0,Math.PI/2):FRUS(b.t)?new THREE.CylinderGeometry(b.d,b.w,b.h,nn):APEX(b.t)?new THREE.ConeGeometry(b.w,b.h,nn):new THREE.CylinderGeometry(b.w,b.w,b.h,nn);
   const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({color:new THREE.Color(b.col||COLORS[i%COLORS.length]),clippingPlanes:planes,side:THREE.DoubleSide}));if(!HEMI(b.t))geo.translate(0,b.h/2,0);m.rotation.set((+b.tl||0)*RAD,(+b.r||0)*RAD,0,'YXZ');m.position.set(b.x,xf(b).lift,-b.y);group.add(m);
   const e=new THREE.LineSegments(new THREE.EdgesGeometry(geo,30),new THREE.LineBasicMaterial({color:0x7d869c}));e.position.copy(m.position);e.rotation.copy(m.rotation);group.add(e);
   if(HEMI(b.t)){const dg=new THREE.CircleGeometry(b.w,40);dg.rotateX(Math.PI/2);const dm=new THREE.Mesh(dg,m.material);dm.position.copy(m.position);dm.rotation.copy(m.rotation);group.add(dm)}});
@@ -478,10 +479,10 @@ $('extBtn').onclick=()=>{S.ext=!S.ext;if(!S.ext)snapBasic();resetVer();S.axOK=fa
 $('btab').addEventListener('change',e=>{const i=+e.target.dataset.i,k=e.target.dataset.k;if(isNaN(i))return;const b=S.world.B[i];
  if(k=='col'){b.col=e.target.value;save();drawMap();draw3d();drawEye();return}
  if(k=='n'||k=='t')b[k]=e.target.value;else{const v=+e.target.value;if(!isFinite(v))return;b[k]=(k=='x'||k=='y')?v:k=='r'?((v%360)+360)%360:k=='tl'?Math.max(0,Math.min(75,v)):k=='z'?Math.max(0,v):k=='k'?Math.max(3,Math.min(8,Math.round(v))):Math.max(0.5,v)}
- if(b.t!='box')b.d=b.w;if(HEMI(b.t))b.h=b.w;if(POLY(b.t)&&!b.k)b.k=4;delete S.verified[i];Object.keys(S.cOK||{}).forEach(k=>{if(+k.split('|')[0]==i)delete S.cOK[k]});renderDesign();save();renderPred();renderMissions();drawMap();draw3d();renderEyeUI();drawEye()});
+ if(FRUS(b.t)&&k=='t')b.d=Math.round(b.w*5)/10;else if(b.t!='box'&&!FRUS(b.t))b.d=b.w;if(HEMI(b.t))b.h=b.w;if(POLY(b.t)&&!b.k)b.k=4;delete S.verified[i];Object.keys(S.cOK||{}).forEach(k=>{if(+k.split('|')[0]==i)delete S.cOK[k]});renderDesign();save();renderPred();renderMissions();drawMap();draw3d();renderEyeUI();drawEye()});
 $('btab').addEventListener('click',e=>{const d=e.target.dataset.del;if(d==null)return;S.world.B.splice(+d,1);S.preds={};S.verified={};S.tries={};S.sel=0;all()});
-const add=t=>{const n=S.world.B.length+1;S.world.B.push({n:'건물 '+n,t,x:S.world.P[0]+3,y:S.world.P[1]+3,z:0,w:t=='box'?2:t=='hemi'?1.5:1,d:t=='box'?2:t=='hemi'?1.5:1,h:t=='hemi'?1.5:2,k:4});S.sel=S.world.B.length-1;all()};
-$('addBox').onclick=()=>add('box');$('addCyl').onclick=()=>add('cyl');$('addCone').onclick=()=>add('cone');$('addPyr').onclick=()=>add('pyr');$('addPrism').onclick=()=>add('prism');$('addHemi').onclick=()=>add('hemi');
+const add=t=>{const n=S.world.B.length+1;S.world.B.push({n:'건물 '+n,t,x:S.world.P[0]+3,y:S.world.P[1]+3,z:0,w:t=='box'?2:t=='hemi'||t=='frus'?1.5:1,d:t=='box'?2:t=='hemi'?1.5:t=='frus'?0.8:1,h:t=='hemi'?1.5:2,k:4});S.sel=S.world.B.length-1;all()};
+$('addBox').onclick=()=>add('box');$('addCyl').onclick=()=>add('cyl');$('addCone').onclick=()=>add('cone');$('addPyr').onclick=()=>add('pyr');$('addPrism').onclick=()=>add('prism');$('addHemi').onclick=()=>add('hemi');$('addFrus').onclick=()=>add('frus');
 $('sample').onclick=()=>{S.world=sampleWorld();S.preds={};S.verified={};S.tries={};S.hints={};S.sel=0;all()};
 $('sel').onchange=e=>{S.sel=+e.target.value;save();renderPred();drawMap()};
 $('check').onclick=check;$('checkAx').onclick=checkAx;$('checkC').onclick=checkC;
