@@ -43,7 +43,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th{font-weight:500;color:var(--muted);text-align:left;padding:6px}
 td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:middle}
 .scroll{overflow-x:auto}
-#btab{min-width:900px}#ltab{min-width:620px}#ltab th,#ltab td:nth-child(5){white-space:nowrap}#ltab td:nth-child(2){min-width:70px}#btab td:first-child{min-width:130px}#btab td:nth-child(2){min-width:110px}
+#btab{min-width:900px}#btabWrap{max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:10px}#btab thead th{position:sticky;top:0;background:var(--panel);z-index:2;box-shadow:0 1px 0 var(--line)}#btab td:last-child{white-space:nowrap}#btab button[data-copy]{margin-right:4px}#ltab{min-width:620px}#ltab th,#ltab td:nth-child(5){white-space:nowrap}#ltab td:nth-child(2){min-width:70px}#btab td:first-child{min-width:130px}#btab td:nth-child(2){min-width:110px}
 .pred{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.6fr);gap:8px 12px;align-items:center}
 .pred .q{font-size:15px}
 .fb{font-size:14px}
@@ -113,8 +113,8 @@ body:not(.ext) .extOnly{display:none!important}body.ext .basicOnly{display:none!
 <div class="extOnly"><label for="fc">f의 z성분 c (확장: + 고개 들기, − 숙이기)</label><input id="fc" type="number" step="0.5"></div>
 <div><label for="fov">시야각 (°)</label><input id="fov" type="number" step="10" min="10" max="170"></div>
 </div>
-<div class="scroll" style="margin-top:12px"><table id="btab"><thead><tr><th>이름</th><th>색</th><th>모양</th><th>중심 x</th><th>중심 y</th><th>바닥 높이 z</th><th>가로 / 반지름</th><th>세로 / 윗면 반지름</th><th>높이</th><th>밑면 꼭짓점 수</th><th>회전 (°)</th><th>기울기 (°)</th><th></th></tr></thead><tbody></tbody></table></div>
-<div class="controls"><button id="addBox">직육면체 추가</button><button id="addCyl">원기둥 추가</button><button id="addCone">원뿔 추가</button><button id="addPyr">각뿔 추가</button><button id="addPrism">각기둥 추가</button><button id="addHemi">반구 추가</button><button id="addFrus">원뿔대 추가</button><button id="sample">예시 세상 불러오기</button></div>
+<div class="scroll" id="btabWrap" style="margin-top:12px"><table id="btab"><thead><tr><th>이름</th><th>색</th><th>모양</th><th>중심 x</th><th>중심 y</th><th>바닥 높이 z</th><th>가로 / 반지름</th><th>세로 / 윗면 반지름</th><th>높이</th><th>밑면 꼭짓점 수</th><th>회전 (°)</th><th>기울기 (°)</th><th></th></tr></thead><tbody></tbody></table></div>
+<div class="controls"><button id="addBox">직육면체 추가</button><button id="addCyl">원기둥 추가</button><button id="addCone">원뿔 추가</button><button id="addPyr">각뿔 추가</button><button id="addPrism">각기둥 추가</button><button id="addHemi">반구 추가</button><button id="addFrus">원뿔대 추가</button><button id="paste" disabled>붙여넣기</button><button id="sample">예시 세상 불러오기</button></div>
 <p class="note">예시 세상은 연습용으로 만든 것입니다. 나만의 장면으로 바꿔 보세요.</p>
 <p class="note"><b>원뿔대</b>는 가로 칸에 아랫면 반지름, 세로 칸에 윗면 반지름을 넣습니다. <b>반구</b>는 반지름만 정하면 높이도 반지름과 같아집니다. <b>회전</b>은 도형을 바닥에서 시계 반대 방향으로 돌립니다(위에서 보았을 때). <b>기울기</b>는 도형을 옆으로 눕힙니다(0°–75°). 눕는 방향은 회전으로 정하고, 가장 낮은 점이 바닥 높이 z에 놓입니다. 평면도에서 기울어진 도형은 점선으로, 위에서 내려다본 그림자 모양으로 보입니다. 판정에 쓰는 중심 (x, y)는 밑면의 중심입니다.</p>
 </div>
@@ -296,7 +296,7 @@ function stepHint(k,T){const [a,c]=S.world.f,[px,py]=S.world.P,b=S.world.B[S.sel
 
 const SHN={box:'직육면체',cyl:'원기둥',cone:'원뿔',pyr:'각뿔',prism:'각기둥',hemi:'반구',frus:'원뿔대'};
 function renderDesign(){const W=S.world;$('px').value=W.P[0];$('py').value=W.P[1];$('fa').value=W.f[0];$('fb').value=W.f[1];$('fc').value=W.c||0;$('fdir').value=W.f.join(',');$('fov').value=W.fov;
- $('btab').tBodies[0].innerHTML=W.B.map((b,i)=>`<tr><td><input data-i="${i}" data-k="n" value="${b.n.replace(/"/g,'&quot;')}" aria-label="이름"></td><td><input type="color" data-i="${i}" data-k="col" value="${b.col||COLORS[i%COLORS.length]}" aria-label="색" style="width:48px;min-height:40px;padding:2px"></td><td><select data-i="${i}" data-k="t" aria-label="모양">${Object.keys(SHN).map(t=>`<option value="${t}"${b.t==t?' selected':''}>${SHN[t]}</option>`).join('')}</select></td>${['x','y','z','w','d','h','k','r','tl'].map(k=>{const dis=(k=='d'&&b.t!='box'&&!FRUS(b.t))||(k=='k'&&!POLY(b.t))||(k=='h'&&HEMI(b.t));const val=k=='z'?(b.z||0):k=='k'?NSIDE(b):(k=='r'||k=='tl')?(+b[k]||0):b[k];const step=(k=='x'||k=='y'||k=='k')?1:k=='r'?15:k=='tl'?5:0.5;return`<td><input type="number" step="${step}"${k=='k'?' min="3" max="8"':''}${k=='z'?' min="0"':''}${k=='tl'?' min="0" max="75"':''} data-i="${i}" data-k="${k}" value="${val}" ${dis?'disabled':''} aria-label="${k}"></td>`}).join('')}<td><button data-del="${i}" aria-label="${b.n} 삭제">×</button></td></tr>`).join('');
+ $('btab').tBodies[0].innerHTML=W.B.map((b,i)=>`<tr><td><input data-i="${i}" data-k="n" value="${b.n.replace(/"/g,'&quot;')}" aria-label="이름"></td><td><input type="color" data-i="${i}" data-k="col" value="${b.col||COLORS[i%COLORS.length]}" aria-label="색" style="width:48px;min-height:40px;padding:2px"></td><td><select data-i="${i}" data-k="t" aria-label="모양">${Object.keys(SHN).map(t=>`<option value="${t}"${b.t==t?' selected':''}>${SHN[t]}</option>`).join('')}</select></td>${['x','y','z','w','d','h','k','r','tl'].map(k=>{const dis=(k=='d'&&b.t!='box'&&!FRUS(b.t))||(k=='k'&&!POLY(b.t))||(k=='h'&&HEMI(b.t));const val=k=='z'?(b.z||0):k=='k'?NSIDE(b):(k=='r'||k=='tl')?(+b[k]||0):b[k];const step=(k=='x'||k=='y'||k=='k')?1:k=='r'?15:k=='tl'?5:0.5;return`<td><input type="number" step="${step}"${k=='k'?' min="3" max="8"':''}${k=='z'?' min="0"':''}${k=='tl'?' min="0" max="75"':''} data-i="${i}" data-k="${k}" value="${val}" ${dis?'disabled':''} aria-label="${k}"></td>`}).join('')}<td><button data-copy="${i}" title="복사" aria-label="${b.n} 복사">복사</button><button data-del="${i}" aria-label="${b.n} 삭제">×</button></td></tr>`).join('');
  $('sel').innerHTML=W.B.map((b,i)=>`<option value="${i}"${i==S.sel?' selected':''}>${b.n}</option>`).join('')}
 function resetVer(i){if(i==null){S.verified={}}else delete S.verified[i]}
 function renderPred(){const b=S.world.B[S.sel];if(!b){$('pred').innerHTML='<p class="note">먼저 건물을 추가하세요.</p>';return}
@@ -480,8 +480,11 @@ $('btab').addEventListener('change',e=>{const i=+e.target.dataset.i,k=e.target.d
  if(k=='col'){b.col=e.target.value;save();drawMap();draw3d();drawEye();return}
  if(k=='n'||k=='t')b[k]=e.target.value;else{const v=+e.target.value;if(!isFinite(v))return;b[k]=(k=='x'||k=='y')?v:k=='r'?((v%360)+360)%360:k=='tl'?Math.max(0,Math.min(75,v)):k=='z'?Math.max(0,v):k=='k'?Math.max(3,Math.min(8,Math.round(v))):Math.max(0.5,v)}
  if(FRUS(b.t)&&k=='t')b.d=Math.round(b.w*5)/10;else if(b.t!='box'&&!FRUS(b.t))b.d=b.w;if(HEMI(b.t))b.h=b.w;if(POLY(b.t)&&!b.k)b.k=4;delete S.verified[i];Object.keys(S.cOK||{}).forEach(k=>{if(+k.split('|')[0]==i)delete S.cOK[k]});renderDesign();save();renderPred();renderMissions();drawMap();draw3d();renderEyeUI();drawEye()});
-$('btab').addEventListener('click',e=>{const d=e.target.dataset.del;if(d==null)return;S.world.B.splice(+d,1);S.preds={};S.verified={};S.tries={};S.sel=0;all()});
-const add=t=>{const n=S.world.B.length+1;S.world.B.push({n:'건물 '+n,t,x:S.world.P[0]+3,y:S.world.P[1]+3,z:0,w:t=='box'?2:t=='hemi'||t=='frus'?1.5:1,d:t=='box'?2:t=='hemi'?1.5:t=='frus'?0.8:1,h:t=='hemi'?1.5:2,k:4});S.sel=S.world.B.length-1;all()};
+let CLIP=null;const toEnd=()=>{const w=$('btabWrap');if(w)w.scrollTop=w.scrollHeight};
+$('btab').addEventListener('click',e=>{const c=e.target.dataset.copy;if(c!=null){CLIP=JSON.parse(JSON.stringify(S.world.B[+c]));const p=$('paste');p.disabled=false;p.textContent='붙여넣기: '+CLIP.n;p.title='복사한 도형을 바로 옆(x + 1, y + 1)에 하나 더 놓습니다. 여러 번 누를 수 있어요.';return}
+ const d=e.target.dataset.del;if(d==null)return;S.world.B.splice(+d,1);S.preds={};S.verified={};S.tries={};S.sel=0;all()});
+const add=t=>{const n=S.world.B.length+1;S.world.B.push({n:'건물 '+n,t,x:S.world.P[0]+3,y:S.world.P[1]+3,z:0,w:t=='box'?2:t=='hemi'||t=='frus'?1.5:1,d:t=='box'?2:t=='hemi'?1.5:t=='frus'?0.8:1,h:t=='hemi'?1.5:2,k:4});S.sel=S.world.B.length-1;all();toEnd()};
+$('paste').onclick=()=>{if(!CLIP)return;const b=JSON.parse(JSON.stringify(CLIP));b.x=(+b.x||0)+1;b.y=(+b.y||0)+1;CLIP.x=b.x;CLIP.y=b.y;b.n=CLIP.n.replace(/ \((copy|복사)\)( \d+)?$/,'')+' (복사)';S.world.B.push(b);S.sel=S.world.B.length-1;all();toEnd()};
 $('addBox').onclick=()=>add('box');$('addCyl').onclick=()=>add('cyl');$('addCone').onclick=()=>add('cone');$('addPyr').onclick=()=>add('pyr');$('addPrism').onclick=()=>add('prism');$('addHemi').onclick=()=>add('hemi');$('addFrus').onclick=()=>add('frus');
 $('sample').onclick=()=>{S.world=sampleWorld();S.preds={};S.verified={};S.tries={};S.hints={};S.sel=0;all()};
 $('sel').onchange=e=>{S.sel=+e.target.value;save();renderPred();drawMap()};
